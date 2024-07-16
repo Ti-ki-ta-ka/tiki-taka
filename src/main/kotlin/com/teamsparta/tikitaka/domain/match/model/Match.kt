@@ -1,4 +1,4 @@
-package com.teamsparta.tikitaka.domain.matching.model
+package com.teamsparta.tikitaka.domain.match.model
 
 import com.teamsparta.tikitaka.domain.common.baseentity.BaseEntity
 import jakarta.persistence.*
@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "matching_post")
-class Matching(
+class Match(
     @Column(name = "matching_date", nullable = false)
     var matchingDate: LocalDateTime,
 
