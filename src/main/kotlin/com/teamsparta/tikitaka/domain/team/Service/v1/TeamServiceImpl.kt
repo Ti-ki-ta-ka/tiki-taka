@@ -1,14 +1,13 @@
 package com.teamsparta.tikitaka.domain.team.Service.v1
 
 import com.teamsparta.tikitaka.domain.common.baseentity.exception.NotFoundException
-import com.teamsparta.tikitaka.domain.team.dto.request.CreateTeamRequest
-import com.teamsparta.tikitaka.domain.team.dto.request.UpdateTeamRequest
+import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
+import com.teamsparta.tikitaka.domain.team.dto.request.toEntity
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
-import com.teamsparta.tikitaka.domain.team.dto.response.toResponse
-import com.teamsparta.tikitaka.domain.team.model.Team
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class TeamServiceImpl(
@@ -16,50 +15,43 @@ class TeamServiceImpl(
 ) : TeamService {
 
 
+    @Transactional
     override fun createTeam(
-        request: CreateTeamRequest
+        request: TeamRequest
     ): TeamResponse {
-        val team = Team(
-            name = request.name,
-            description = request.description,
-            region = request.region
-        )
-
-        return teamRepository.save(team).toResponse(team)
+        return TeamResponse.from(teamRepository.save(request.toEntity()))
     }
 
+
+    @Transactional
     override fun updateTeam(
-        request: UpdateTeamRequest,
+        request: TeamRequest,
         teamId: Long
     ): TeamResponse {
         val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
-
-        team.name = request.name
-        team.description = request.description
-        team.region = request.region
-
-        return teamRepository.save(team).toResponse(team)
+        team.updateTeam(request.name, request.description, request.region)
+        return TeamResponse.from(team)
     }
 
+    @Transactional
     override fun deleteTeam(
         teamId: Long
     ) {
         val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
-        teamRepository.delete(team)
+        team.softDelete()
     }
 
     override fun getTeams(
-
     ): List<TeamResponse> {
         val teams = teamRepository.findAll()
-        return teams.map { team -> team.toResponse(team) }
+        return teams.map { team -> TeamResponse.from(team) }
     }
 
     override fun getTeam(
         teamId: Long
     ): TeamResponse {
         val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
-        return team.toResponse(team)
+        return TeamResponse.from(team)
     }
 
 }

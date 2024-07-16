@@ -2,8 +2,7 @@ package com.teamsparta.tikitaka.domain.team.controller.v1
 
 
 import com.teamsparta.tikitaka.domain.team.Service.v1.TeamService
-import com.teamsparta.tikitaka.domain.team.dto.request.CreateTeamRequest
-import com.teamsparta.tikitaka.domain.team.dto.request.UpdateTeamRequest
+import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,17 +17,17 @@ class TeamController(
 
     @PostMapping
     fun createTeam(
-        @RequestBody createTeamRequest: CreateTeamRequest
+        @RequestBody request: TeamRequest
     ): ResponseEntity<TeamResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(teamService.createTeam(createTeamRequest))
+        return ResponseEntity.status(HttpStatus.CREATED).body(teamService.createTeam(request))
     }
 
     @PutMapping("/{team-id}")
     fun updateTeam(
         @PathVariable("team-id") teamId: Long,
-        @RequestBody updateTeamRequest: UpdateTeamRequest
+        @RequestBody request: TeamRequest
     ): ResponseEntity<TeamResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(teamService.updateTeam(updateTeamRequest, teamId))
+        return ResponseEntity.status(HttpStatus.OK).body(teamService.updateTeam(request, teamId))
     }
 
     @DeleteMapping("/{team-id}")
