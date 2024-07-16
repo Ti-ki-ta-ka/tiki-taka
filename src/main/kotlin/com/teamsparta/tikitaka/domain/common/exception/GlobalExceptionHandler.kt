@@ -3,6 +3,7 @@ package com.teamsparta.tikitaka.domain.common.exception
 import com.teamsparta.tikitaka.domain.common.exception.dto.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -13,5 +14,21 @@ class GlobalExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)
             .body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<MutableMap<String, Any>> {
+        val body: MutableMap<String, Any> = mutableMapOf("statusCode" to "400")
+        val errors: MutableMap<String, String> = mutableMapOf()
+
+        e.bindingResult.fieldErrors.forEach { fieldError ->
+            errors[fieldError.field] = fieldError.defaultMessage ?: ""
+        }
+
+        body["errors"] = errors
+
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(body)
     }
 }
