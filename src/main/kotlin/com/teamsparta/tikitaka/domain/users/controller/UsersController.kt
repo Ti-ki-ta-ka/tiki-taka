@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import com.teamsparta.tikitaka.domain.users.dto.LoginRequest
+import com.teamsparta.tikitaka.domain.users.dto.LoginResponse
 
 @RequestMapping("/api/v1/users")
 @RestController
@@ -24,5 +26,12 @@ class UsersController(
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(userService.signUp(signUpRequest))
+    }
+
+    @PostMapping("/log-in")
+    fun logIn(
+        @RequestBody request: LoginRequest
+    ): ResponseEntity<LoginResponse> {
+        return ResponseEntity.ok(usersService.logIn(request))
     }
 }
