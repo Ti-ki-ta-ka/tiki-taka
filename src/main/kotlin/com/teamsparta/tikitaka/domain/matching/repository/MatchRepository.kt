@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface MatchRepository:JpaRepository<Match,Long> {
+    fun findByDeletedAtIsNull(): List<Match>
 }

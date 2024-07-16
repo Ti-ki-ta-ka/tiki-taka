@@ -18,7 +18,10 @@ class MatchServiceImpl(
 ):MatchService {
 
     @Transactional
-    override fun postMatch(request: PostMatchRequest): MatchStatusResponse {
+    override fun postMatch(
+        request: PostMatchRequest
+    ): MatchStatusResponse
+    {
 
         matchRepository.save(Match.of(
             title = request.title,
@@ -34,28 +37,38 @@ class MatchServiceImpl(
     }
 
     @Transactional
-    override fun updateMatch(matchId: Long, request: UpdateMatchRequest): MatchStatusResponse {
+    override fun updateMatch(
+        matchId: Long, request: UpdateMatchRequest
+    ): MatchStatusResponse
+    {
         matchRepository.findByIdOrNull(matchId)
-            ?. apply { this.updateMatch(request) }
+            ?. let { it.updateMatch(request) }
             ?: throw RuntimeException("") //todo : custom exception
 
         return MatchStatusResponse.from()
     }
 
     @Transactional
-    override fun deleteMatch(matchId: Long): MatchStatusResponse {
+    override fun deleteMatch(
+        matchId: Long
+    ): MatchStatusResponse
+    {
         matchRepository.findByIdOrNull(matchId)
-            ?.apply {this.softDelete()}
+            ?.let {it.softDelete()}
             ?: throw RuntimeException("Match not found") //todo : custom exception
         return MatchStatusResponse.from()
     }
 
-    override fun getMatches(): List<MatchResponse> {
-        return matchRepository.findAll()
+    override fun getMatches(): List<MatchResponse>
+    {
+        return matchRepository.findByDeletedAtIsNull()
             .map { match -> MatchResponse.from(match) }
     }
 
-    override fun getMatchDetails(matchId: Long): MatchResponse {
+    override fun getMatchDetails(
+        matchId: Long
+    ): MatchResponse
+    {
         return matchRepository.findByIdOrNull(matchId)
             ?.let { match -> MatchResponse.from(match) }
             ?: throw RuntimeException("Match not found") //todo : custom exception
