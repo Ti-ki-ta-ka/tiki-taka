@@ -16,11 +16,11 @@ class MatchApplicationController(
 ) {
     @PostMapping("/{matchId}/match-applications")
     fun applyMatch(
-        // Users 구현 이후, 인증 부분 추가 필요
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable matchId: Long,
         @RequestBody request: CreateApplyRequest
     ): ResponseEntity<MatchApplyResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(matchApplicationService.applyMatch(request, matchId))
+        return ResponseEntity.status(HttpStatus.CREATED).body(matchApplicationService.applyMatch(principal.id, request, matchId))
     }
 
     @DeleteMapping("/{matchId}/match-applications/{applicationId}")
@@ -28,7 +28,7 @@ class MatchApplicationController(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable applicationId: Long,
     ): ResponseEntity<Unit> {
-        matchApplicationService.deleteMatch(principal.id, applicationId)
+        matchApplicationService.deleteMatch(principal, applicationId)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 }
