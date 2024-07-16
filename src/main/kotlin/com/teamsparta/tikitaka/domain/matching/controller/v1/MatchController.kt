@@ -4,6 +4,7 @@ import com.teamsparta.tikitaka.domain.matching.dto.MatchResponse
 import com.teamsparta.tikitaka.domain.matching.dto.MatchStatusResponse
 import com.teamsparta.tikitaka.domain.matching.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.matching.dto.UpdateMatchRequest
+import com.teamsparta.tikitaka.domain.matching.service.v1.MatchService
 import com.teamsparta.tikitaka.domain.matching.service.v1.MatchServiceImpl
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/matches")
 class MatchController(
-    private val matchService : MatchServiceImpl,
+    private val matchService : MatchService,
 ) {
     //@PreAuthorize("hasRole('LEADER')") //todo : 리더 외 권한 부여 ?
     @PostMapping()
