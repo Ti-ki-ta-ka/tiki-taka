@@ -1,5 +1,7 @@
 package com.teamsparta.tikitaka.infra.security.jwt
 
+import com.teamsparta.tikitaka.domain.users.service.v1.UsersService
+import com.teamsparta.tikitaka.domain.users.service.v1.UsersServiceImpl
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -12,7 +14,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthenticationFilter(
-    private val jwtPlugin: JwtPlugin
+    private val jwtPlugin: JwtPlugin,
+    private val usersService: UsersServiceImpl
 ) : OncePerRequestFilter()
 {
 
@@ -29,6 +32,10 @@ class JwtAuthenticationFilter(
         val jwt = request.getBearerToken()
 
         if (jwt != null) {
+            if (usersService.isTokenBlacklisted(jwt)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is blacklisted")
+                return
+            }
             jwtPlugin.validateToken(jwt)
                 .onSuccess {
                     val userId = it.payload.subject.toLong()
@@ -46,6 +53,11 @@ class JwtAuthenticationFilter(
                         details = WebAuthenticationDetailsSource().buildDetails(request)
                     )
                     SecurityContextHolder.getContext().authentication = authentication
+                    request.setAttribute("accessToken", jwt)
+                }
+                .onFailure {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token")
+                    return
                 }
         }
         filterChain.doFilter(request, response)

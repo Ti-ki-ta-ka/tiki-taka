@@ -1,6 +1,7 @@
 package com.teamsparta.tikitaka.domain.users.service.v1
 
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
+import com.teamsparta.tikitaka.domain.common.util.RedisUtils
 import com.teamsparta.tikitaka.domain.users.dto.LoginRequest
 import com.teamsparta.tikitaka.domain.users.dto.LoginResponse
 import com.teamsparta.tikitaka.domain.users.dto.SignUpRequest
@@ -13,10 +14,11 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UserServiceImpl(
+class UsersServiceImpl(
     private val usersRepository: UsersRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtPlugin: JwtPlugin
+    private val jwtPlugin: JwtPlugin,
+    private val redisUtils: RedisUtils
 ) : UsersService
 {
     @Transactional
@@ -50,5 +52,13 @@ class UserServiceImpl(
             )
 
         )
+    }
+
+    override fun logOut(token: String) {
+        redisUtils.setDataExpire(token, "blacklisted")
+    }
+
+    fun isTokenBlacklisted(token: String): Boolean {
+        return redisUtils.getData(token) != null
     }
 }
