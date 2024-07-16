@@ -22,4 +22,6 @@ class MatchApplicationServiceImpl
         return matchApplicationRepository.save(MatchApplication.of(matchPost, teamId))
             .let { MatchApplyResponse.from(it) }
     }
+
+
 }
