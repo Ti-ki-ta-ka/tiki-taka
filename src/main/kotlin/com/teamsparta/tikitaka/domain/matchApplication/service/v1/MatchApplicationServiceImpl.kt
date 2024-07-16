@@ -24,8 +24,8 @@ class MatchApplicationServiceImpl
 ) : MatchApplicationService {
     @Transactional
     override fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse {
-        // 신청자가 리더나 작성자가 아닐 경우 신청 불가
-        // MatchPost 중 동일한 MatchingDate 는 신청 불가 (다른 신청의 ApproveStatus 가 WAITING 인 경우)
+        // 신청자의 역할이 리더나 서브 리더가 아닐 경우 신청 불가
+        // MatchPost, 동일한 MatchingDate 중 다른 신청의 ApproveStatus 가 WAITING 인 경우 해당 날짜에 신청 불가
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("match", matchId)
         val (teamId) = request
