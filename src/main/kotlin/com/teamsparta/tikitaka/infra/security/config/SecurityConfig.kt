@@ -1,4 +1,4 @@
-package com.teamsparta.tikitaka.infra.security
+package com.teamsparta.tikitaka.infra.security.config
 
 import com.teamsparta.tikitaka.infra.security.jwt.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
