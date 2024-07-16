@@ -25,5 +25,14 @@ class MatchApplicationServiceImpl
             .let { MatchApplyResponse.from(it) }
     }
 
+    @Transactional
+    override fun deleteMatch(userId: Long, applicationId: Long) {
+        // 사용자 인증여부 조회, 사용자 미인증 시 예외처리 진행
+        // 팀 맴버 Role 의 경우, 신청자 또는 해당 팀의 리더만 가능
+        // SoftDelete 진행
+
+        TODO()
+    }
+
 
 }
