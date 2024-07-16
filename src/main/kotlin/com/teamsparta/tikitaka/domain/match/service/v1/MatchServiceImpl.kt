@@ -1,11 +1,11 @@
-package com.teamsparta.tikitaka.domain.matching.service.v1
+package com.teamsparta.tikitaka.domain.match.service.v1
 
-import com.teamsparta.tikitaka.domain.matching.dto.MatchResponse
-import com.teamsparta.tikitaka.domain.matching.dto.MatchStatusResponse
-import com.teamsparta.tikitaka.domain.matching.dto.PostMatchRequest
-import com.teamsparta.tikitaka.domain.matching.dto.UpdateMatchRequest
-import com.teamsparta.tikitaka.domain.matching.model.Match
-import com.teamsparta.tikitaka.domain.matching.repository.MatchRepository
+import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
+import com.teamsparta.tikitaka.domain.match.dto.MatchStatusResponse
+import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
+import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
+import com.teamsparta.tikitaka.domain.match.model.Match
+import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,22 +15,23 @@ import org.springframework.transaction.annotation.Transactional
 class MatchServiceImpl(
     private val matchRepository: MatchRepository,
 
-):MatchService {
+    ) : MatchService {
 
     @Transactional
     override fun postMatch(
         request: PostMatchRequest
-    ): MatchStatusResponse
-    {
+    ): MatchStatusResponse {
 
-        matchRepository.save(Match.of(
-            title = request.title,
-            matchDate = request.matchDate,
-            location = request.location,
-            content = request.content,
-            matchStatus = false,
-            teamId = request.teamId,
-        ))
+        matchRepository.save(
+            Match.of(
+                title = request.title,
+                matchDate = request.matchDate,
+                location = request.location,
+                content = request.content,
+                matchStatus = false,
+                teamId = request.teamId,
+            )
+        )
         //todo : team 구인공고 상태 변경
 
         return MatchStatusResponse.from()
@@ -39,10 +40,9 @@ class MatchServiceImpl(
     @Transactional
     override fun updateMatch(
         matchId: Long, request: UpdateMatchRequest
-    ): MatchStatusResponse
-    {
+    ): MatchStatusResponse {
         matchRepository.findByIdOrNull(matchId)
-            ?. let { it.updateMatch(request) }
+            ?.let { it.updateMatch(request) }
             ?: throw RuntimeException("") //todo : custom exception
 
         return MatchStatusResponse.from()
@@ -51,24 +51,21 @@ class MatchServiceImpl(
     @Transactional
     override fun deleteMatch(
         matchId: Long
-    ): MatchStatusResponse
-    {
+    ): MatchStatusResponse {
         matchRepository.findByIdOrNull(matchId)
-            ?.let {it.softDelete()}
+            ?.let { it.softDelete() }
             ?: throw RuntimeException("Match not found") //todo : custom exception
         return MatchStatusResponse.from()
     }
 
-    override fun getMatches(): List<MatchResponse>
-    {
+    override fun getMatches(): List<MatchResponse> {
         return matchRepository.findByDeletedAtIsNull()
             .map { match -> MatchResponse.from(match) }
     }
 
     override fun getMatchDetails(
         matchId: Long
-    ): MatchResponse
-    {
+    ): MatchResponse {
         return matchRepository.findByIdOrNull(matchId)
             ?.let { match -> MatchResponse.from(match) }
             ?: throw RuntimeException("Match not found") //todo : custom exception
