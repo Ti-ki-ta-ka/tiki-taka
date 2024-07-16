@@ -32,6 +32,6 @@ class UsersController(
     fun logIn(
         @RequestBody request: LoginRequest
     ): ResponseEntity<LoginResponse> {
-        return ResponseEntity.ok(usersService.logIn(request))
+        return ResponseEntity.ok(userService.logIn(request))
     }
 }

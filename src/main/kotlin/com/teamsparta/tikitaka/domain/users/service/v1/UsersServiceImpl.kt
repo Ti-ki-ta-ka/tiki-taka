@@ -1,10 +1,13 @@
 package com.teamsparta.tikitaka.domain.users.service.v1
 
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
+import com.teamsparta.tikitaka.domain.users.dto.LoginRequest
+import com.teamsparta.tikitaka.domain.users.dto.LoginResponse
 import com.teamsparta.tikitaka.domain.users.dto.SignUpRequest
 import com.teamsparta.tikitaka.domain.users.dto.UserDto
 import com.teamsparta.tikitaka.domain.users.model.Users
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
+import com.teamsparta.tikitaka.infra.security.jwt.JwtPlugin
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserServiceImpl(
     private val usersRepository: UsersRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val jwtPlugin: JwtPlugin
 ) : UsersService
 {
     @Transactional
@@ -31,5 +35,20 @@ class UserServiceImpl(
             )
         )
         return UserDto.fromEntity(user)
+    }
+
+    override fun logIn(request: LoginRequest): LoginResponse {
+        val user = usersRepository.findByEmail(request.email) ?: throw RuntimeException("임시")
+        return LoginResponse(
+            refreshToken = jwtPlugin.generateRefreshToken(
+                subject = user.id.toString(),
+                email = user.email
+            ),
+            accessToken = jwtPlugin.generateAccessToken(
+                subject = user.id.toString(),
+                email = user.email
+            )
+
+        )
     }
 }
