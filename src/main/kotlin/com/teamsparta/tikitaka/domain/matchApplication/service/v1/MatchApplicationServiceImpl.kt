@@ -43,6 +43,7 @@ class MatchApplicationServiceImpl
             "You do not have permission to delete."
         )
         matchApply.delete()
+        matchApply.approveStatus = ApproveStatus.CANCELLED
     }
 
     @Transactional
