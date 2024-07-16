@@ -1,9 +1,12 @@
 package com.teamsparta.tikitaka.domain.team.model
 
+import com.teamsparta.tikitaka.domain.common.baseentity.BaseEntity
 import jakarta.persistence.*
+import org.hibernate.annotations.SQLRestriction
 
 @Entity
 @Table(name = "team")
+@SQLRestriction("deleted_at is null")
 class Team(
     @Column(name = "name", nullable = false)
     var name: String,
@@ -32,8 +35,22 @@ class Team(
     @Column(name = "region", nullable = false)
     var region: String
 
-) {
+) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+
+    fun updateTeam(
+        name: String,
+        description: String,
+        region: String
+    ) {
+        this.name = name
+        this.description = description
+        this.region = region
+    }
+
+
 }
+
