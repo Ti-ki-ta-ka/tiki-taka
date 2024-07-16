@@ -19,7 +19,6 @@ class SecurityConfig(
     private val authenticationEntryPoint: AuthenticationEntryPoint,
     private val accessDeniedHandler: AccessDeniedHandler
 ) {
-
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         return http
@@ -30,7 +29,8 @@ class SecurityConfig(
                 it.requestMatchers(
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/api/v1/users/log_in",
+                    "/api/v1/users/log-in",
+                    "/api/v1/users/sign-up",
                     "/error"
                 ).permitAll()
                     .anyRequest().authenticated()

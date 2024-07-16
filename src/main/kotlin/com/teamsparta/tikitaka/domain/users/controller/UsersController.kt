@@ -15,7 +15,7 @@ class UsersController(
     private val usersService: UsersService
 )
 {
-    @PostMapping("/log_in")
+    @PostMapping("/log-in")
     fun logIn(
         @RequestBody request: LoginRequest
     ): ResponseEntity<LoginResponse> {
