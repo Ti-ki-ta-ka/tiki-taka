@@ -1,5 +1,6 @@
 package com.teamsparta.tikitaka.domain.matchApplication.controller.v1
 
+import com.teamsparta.tikitaka.domain.matchApplication.dto.MatchApplyResponse
 import com.teamsparta.tikitaka.domain.matchApplication.service.v1.MatchApplicationService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -17,7 +18,7 @@ class MatchApplicationController(
     fun applyMatch(
         // Users 구현 이후, 인증 부분 추가 필요
         @PathVariable matchId: Long,
-    ): ResponseEntity<matchApplyResponse> {
+    ): ResponseEntity<MatchApplyResponse> {
         return ResponseEntity.status(HttpStatus.CREATED).body(matchApplicationService.applyMatch(matchId))
     }
 }
