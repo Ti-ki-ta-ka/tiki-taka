@@ -13,21 +13,24 @@ data class TeamResponse(
     val attendanceScore: Int,
     val recruitStatus: Boolean,
     val region: String
-)
-
-fun Team.toResponse(
-    team: Team
-): TeamResponse {
-    return TeamResponse(
-        team.id ?: throw IllegalStateException(" ID cannot be null"),
-        team.name,
-        team.description,
-        team.numMember,
-        team.maxMember,
-        team.tierScore,
-        team.mannerScore,
-        team.attendanceScore,
-        team.recruitStatus,
-        team.region
-    )
+) {
+    companion object {
+        fun from(
+            team: Team
+        ): TeamResponse {
+            return TeamResponse(
+                team.id ?: throw IllegalStateException("ID cannot be Null"),
+                team.name,
+                team.description,
+                team.numMember,
+                team.maxMember,
+                team.tierScore,
+                team.mannerScore,
+                team.attendanceScore,
+                team.recruitStatus,
+                team.region
+            )
+        }
+    }
 }
+
