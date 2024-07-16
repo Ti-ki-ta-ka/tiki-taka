@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "match_post")
 class Match(
-    @Column(name = "match_date", nullable = false)
+    @Column(name = "title", nullable = false)
     var title: String,
 
     @Column(name = "match_date", nullable = false)

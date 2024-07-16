@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/matches")
 class MatchController(
-    private val matchService : MatchService,
+    private val matchService: MatchService,
 ) {
     //@PreAuthorize("hasRole('LEADER')") //todo : 리더 외 권한 부여 ?
     @PostMapping()
