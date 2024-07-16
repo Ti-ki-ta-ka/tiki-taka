@@ -21,6 +21,7 @@ class MatchServiceImpl(
     override fun postMatch(request: PostMatchRequest): MatchStatusResponse {
 
         matchRepository.save(Match.of(
+            title = request.title,
             matchDate = request.matchDate,
             location = request.location,
             content = request.content,

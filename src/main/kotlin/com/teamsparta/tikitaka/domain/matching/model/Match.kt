@@ -9,6 +9,9 @@ import java.time.LocalDateTime
 @Table(name = "match_post")
 class Match(
     @Column(name = "match_date", nullable = false)
+    var title: String,
+
+    @Column(name = "match_date", nullable = false)
     var matchDate: LocalDateTime,
 
     @Column(name = "location", nullable = false)
@@ -29,6 +32,7 @@ class Match(
     var id: Long? = null
 
     fun updateMatch( request : UpdateMatchRequest){
+        this.title=request.title
         this.matchDate =request.matchDate
         this.location = request.location
         this.content = request.content
@@ -37,13 +41,14 @@ class Match(
 
 
     companion object{
-        fun of(matchDate: LocalDateTime, location: String, content: String, matchStatus: Boolean, teamId: Long):Match{
+        fun of(matchDate: LocalDateTime, location: String, content: String, matchStatus: Boolean, teamId: Long, title:String):Match{
             return Match(
                 matchDate = matchDate,
                 location = location,
                 content = content,
                 matchStatus = matchStatus,
                 teamId = teamId,
+                title =title,
             )
         }
     }
