@@ -1,0 +1,31 @@
+package com.teamsparta.tikitaka.domain.users.model
+
+import jakarta.persistence.*
+import java.time.LocalDateTime
+
+@Entity
+@Table(name = "app_user")
+class Users(
+    @Column(name = "email", nullable = false, unique = true)
+    val email: String,
+
+    @Column(name = "password")
+    var password: String,
+
+    @Column(name = "name", nullable = false)
+    var name: String,
+
+    @Column(name = "team_status")
+    val teamStatus: Boolean = false,
+
+    @Column(name = "created_at", nullable = false)
+    var createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(name = "deleted_at", nullable = true)
+    var deletedAt: LocalDateTime = LocalDateTime.now(),
+)
+{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
+}
