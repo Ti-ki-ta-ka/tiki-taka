@@ -16,4 +16,6 @@ interface TeamService {
 
     fun getTeam(teamId: Long): TeamResponse
 
+    fun searchTeamListByName(name: String): List<TeamResponse>
+
 }
