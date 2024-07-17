@@ -9,4 +9,5 @@ interface UsersService {
     fun signUp(request: SignUpRequest): UserDto
     fun logIn(request: LoginRequest): LoginResponse
     fun logOut(token: String)
+    fun validateRefreshTokenAndCreateToken(refreshToken: String): LoginResponse
 }

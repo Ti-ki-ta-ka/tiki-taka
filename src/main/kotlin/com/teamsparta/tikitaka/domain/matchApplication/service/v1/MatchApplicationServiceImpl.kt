@@ -11,6 +11,7 @@ import com.teamsparta.tikitaka.domain.matchApplication.repository.MatchApplicati
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 
 @Service
