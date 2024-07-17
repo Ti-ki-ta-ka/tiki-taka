@@ -3,12 +3,13 @@ package com.teamsparta.tikitaka.domain.match.model
 import com.teamsparta.tikitaka.domain.common.baseentity.BaseEntity
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import jakarta.persistence.*
+import org.hibernate.annotations.SQLRestriction
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "match_post")
+@SQLRestriction("deleted_at is null")
 class Match(
-
     @Column(name = "title", nullable = false)
     var title: String,
 

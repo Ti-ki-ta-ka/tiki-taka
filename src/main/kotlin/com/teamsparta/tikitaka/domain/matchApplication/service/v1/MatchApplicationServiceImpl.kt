@@ -36,6 +36,7 @@ class MatchApplicationServiceImpl
 
     @Transactional
     override fun deleteMatchApplication(principal: UserPrincipal, applicationId: Long) {
+
         val matchApply = matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
             "match",
             applicationId
@@ -45,6 +46,7 @@ class MatchApplicationServiceImpl
         )
         matchApply.delete()
         matchApply.approveStatus = ApproveStatus.CANCELLED
+
     }
 
     @Transactional
@@ -64,5 +66,6 @@ class MatchApplicationServiceImpl
         )
         matchApply.approveStatus = ApproveStatus.fromString(approveStatus)
         return MatchApplicationResponse.from(matchApply)
+
     }
 }
