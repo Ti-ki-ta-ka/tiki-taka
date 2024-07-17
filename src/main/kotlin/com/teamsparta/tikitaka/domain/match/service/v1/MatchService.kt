@@ -14,6 +14,5 @@ interface MatchService {
     fun deleteMatch(matchId: Long): MatchStatusResponse
     fun getMatches(pageable: Pageable): Page<MatchResponse>
     fun getMatchDetails(matchId: Long): MatchResponse
-
-
+    fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse>
 }
