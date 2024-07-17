@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/matches")
+@RequestMapping("/api/v1/matches")
 class MatchController(
     private val matchService: MatchService,
 ) {
@@ -51,7 +51,7 @@ class MatchController(
             .body(matchService.getMatchDetails(matchId))
     }
 
-    @GetMapping("/search")
+    @GetMapping("/searches")
     fun searchMatch(
         pageable: Pageable,
         @RequestParam keyword: String,
