@@ -34,6 +34,7 @@ class SecurityConfig(
                     "/error",
                     "/matches",
                     "/matches/{match-id}",
+                    "/api/v1/users/token/refresh"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
