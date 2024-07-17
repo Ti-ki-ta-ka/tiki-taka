@@ -13,6 +13,7 @@ import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 
 @Service
@@ -31,10 +32,12 @@ class MatchApplicationServiceImpl
         val (teamId) = request
         return matchApplicationRepository.save(MatchApplication.of(matchPost, teamId, userId))
             .let { MatchApplicationResponse.from(it) }
+        TODO()
     }
 
     @Transactional
     override fun deleteMatchApplication(principal: UserPrincipal, applicationId: Long) {
+
         val matchApply = matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
             "match",
             applicationId
@@ -44,6 +47,7 @@ class MatchApplicationServiceImpl
         )
         matchApply.delete()
         matchApply.approveStatus = ApproveStatus.CANCELLED
+
     }
 
     @Transactional
@@ -63,5 +67,6 @@ class MatchApplicationServiceImpl
         )
         matchApply.approveStatus = ApproveStatus.fromString(approveStatus)
         return MatchApplicationResponse.from(matchApply)
+
     }
 }
