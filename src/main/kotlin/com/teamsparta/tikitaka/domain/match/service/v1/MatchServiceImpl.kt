@@ -6,6 +6,8 @@ import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.Match
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -71,4 +73,7 @@ class MatchServiceImpl(
             ?: throw RuntimeException("Match not found") //todo : custom exception
     }
 
+    override fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse> {
+        return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword)
+    }
 }

@@ -60,7 +60,7 @@ class Match(
                 content = content,
                 matchStatus = matchStatus,
                 teamId = teamId,
-                title = title,
+                title = title
             ).apply {
                 validateTitle(title)
                 validateMatchDate(matchDate)
