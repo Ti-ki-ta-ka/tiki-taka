@@ -5,18 +5,17 @@ import java.time.LocalDateTime
 
 data class MatchResponse(
 
-    val id :Long,
-    val teamId : Long,
-    val title:String,
-    val matchDate :LocalDateTime,
-    val location : String,
-    val content : String,
-    val matchStatus : Boolean,
+    val id: Long,
+    val teamId: Long,
+    val title: String,
+    val matchDate: LocalDateTime,
+    val location: String,
+    val content: String,
+    val matchStatus: Boolean,
 
-    )
-{
-    companion object{
-        fun from(match : Match) = MatchResponse(
+    ) {
+    companion object {
+        fun from(match: Match) = MatchResponse(
             id = match.id!!,
             teamId = match.teamId,
             title = match.title,
@@ -25,6 +24,6 @@ data class MatchResponse(
             content = match.content,
             matchStatus = match.matchStatus,
 
-        )
+            )
     }
 }

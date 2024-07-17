@@ -32,7 +32,6 @@ class MatchApplicationServiceImpl
         val (teamId) = request
         return matchApplicationRepository.save(MatchApplication.of(matchPost, teamId, userId))
             .let { MatchApplicationResponse.from(it) }
-        TODO()
     }
 
     @Transactional
