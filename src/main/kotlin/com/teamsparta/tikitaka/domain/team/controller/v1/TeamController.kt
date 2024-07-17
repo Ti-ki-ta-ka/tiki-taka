@@ -6,6 +6,7 @@ import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RequestMapping("/api/v1/teams")
@@ -13,9 +14,16 @@ import org.springframework.web.bind.annotation.*
 class TeamController(
     private val teamService: TeamService
 ) {
-
+    @GetMapping("/search")
+    @PreAuthorize("permitAll()")
+    fun searchTeams(
+        @RequestParam(value = "name") name: String
+    ): ResponseEntity<List<TeamResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(teamService.searchTeamListByName(name))
+    }
 
     @PostMapping
+    @PreAuthorize("permitAll()")
     fun createTeam(
         @RequestBody request: TeamRequest
     ): ResponseEntity<TeamResponse> {
@@ -23,6 +31,7 @@ class TeamController(
     }
 
     @PutMapping("/{team-id}")
+    @PreAuthorize("permitAll()")
     fun updateTeam(
         @PathVariable("team-id") teamId: Long,
         @RequestBody request: TeamRequest
@@ -31,6 +40,7 @@ class TeamController(
     }
 
     @DeleteMapping("/{team-id}")
+    @PreAuthorize("permitAll()")
     fun deleteTeam(
         @PathVariable("team-id") teamId: Long
     ): ResponseEntity<Unit> {
@@ -39,12 +49,14 @@ class TeamController(
     }
 
     @GetMapping
+    @PreAuthorize("permitAll()")
     fun getTeams(
     ): ResponseEntity<List<TeamResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(teamService.getTeams())
     }
 
     @GetMapping("/{team-id}")
+    @PreAuthorize("permitAll()")
     fun getTeam(
         @PathVariable("team-id") teamId: Long
     ): ResponseEntity<TeamResponse> {

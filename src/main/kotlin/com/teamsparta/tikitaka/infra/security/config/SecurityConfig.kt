@@ -31,6 +31,7 @@ class SecurityConfig(
                     "/v3/api-docs/**",
                     "/api/v1/users/log-in",
                     "/api/v1/users/sign-up",
+                    "/api/v1/teams/**",
                     "/error"
                 ).permitAll()
                     .anyRequest().authenticated()
