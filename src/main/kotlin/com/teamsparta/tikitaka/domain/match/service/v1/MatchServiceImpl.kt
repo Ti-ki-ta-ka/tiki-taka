@@ -17,22 +17,23 @@ import org.springframework.transaction.annotation.Transactional
 class MatchServiceImpl(
     private val matchRepository: MatchRepository,
 
-):MatchService {
+    ) : MatchService {
 
     @Transactional
     override fun postMatch(
         request: PostMatchRequest
-    ): MatchStatusResponse
-    {
+    ): MatchStatusResponse {
 
-        matchRepository.save(Match.of(
-            title = request.title,
-            matchDate = request.matchDate,
-            location = request.location,
-            content = request.content,
-            matchStatus = false,
-            teamId = request.teamId,
-        ))
+        matchRepository.save(
+            Match.of(
+                title = request.title,
+                matchDate = request.matchDate,
+                location = request.location,
+                content = request.content,
+                matchStatus = false,
+                teamId = request.teamId,
+            )
+        )
         //todo : team 구인공고 상태 변경
 
         return MatchStatusResponse.from()
@@ -41,10 +42,9 @@ class MatchServiceImpl(
     @Transactional
     override fun updateMatch(
         matchId: Long, request: UpdateMatchRequest
-    ): MatchStatusResponse
-    {
+    ): MatchStatusResponse {
         matchRepository.findByIdOrNull(matchId)
-            ?. let { it.updateMatch(request) }
+            ?.let { it.updateMatch(request) }
             ?: throw RuntimeException("") //todo : custom exception
 
         return MatchStatusResponse.from()
@@ -53,10 +53,9 @@ class MatchServiceImpl(
     @Transactional
     override fun deleteMatch(
         matchId: Long
-    ): MatchStatusResponse
-    {
+    ): MatchStatusResponse {
         matchRepository.findByIdOrNull(matchId)
-            ?.let {it.softDelete()}
+            ?.let { it.softDelete() }
             ?: throw RuntimeException("Match not found") //todo : custom exception
         return MatchStatusResponse.from()
     }
@@ -68,8 +67,7 @@ class MatchServiceImpl(
 
     override fun getMatchDetails(
         matchId: Long
-    ): MatchResponse
-    {
+    ): MatchResponse {
         return matchRepository.findByIdOrNull(matchId)
             ?.let { match -> MatchResponse.from(match) }
             ?: throw RuntimeException("Match not found") //todo : custom exception
