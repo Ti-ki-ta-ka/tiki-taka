@@ -5,9 +5,11 @@ import com.teamsparta.tikitaka.domain.match.dto.MatchStatusResponse
 import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.service.v1.MatchService
+import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.awt.print.Pageable
 
 @RestController
 @RequestMapping("/matches")
@@ -49,4 +51,11 @@ class MatchController(
             .body(matchService.getMatchDetails(matchId))
     }
 
+    @GetMapping("/search")
+    fun searchMatch(
+        pageable: Pageable,
+        @RequestParam keyword: String,
+    ): ResponseEntity<Page<MatchResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(matchService.searchMatch(pageable, keyword))
+    }
 }
