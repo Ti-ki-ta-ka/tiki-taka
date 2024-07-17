@@ -1,6 +1,5 @@
 package com.teamsparta.tikitaka.domain.matchApplication.service.v1
 
-import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplicationRequest
@@ -10,7 +9,6 @@ import com.teamsparta.tikitaka.domain.matchApplication.model.ApproveStatus
 import com.teamsparta.tikitaka.domain.matchApplication.model.MatchApplication
 import com.teamsparta.tikitaka.domain.matchApplication.repository.MatchApplicationRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
-import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -33,7 +31,7 @@ class MatchApplicationServiceImpl
             .let { MatchApplicationResponse.from(it) }
     }
 
-    @Transactional
+    /* @Transactional
     override fun deleteMatchApplication(principal: UserPrincipal, applicationId: Long) {
         val matchApply = matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
             "match",
@@ -44,7 +42,7 @@ class MatchApplicationServiceImpl
         )
         matchApply.delete()
         matchApply.approveStatus = ApproveStatus.CANCELLED
-    }
+    } */
 
     @Transactional
     override fun replyMatchApplication(

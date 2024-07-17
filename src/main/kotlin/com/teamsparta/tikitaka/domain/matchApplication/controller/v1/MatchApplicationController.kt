@@ -25,14 +25,14 @@ class MatchApplicationController(
             .body(matchApplicationService.applyMatch(principal.id, request, matchId))
     }
 
-    @DeleteMapping("/{matchId}/match-applications/{applicationId}")
+    /* @DeleteMapping("/{matchId}/match-applications/{applicationId}")
     fun deleteMatchApplication(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable applicationId: Long,
     ): ResponseEntity<Unit> {
         matchApplicationService.deleteMatchApplication(principal, applicationId)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
-    }
+    } */
 
     @PatchMapping("/{matchId}/match-applications/{applicationId}")
     fun replyMatchApplication(
