@@ -29,6 +29,11 @@ class UsersServiceImpl(
         if (request.password != request.confirmPassword) {
             throw InvalidCredentialException("비밀번호 확인이 비밀번호와 일치하지 않습니다.")
         }
+        with(Users) {
+            validateEmail(request.email)
+            validatePassword(request.password)
+            validateName(request.name)
+        }
         val user = usersRepository.save(
             Users(
                 email = request.email,

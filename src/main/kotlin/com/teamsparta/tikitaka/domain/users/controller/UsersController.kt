@@ -22,7 +22,7 @@ class UsersController(
 {
     @PostMapping("/sign-up")
     fun signUp(
-        @Valid @RequestBody signUpRequest: SignUpRequest
+        @RequestBody signUpRequest: SignUpRequest
     ): ResponseEntity<UserDto> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
