@@ -41,21 +41,32 @@ class UsersServiceImpl(
 
     override fun logIn(request: LoginRequest): LoginResponse {
         val user = usersRepository.findByEmail(request.email) ?: throw RuntimeException("임시")
-        return LoginResponse(
-            refreshToken = jwtPlugin.generateRefreshToken(
-                subject = user.id.toString(),
-                email = user.email
-            ),
-            accessToken = jwtPlugin.generateAccessToken(
-                subject = user.id.toString(),
-                email = user.email
-            )
-
+        val accessToken = jwtPlugin.generateAccessToken(
+            subject = user.id.toString(),
+            email = user.email
         )
+        val refreshToken = jwtPlugin.generateRefreshToken(
+            subject = user.id.toString(),
+            email = user.email
+        )
+        redisUtils.saveRefreshToken(refreshToken)
+        return LoginResponse(accessToken = accessToken, refreshToken = refreshToken)
     }
 
     override fun logOut(token: String) {
         redisUtils.setDataExpire(token, "blacklisted")
+    }
+
+    override fun validateRefreshTokenAndCreateToken(refreshToken: String): LoginResponse {
+        redisUtils.findByRefreshToken(refreshToken)
+            ?: throw InvalidCredentialException("만료되거나 찾을 수 없는 Refresh 토큰입니다. 재로그인이 필요합니다.")
+
+        val newTokenInfo = jwtPlugin.validateRefreshTokenAndCreateToken(refreshToken)
+        with(redisUtils) {
+            deleteByRefreshToken(refreshToken)
+            saveRefreshToken(newTokenInfo.refreshToken)
+        }
+        return newTokenInfo
     }
 
     fun isTokenBlacklisted(token: String): Boolean {

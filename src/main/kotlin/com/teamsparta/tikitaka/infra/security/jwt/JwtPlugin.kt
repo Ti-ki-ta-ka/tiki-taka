@@ -1,5 +1,7 @@
 package com.teamsparta.tikitaka.infra.security.jwt
 
+import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
+import com.teamsparta.tikitaka.domain.users.dto.LoginResponse
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
@@ -52,5 +54,16 @@ class JwtPlugin(
             .claims(claims)
             .signWith(key)
             .compact()
+    }
+
+    fun validateRefreshTokenAndCreateToken(refreshToken: String): LoginResponse {
+        val claims = validateToken(refreshToken).getOrElse { throw InvalidCredentialException("Invalid Refresh Token") }.payload
+        val subject = claims.subject
+        val email = claims["email"].toString()
+
+        val newAccessToken = generateAccessToken(subject, email)
+        val newRefreshToken = generateRefreshToken(subject, email)
+
+        return LoginResponse(newAccessToken, newRefreshToken)
     }
 }
