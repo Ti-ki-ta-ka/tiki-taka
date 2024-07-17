@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.teamsparta.tikitaka.domain.users.dto.LoginRequest
 import com.teamsparta.tikitaka.domain.users.dto.LoginResponse
+import jakarta.servlet.http.HttpServletRequest
 
 @RequestMapping("/api/v1/users")
 @RestController
@@ -33,5 +34,13 @@ class UsersController(
         @RequestBody request: LoginRequest
     ): ResponseEntity<LoginResponse> {
         return ResponseEntity.ok(userService.logIn(request))
+    }
+
+    @PostMapping("/log-out")
+    fun logout(request: HttpServletRequest): ResponseEntity<Unit> {
+        val token = request.getAttribute("accessToken") as String?
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.logOut(token!!))
     }
 }
