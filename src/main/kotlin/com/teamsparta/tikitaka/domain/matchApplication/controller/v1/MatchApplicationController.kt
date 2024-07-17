@@ -1,15 +1,14 @@
 package com.teamsparta.tikitaka.domain.matchApplication.controller.v1
 
-import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplyRequest
-import com.teamsparta.tikitaka.domain.matchApplication.dto.MatchApplyResponse
+import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplicationRequest
+import com.teamsparta.tikitaka.domain.matchApplication.dto.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.matchApplication.dto.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.matchApplication.service.v1.MatchApplicationService
+import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.*
 
 @RequestMapping("/api/v1/matches")
 @RestController
@@ -18,10 +17,30 @@ class MatchApplicationController(
 ) {
     @PostMapping("/{matchId}/match-applications")
     fun applyMatch(
-        // Users 구현 이후, 인증 부분 추가 필요
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable matchId: Long,
-        @RequestBody request: CreateApplyRequest
-    ): ResponseEntity<MatchApplyResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(matchApplicationService.applyMatch(request, matchId))
+        @RequestBody request: CreateApplicationRequest
+    ): ResponseEntity<MatchApplicationResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(matchApplicationService.applyMatch(principal.id, request, matchId))
+    }
+
+    @DeleteMapping("/{matchId}/match-applications/{applicationId}")
+    fun deleteMatchApplication(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @PathVariable applicationId: Long,
+    ): ResponseEntity<Unit> {
+        matchApplicationService.deleteMatchApplication(principal, applicationId)
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+    }
+
+    @PatchMapping("/{matchId}/match-applications/{applicationId}")
+    fun replyMatchApplication(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @PathVariable applicationId: Long,
+        @RequestBody request: ReplyApplicationRequest
+    ): ResponseEntity<MatchApplicationResponse> {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(matchApplicationService.replyMatchApplication(principal.id, applicationId, request))
     }
 }

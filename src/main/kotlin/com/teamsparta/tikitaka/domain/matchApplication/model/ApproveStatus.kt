@@ -1,7 +1,7 @@
 package com.teamsparta.tikitaka.domain.matchApplication.model
 
 enum class ApproveStatus {
-    WAITING, APPROVE, REJECT;
+    WAITING, APPROVE, REJECT, CANCELLED;
 
     companion object {
         fun fromString(approveStatus: String): ApproveStatus {

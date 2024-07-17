@@ -2,10 +2,12 @@ package com.teamsparta.tikitaka.domain.matchApplication.model
 
 import com.teamsparta.tikitaka.domain.match.model.Match
 import jakarta.persistence.*
+import org.hibernate.annotations.SQLRestriction
 import java.time.LocalDateTime
 
 @Entity
 @Table(name = "match_application")
+@SQLRestriction("deleted_at is null")
 class MatchApplication(
     @ManyToOne
     @JoinColumn(name = "match_post_id", nullable = false)
@@ -13,6 +15,9 @@ class MatchApplication(
 
     @Column(name = "apply_team_id", nullable = false)
     var applyTeamId: Long,
+
+    @Column(name = "apply_user_id", nullable = false)
+    var applyUserId: Long,
 
     @Enumerated(EnumType.STRING)
     var approveStatus: ApproveStatus = ApproveStatus.WAITING,
@@ -32,13 +37,14 @@ class MatchApplication(
     }
 
     companion object {
-        fun of(matchPost: Match, applyTeamId: Long): MatchApplication {
+        fun of(matchPost: Match, applyTeamId: Long, applyUserId: Long): MatchApplication {
             val timestamp = LocalDateTime.now()
 
             return MatchApplication(
                 matchPost,
                 applyTeamId = applyTeamId,
-                createdAt = timestamp
+                createdAt = timestamp,
+                applyUserId = applyUserId
             )
         }
     }
