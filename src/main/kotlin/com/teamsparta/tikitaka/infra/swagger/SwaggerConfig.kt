@@ -12,23 +12,27 @@ import org.springframework.context.annotation.Configuration
 class SwaggerConfig {
 
     @Bean
-    fun openAPI(): OpenAPI = OpenAPI()
-        .components(
-            Components()
-                .addSecuritySchemes(
-                    "authorization", SecurityScheme()
-                        .name("authorization")
+    fun openAPI(): OpenAPI {
+        return OpenAPI()
+            .addSecurityItem(
+                SecurityRequirement().addList("Bearer Authentication")
+            )
+            .components(
+                Components().addSecuritySchemes(
+                    "Bearer Authentication",
+                    SecurityScheme()
                         .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
+                        .scheme("Bearer")
                         .bearerFormat("JWT")
+                        .`in`(SecurityScheme.In.HEADER)
+                        .name("Authorization")
                 )
-        )
-        .addSecurityItem(SecurityRequirement().addList("authorization"))
-        .info(
-            Info()
-                .title("Tiki-Taka API")
-                .description("TikiTaka API schema")
-                .version("1.0.0")
-        )
+            )
+            .info(
+                Info()
+                    .title("Tiki-Taka API")
+                    .description("TikiTaka API schema")
+                    .version("1.0.0")
+            )
+    }
 }
-
