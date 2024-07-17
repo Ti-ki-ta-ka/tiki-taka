@@ -60,8 +60,8 @@ class MatchServiceImpl(
         return MatchStatusResponse.from()
     }
 
-    override fun getMatches(): List<MatchResponse> {
-        return matchRepository.findByDeletedAtIsNull()
+    override fun getMatches(pageable: Pageable): Page<MatchResponse> {
+        return matchRepository.findAll(pageable)
             .map { match -> MatchResponse.from(match) }
     }
 

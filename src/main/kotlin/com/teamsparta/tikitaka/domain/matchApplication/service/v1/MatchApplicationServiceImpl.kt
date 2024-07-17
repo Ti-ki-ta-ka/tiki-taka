@@ -1,5 +1,6 @@
 package com.teamsparta.tikitaka.domain.matchApplication.service.v1
 
+import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplicationRequest

@@ -8,10 +8,11 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface MatchService {
+
     fun postMatch(request: PostMatchRequest): MatchStatusResponse
     fun updateMatch(matchId: Long, request: UpdateMatchRequest): MatchStatusResponse
     fun deleteMatch(matchId: Long): MatchStatusResponse
-    fun getMatches(): List<MatchResponse>
+    fun getMatches(pageable: Pageable): Page<MatchResponse>
     fun getMatchDetails(matchId: Long): MatchResponse
     fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse>
 }
