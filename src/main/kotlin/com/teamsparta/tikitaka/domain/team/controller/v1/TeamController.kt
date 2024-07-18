@@ -3,6 +3,7 @@ package com.teamsparta.tikitaka.domain.team.controller.v1
 
 import com.teamsparta.tikitaka.domain.team.Service.v1.TeamService
 import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
+import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -15,9 +16,15 @@ class TeamController(
 ) {
     @GetMapping("/search")
     fun searchTeams(
-        @RequestParam(value = "name") name: String
-    ): ResponseEntity<List<TeamResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(teamService.searchTeamListByName(name))
+        @RequestParam("page", defaultValue = "0") page: Int,
+        @RequestParam("size", defaultValue = "10") size: Int,
+        @RequestParam("sort_by", defaultValue = "createdAt") sortBy: String,
+        @RequestParam("sort_direction", defaultValue = "desc") direction: String,
+        @RequestParam(value = "name") name: String,
+
+        ): ResponseEntity<PageResponse<TeamResponse>> {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(teamService.searchTeamListByName(page, size, sortBy, direction, name))
     }
 
     @PostMapping
@@ -45,8 +52,12 @@ class TeamController(
 
     @GetMapping
     fun getTeams(
-    ): ResponseEntity<List<TeamResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(teamService.getTeams())
+        @RequestParam("page", defaultValue = "0") page: Int,
+        @RequestParam("size", defaultValue = "10") size: Int,
+        @RequestParam("sort_by", defaultValue = "created_at") sortBy: String,
+        @RequestParam("sort_direction", defaultValue = "desc") direction: String
+    ): ResponseEntity<PageResponse<TeamResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(teamService.getTeams(page, size, sortBy, direction))
     }
 
 
