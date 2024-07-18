@@ -4,4 +4,5 @@ import com.teamsparta.tikitaka.domain.matchApplication.model.MatchApplication
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface MatchApplicationRepository: JpaRepository<MatchApplication, Long> {
+    fun findByApplyTeamId(applyTeamId: Long): List<MatchApplication>
 }

@@ -2,6 +2,8 @@ package com.teamsparta.tikitaka.domain.matchApplication.controller.v1
 
 import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplicationRequest
 import com.teamsparta.tikitaka.domain.matchApplication.dto.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.matchApplication.dto.MyApplicationRequest
+import com.teamsparta.tikitaka.domain.matchApplication.dto.MyApplicationsResponse
 import com.teamsparta.tikitaka.domain.matchApplication.dto.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.matchApplication.service.v1.MatchApplicationService
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
@@ -42,5 +44,12 @@ class MatchApplicationController(
     ): ResponseEntity<MatchApplicationResponse> {
         return ResponseEntity.status(HttpStatus.OK)
             .body(matchApplicationService.replyMatchApplication(principal.id, applicationId, request))
+    }
+
+    @GetMapping("/match-applications/my-applications")
+    fun getMyApplications(
+        @RequestBody request: MyApplicationRequest
+    ): ResponseEntity<List<MyApplicationsResponse>> {
+        return ResponseEntity.ok(matchApplicationService.getMyApplications(request))
     }
 }
