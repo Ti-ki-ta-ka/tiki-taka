@@ -4,8 +4,6 @@ import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialExceptio
 import com.teamsparta.tikitaka.domain.common.util.RedisUtils
 import com.teamsparta.tikitaka.domain.users.dto.*
 import com.teamsparta.tikitaka.domain.users.model.Users
-import com.teamsparta.tikitaka.domain.users.model.toUpdateNameResponse
-import com.teamsparta.tikitaka.domain.users.model.toUpdatePasswordResponse
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import com.teamsparta.tikitaka.infra.security.jwt.JwtPlugin
@@ -86,10 +84,9 @@ class UsersServiceImpl(
         if (usersRepository.existsByName(request.name)) {
             throw RuntimeException("이미 사용하고 있는 이름")
         }
-
-        user.name = request.name
+        user.updateName(request.name)
         usersRepository.save(user)
-        return user.toUpdateNameResponse()
+        return NameResponse.from(user)
     }
 
     override fun updatePassword(request: PasswordRequest, userPrincipal: UserPrincipal): PasswordResponse {
@@ -100,10 +97,10 @@ class UsersServiceImpl(
         if (usersRepository.existsByPassword(request.password)) {
             throw RuntimeException("이미 사용하고 있는 패스워드")
         }
-
-        user.password = passwordEncoder.encode(request.password)
+        Users.validatePassword(request.password)
+        user.updatePassword(passwordEncoder.encode(request.password))
         usersRepository.save(user)
-        return user.toUpdatePasswordResponse()
+        return PasswordResponse.from(user)
     }
 
     fun isTokenBlacklisted(token: String): Boolean {
