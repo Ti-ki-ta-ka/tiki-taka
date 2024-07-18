@@ -31,6 +31,15 @@ class Users(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
+    fun updateName(newName: String) {
+        validateName(newName)
+        this.name = newName
+    }
+
+    fun updatePassword(newPassword: String) {
+        this.password = newPassword
+    }
+
     companion object {
         fun validateName(newName: String) {
             if (newName.isBlank()) {
