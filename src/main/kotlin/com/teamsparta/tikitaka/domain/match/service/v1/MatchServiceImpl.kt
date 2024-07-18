@@ -1,10 +1,12 @@
 package com.teamsparta.tikitaka.domain.match.service.v1
 
+import com.teamsparta.tikitaka.domain.common.Region
 import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
 import com.teamsparta.tikitaka.domain.match.dto.MatchStatusResponse
 import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.Match
+import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -32,6 +34,7 @@ class MatchServiceImpl(
                 content = request.content,
                 matchStatus = false,
                 teamId = request.teamId,
+                region = request.region,
             )
         )
         //todo : team 구인공고 상태 변경
@@ -65,6 +68,18 @@ class MatchServiceImpl(
             .map { match -> MatchResponse.from(match) }
     }
 
+    override fun getAvailableMatchesAndSort(pageable: Pageable, sortCriteria: SortCriteria): Page<MatchResponse> {
+        return matchRepository.getAvailableMatchesAndSort(pageable, sortCriteria)
+    }
+
+    override fun getMatchesByRegionAndSort(
+        region: Region,
+        pageable: Pageable,
+        sortCriteria: SortCriteria
+    ): Page<MatchResponse> {
+        return matchRepository.getMatchesByRegionAndSort(region, pageable, sortCriteria)
+    }
+
     override fun getMatchDetails(
         matchId: Long
     ): MatchResponse {
@@ -76,4 +91,5 @@ class MatchServiceImpl(
     override fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse> {
         return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword)
     }
+
 }
