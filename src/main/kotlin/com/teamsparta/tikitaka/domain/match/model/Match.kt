@@ -1,5 +1,6 @@
 package com.teamsparta.tikitaka.domain.match.model
 
+import com.teamsparta.tikitaka.domain.common.Region
 import com.teamsparta.tikitaka.domain.common.baseentity.BaseEntity
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import jakarta.persistence.*
@@ -18,6 +19,10 @@ class Match(
 
     @Column(name = "location", nullable = false)
     var location: String,
+
+    @Enumerated(EnumType.STRING)
+    //@Column(name = "region", nullable = false)
+    var region: Region,
 
     @Column(name = "content", nullable = false)
     var content: String,
@@ -53,7 +58,8 @@ class Match(
             content: String,
             matchStatus: Boolean,
             teamId: Long,
-            title: String
+            title: String,
+            region: Region,
         ): Match {
             return Match(
                 matchDate = matchDate,
@@ -61,7 +67,8 @@ class Match(
                 content = content,
                 matchStatus = matchStatus,
                 teamId = teamId,
-                title = title
+                title = title,
+                region = region,
             ).apply {
                 validateTitle(title)
                 validateMatchDate(matchDate)

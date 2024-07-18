@@ -2,8 +2,10 @@ package com.teamsparta.tikitaka.domain.match.repository
 
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.dsl.Expressions
+import com.teamsparta.tikitaka.domain.common.Region
 import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
 import com.teamsparta.tikitaka.domain.match.model.QMatch
+import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.infra.querydsl.QueryDslSupport
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -52,27 +54,33 @@ class MatchRepositoryImpl : CustomMatchRepository, QueryDslSupport() {
                 content = match.content,
                 matchStatus = match.matchStatus,
                 createdAt = match.createdAt,
+                region = match.region,
             )
         }
         return PageImpl(matchResponse, pageable, totalCount)
     }
 
-    override fun getMatchesByDeadline(pageable: Pageable): Page<MatchResponse> {
-
+    override fun getAvailableMatchesAndSort(pageable: Pageable, sortCriteria: SortCriteria): Page<MatchResponse> {
         val totalCount = queryFactory.select(match.count())
             .from(match)
             .where(match.matchStatus.eq(false))
             .fetchOne() ?: 0L
 
-        val matches = queryFactory.selectFrom(match)
+        val query = queryFactory.selectFrom(match)
             .where(match.matchStatus.eq(false))
-            .orderBy(
+
+        when (sortCriteria) {
+            SortCriteria.CREATED_AT -> query.orderBy(match.createdAt.asc())
+            SortCriteria.DEADLINE -> query.orderBy(
                 Expressions.dateTemplate(
                     LocalDateTime::class.java,
                     "dateadd(day, -1, {0})",
                     match.matchDate
                 ).asc()
             )
+        }
+
+        val matches = query
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .fetch()
@@ -87,22 +95,45 @@ class MatchRepositoryImpl : CustomMatchRepository, QueryDslSupport() {
                 content = match.content,
                 matchStatus = match.matchStatus,
                 createdAt = match.createdAt,
+                region = match.region
             )
         }
 
         return PageImpl(matchResponse, pageable, totalCount)
     }
 
-    override fun getMatchesAvailable(pageable: Pageable): Page<MatchResponse> {
+    override fun getMatchesByRegionAndSort(
+        region: Region,
+        pageable: Pageable,
+        sortCriteria: SortCriteria
+    ): Page<MatchResponse> {
+        val whereClause = BooleanBuilder().apply {
+            and(match.region.eq(region))
+            if (sortCriteria == SortCriteria.DEADLINE) {
+                and(match.matchStatus.eq(false))
+            }
+        }
 
         val totalCount = queryFactory.select(match.count())
             .from(match)
-            .where(match.matchStatus.eq(false))
+            .where(whereClause)
             .fetchOne() ?: 0L
 
-        val matches = queryFactory.selectFrom(match)
-            .where(match.matchStatus.eq(false))
-            .orderBy(match.createdAt.asc()) // Sorting by createdAt
+        val query = queryFactory.selectFrom(match)
+            .where(whereClause)
+
+        when (sortCriteria) {
+            SortCriteria.CREATED_AT -> query.orderBy(match.createdAt.desc())
+            SortCriteria.DEADLINE -> query.orderBy(
+                Expressions.dateTemplate(
+                    LocalDateTime::class.java,
+                    "dateadd(day, -1, {0})",
+                    match.matchDate
+                ).asc()
+            )
+        }
+
+        val matches = query
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .fetch()
@@ -116,6 +147,7 @@ class MatchRepositoryImpl : CustomMatchRepository, QueryDslSupport() {
                 location = match.location,
                 content = match.content,
                 matchStatus = match.matchStatus,
+                region = match.region,
                 createdAt = match.createdAt,
             )
         }
