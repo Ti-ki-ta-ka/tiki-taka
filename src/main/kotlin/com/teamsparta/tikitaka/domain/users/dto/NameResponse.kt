@@ -7,7 +7,7 @@ data class NameResponse(
     val name: String
 ) {
     companion object {
-        fun from(user: Users) : NameResponse {
+        fun from(user: Users): NameResponse {
             return NameResponse(
                 id = user.id!!,
                 name = user.name

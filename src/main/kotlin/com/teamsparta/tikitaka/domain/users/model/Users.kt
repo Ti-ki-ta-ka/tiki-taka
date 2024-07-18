@@ -1,8 +1,6 @@
 package com.teamsparta.tikitaka.domain.users.model
 
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
-import com.teamsparta.tikitaka.domain.users.dto.NameResponse
-import com.teamsparta.tikitaka.domain.users.dto.PasswordResponse
 import jakarta.persistence.*
 import java.time.LocalDateTime
 import java.util.regex.Pattern

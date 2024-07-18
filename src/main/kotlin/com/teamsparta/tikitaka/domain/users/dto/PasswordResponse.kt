@@ -6,7 +6,7 @@ data class PasswordResponse(
     val id: Long
 ) {
     companion object {
-        fun from(user: Users) : PasswordResponse {
+        fun from(user: Users): PasswordResponse {
             return PasswordResponse(
                 id = user.id!!
             )

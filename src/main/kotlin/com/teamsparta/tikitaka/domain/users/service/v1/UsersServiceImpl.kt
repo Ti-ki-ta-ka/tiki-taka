@@ -2,7 +2,14 @@ package com.teamsparta.tikitaka.domain.users.service.v1
 
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
 import com.teamsparta.tikitaka.domain.common.util.RedisUtils
-import com.teamsparta.tikitaka.domain.users.dto.*
+import com.teamsparta.tikitaka.domain.users.dto.LoginRequest
+import com.teamsparta.tikitaka.domain.users.dto.LoginResponse
+import com.teamsparta.tikitaka.domain.users.dto.NameRequest
+import com.teamsparta.tikitaka.domain.users.dto.NameResponse
+import com.teamsparta.tikitaka.domain.users.dto.PasswordRequest
+import com.teamsparta.tikitaka.domain.users.dto.PasswordResponse
+import com.teamsparta.tikitaka.domain.users.dto.SignUpRequest
+import com.teamsparta.tikitaka.domain.users.dto.UserDto
 import com.teamsparta.tikitaka.domain.users.model.Users
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
@@ -18,8 +25,7 @@ class UsersServiceImpl(
     private val passwordEncoder: PasswordEncoder,
     private val jwtPlugin: JwtPlugin,
     private val redisUtils: RedisUtils
-) : UsersService
-{
+) : UsersService {
     @Transactional
     override fun signUp(request: SignUpRequest): UserDto {
         if (usersRepository.findByEmail(request.email) != null) {
