@@ -13,7 +13,12 @@ import org.springframework.web.bind.annotation.*
 class TeamController(
     private val teamService: TeamService
 ) {
-
+    @GetMapping("/search")
+    fun searchTeams(
+        @RequestParam(value = "name") name: String
+    ): ResponseEntity<List<TeamResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(teamService.searchTeamListByName(name))
+    }
 
     @PostMapping
     fun createTeam(
@@ -43,6 +48,7 @@ class TeamController(
     ): ResponseEntity<List<TeamResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(teamService.getTeams())
     }
+
 
     @GetMapping("/{team-id}")
     fun getTeam(

@@ -5,17 +5,20 @@ import com.teamsparta.tikitaka.domain.match.dto.MatchStatusResponse
 import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.service.v1.MatchService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/matches")
+@RequestMapping("/api/v1/matches")
 class MatchController(
     private val matchService: MatchService,
 ) {
     //@PreAuthorize("hasRole('LEADER')") //todo : 리더 외 권한 부여 ?
-    @PostMapping()
+    @PostMapping("/create")
     fun postMatch(@RequestBody request: PostMatchRequest): ResponseEntity<MatchStatusResponse> {
         return ResponseEntity.status(HttpStatus.CREATED).body(matchService.postMatch(request))
     }
@@ -36,9 +39,10 @@ class MatchController(
     }
 
     @GetMapping()
-    fun getMatches(): ResponseEntity<List<MatchResponse>> {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(matchService.getMatches())
+    fun getMatches(
+        @PageableDefault(size = 10, sort = ["createdAt,desc"]) pageable: Pageable
+    ): ResponseEntity<Page<MatchResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(matchService.getMatches(pageable))
     }
 
     @GetMapping("/{match-id}")
@@ -49,4 +53,11 @@ class MatchController(
             .body(matchService.getMatchDetails(matchId))
     }
 
+    @GetMapping("/searches")
+    fun searchMatch(
+        pageable: Pageable,
+        @RequestParam keyword: String,
+    ): ResponseEntity<Page<MatchResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(matchService.searchMatch(pageable, keyword))
+    }
 }
