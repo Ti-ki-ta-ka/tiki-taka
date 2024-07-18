@@ -12,6 +12,6 @@ data class UserPrincipal(
     constructor(
         id: Long,
         name: String,
-        role: TeamRole,
-    ) : this(id, name, setOf(SimpleGrantedAuthority("ROLE_$role")))
+        role: TeamRole?,
+    ) : this(id, name, if (role == null) emptySet<GrantedAuthority>() else setOf(SimpleGrantedAuthority("ROLE_$role")))
 }

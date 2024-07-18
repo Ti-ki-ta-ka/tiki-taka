@@ -51,11 +51,13 @@ class UsersServiceImpl(
         }
 
 
-        val role = if (user.teamStatus) {
-            val teamMember = teamMemberRepository.findByUserId(user.id!!)
-            teamMember.teamRole.name
-        } else {
-            "USER" // "TeamRole 에 대한 권한을 주지 않는다" 로 수정 필요
+        val role = when {
+            user.teamStatus -> {
+                val teamMember = teamMemberRepository.findByUserId(user.id!!)
+                teamMember.teamRole.name
+            }
+
+            else -> null
         }
         val accessToken = jwtPlugin.generateAccessToken(
             subject = user.id.toString(),

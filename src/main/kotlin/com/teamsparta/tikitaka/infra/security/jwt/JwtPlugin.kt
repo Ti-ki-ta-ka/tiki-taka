@@ -62,7 +62,7 @@ class JwtPlugin(
             validateToken(refreshToken).getOrElse { throw InvalidCredentialException("Invalid Refresh Token") }.payload
         val subject = claims.subject
         val email = claims["email"].toString()
-        val role = TeamRole.valueOf(claims["role"] as String)
+        val role: TeamRole? = claims["role"]?.let { TeamRole.valueOf(it as String) }
 
         val newAccessToken = generateAccessToken(subject, email, role.toString())
         val newRefreshToken = generateRefreshToken(subject, email, role.toString())

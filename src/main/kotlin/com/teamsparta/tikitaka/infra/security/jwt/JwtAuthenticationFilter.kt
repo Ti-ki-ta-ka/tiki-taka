@@ -34,7 +34,7 @@ class JwtAuthenticationFilter(
             jwtPlugin.validateToken(jwt).onSuccess { claims ->
                 val userId = claims.payload.subject.toLong()
                 val name = claims.payload.get("email", String::class.java)
-                val role = TeamRole.valueOf(claims.payload["role"] as String)
+                val role: TeamRole? = claims.payload["role"]?.let { TeamRole.valueOf(it as String) }
 
                 val principal = UserPrincipal(
                     id = userId, name = name, role = role
