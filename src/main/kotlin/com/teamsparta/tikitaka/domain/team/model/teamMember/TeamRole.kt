@@ -1,7 +1,7 @@
 package com.teamsparta.tikitaka.domain.team.model.teamMember
 
 enum class TeamRole {
-    LEADER, SUB_LEADER, MEMBER;
+    USER, LEADER, SUB_LEADER, MEMBER;
 
     companion object {
         fun fromString(teamRole: String): TeamRole {
