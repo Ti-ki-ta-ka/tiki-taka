@@ -4,6 +4,8 @@ import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplicationRequ
 import com.teamsparta.tikitaka.domain.matchApplication.dto.MatchApplicationResponse
 import com.teamsparta.tikitaka.domain.matchApplication.dto.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.matchApplication.service.v1.MatchApplicationService
+import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -13,7 +15,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/matches")
 @RestController
 class MatchApplicationController(
-    private val matchApplicationService: MatchApplicationService
+    private val matchApplicationService: MatchApplicationService,
+    private val preAuthorize: CustomPreAuthorize,
 ) {
     @PostMapping("/{matchId}/match-applications")
     fun applyMatch(
@@ -21,8 +24,10 @@ class MatchApplicationController(
         @PathVariable matchId: Long,
         @RequestBody request: CreateApplicationRequest
     ): ResponseEntity<MatchApplicationResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(matchApplicationService.applyMatch(principal.id, request, matchId))
+        return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER, TeamRole.SUB_LEADER)) {
+            ResponseEntity.status(HttpStatus.CREATED)
+                .body(matchApplicationService.applyMatch(principal.id, request, matchId))
+        }
     }
 
     /* @DeleteMapping("/{matchId}/match-applications/{applicationId}")
