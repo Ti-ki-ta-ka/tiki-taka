@@ -24,5 +24,4 @@ interface TeamService {
         direction: String,
         name: String
     ): PageResponse<TeamResponse>
-
 }

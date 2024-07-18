@@ -5,6 +5,7 @@ import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.request.toEntity
 import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
+import com.teamsparta.tikitaka.domain.team.repository.QueryDslTeamRepository
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -15,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class TeamServiceImpl(
-    val teamRepository: TeamRepository
+    val teamRepository: TeamRepository,
+    val queryDslTeamRepository: QueryDslTeamRepository
 ) : TeamService {
 
     override fun searchTeamListByName(
@@ -36,7 +38,6 @@ class TeamServiceImpl(
             page,
             size
         )
-    }
 
 
     @Transactional
@@ -92,6 +93,4 @@ class TeamServiceImpl(
         "asc" -> Sort.Direction.ASC
         else -> Sort.Direction.DESC
     }
-
-
 }
