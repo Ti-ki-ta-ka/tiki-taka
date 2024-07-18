@@ -1,5 +1,6 @@
 package com.teamsparta.tikitaka.domain.users.service.v1
 
+import com.teamsparta.tikitaka.domain.common.exception.AnyThingNotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
 import com.teamsparta.tikitaka.domain.common.util.RedisUtils
 import com.teamsparta.tikitaka.domain.users.dto.LoginRequest
@@ -50,9 +51,9 @@ class UsersServiceImpl(
     }
 
     override fun logIn(request: LoginRequest): LoginResponse {
-        val user = usersRepository.findByEmail(request.email) ?: throw RuntimeException("email이 없습니다")
+        val user = usersRepository.findByEmail(request.email) ?: throw AnyThingNotFoundException("이메일을 찾을 수 없습니다")
         if (!passwordEncoder.matches(request.password, user.password)) {
-            throw RuntimeException("비밀번호가 맞지 않습니다")
+            throw InvalidCredentialException("비밀번호가 일치하지 않습니다")
         }
         val accessToken = jwtPlugin.generateAccessToken(
             subject = user.id.toString(),
@@ -83,12 +84,12 @@ class UsersServiceImpl(
     }
 
     override fun updateName(request: NameRequest, userPrincipal: UserPrincipal): NameResponse {
-        val user = usersRepository.findByIdOrNull(userPrincipal.id) ?: throw RuntimeException("임시")
+        val user = usersRepository.findByIdOrNull(userPrincipal.id) ?: throw AnyThingNotFoundException("유저를 찾을 수 없습니다")
         if (user.id != userPrincipal.id) {
-            throw RuntimeException("인증되지 않은 사용자")
+            throw InvalidCredentialException("인증되지 않은 사용자입니다")
         }
         if (usersRepository.existsByName(request.name)) {
-            throw RuntimeException("이미 사용하고 있는 이름")
+            throw IllegalArgumentException("이미 사용하고 있는 이름입니다")
         }
         user.updateName(request.name)
         usersRepository.save(user)
@@ -96,12 +97,15 @@ class UsersServiceImpl(
     }
 
     override fun updatePassword(request: PasswordRequest, userPrincipal: UserPrincipal): PasswordResponse {
-        val user = usersRepository.findByIdOrNull(userPrincipal.id) ?: throw RuntimeException("임시")
+        val user = usersRepository.findByIdOrNull(userPrincipal.id) ?: throw AnyThingNotFoundException("유저를 찾을 수 없습니다")
         if (user.id != userPrincipal.id) {
-            throw RuntimeException("인증되지 않은 사용자")
+            throw InvalidCredentialException("인증되지 않은 사용자입니다")
         }
-        if (usersRepository.existsByPassword(request.password)) {
-            throw RuntimeException("이미 사용하고 있는 패스워드")
+        val allUsers = usersRepository.findAll()
+        allUsers.forEach { existingUser ->
+            if (passwordEncoder.matches(request.password, existingUser.password)) {
+                throw IllegalArgumentException("이미 사용하고 있는 패스워드입니다")
+            }
         }
         Users.validatePassword(request.password)
         user.updatePassword(passwordEncoder.encode(request.password))

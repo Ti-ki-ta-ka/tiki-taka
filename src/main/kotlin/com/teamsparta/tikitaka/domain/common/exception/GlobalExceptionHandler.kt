@@ -53,4 +53,10 @@ class GlobalExceptionHandler {
             .body(ErrorResponse(message = e.message))
     }
 
+    @ExceptionHandler(AnyThingNotFoundException::class)
+    fun handleEmailNotFoundException(e: AnyThingNotFoundException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ErrorResponse(message = e.message))
+    }
 }
