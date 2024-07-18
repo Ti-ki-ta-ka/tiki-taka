@@ -73,4 +73,7 @@ class MatchServiceImpl(
             ?: throw RuntimeException("Match not found") //todo : custom exception
     }
 
+    override fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse> {
+        return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword)
+    }
 }

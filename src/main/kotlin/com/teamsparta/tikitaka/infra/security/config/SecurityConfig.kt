@@ -32,9 +32,10 @@ class SecurityConfig(
                     "/api/v1/users/log-in",
                     "/api/v1/users/sign-up",
                     "/error",
-                    "/matches",
+                    "/api/v1/matches",
                     "/matches/{match-id}",
-                    "/api/v1/users/token/refresh"
+                    "/api/v1/users/token/refresh",
+                    "/api/v1/matches/searches"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
