@@ -15,4 +15,7 @@ interface MatchService {
     fun getMatches(pageable: Pageable): Page<MatchResponse>
     fun getMatchDetails(matchId: Long): MatchResponse
     fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse>
+    fun getMatchesByDeadline(pageable: Pageable): Page<MatchResponse>
+
+    fun getMatchesAvailable(pageable: Pageable): Page<MatchResponse>
 }

@@ -60,4 +60,18 @@ class MatchController(
     ): ResponseEntity<Page<MatchResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(matchService.searchMatch(pageable, keyword))
     }
+
+    @GetMapping("/by-deadline")
+    fun getMatchesByDeadline(
+        @PageableDefault(size = 10) pageable: Pageable
+    ): ResponseEntity<Page<MatchResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(matchService.getMatchesByDeadline(pageable))
+    }
+
+    @GetMapping("/available")
+    fun getMatchesAvailable(
+        @PageableDefault(size = 10) pageable: Pageable
+    ): ResponseEntity<Page<MatchResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(matchService.getMatchesAvailable(pageable))
+    }
 }

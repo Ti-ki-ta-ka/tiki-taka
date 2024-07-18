@@ -76,4 +76,12 @@ class MatchServiceImpl(
     override fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse> {
         return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword)
     }
+
+    override fun getMatchesByDeadline(pageable: Pageable): Page<MatchResponse> {
+        return matchRepository.getMatchesByDeadline(pageable)
+    }
+
+    override fun getMatchesAvailable(pageable: Pageable): Page<MatchResponse> {
+        return matchRepository.getMatchesAvailable(pageable)
+    }
 }

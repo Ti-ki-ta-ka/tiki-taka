@@ -6,4 +6,6 @@ import org.springframework.data.domain.Pageable
 
 interface CustomMatchRepository {
     fun searchMatchByPageableAndKeyword(pageable: Pageable, keyword: String?): Page<MatchResponse>
+    fun getMatchesByDeadline(pageable: Pageable): Page<MatchResponse>
+    fun getMatchesAvailable(pageable: Pageable): Page<MatchResponse>
 }

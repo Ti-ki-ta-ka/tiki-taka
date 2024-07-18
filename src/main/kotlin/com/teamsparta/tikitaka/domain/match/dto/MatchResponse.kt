@@ -12,6 +12,7 @@ data class MatchResponse(
     val location: String,
     val content: String,
     val matchStatus: Boolean,
+    val createdAt: LocalDateTime,
 
     ) {
     companion object {
@@ -23,7 +24,7 @@ data class MatchResponse(
             location = match.location,
             content = match.content,
             matchStatus = match.matchStatus,
-
-            )
+            createdAt = match.createdAt,
+        )
     }
 }
