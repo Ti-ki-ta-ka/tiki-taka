@@ -25,11 +25,18 @@ class MatchApplicationServiceImpl
 ) : MatchApplicationService {
     @Transactional
     override fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse {
-        // 신청자의 역할이 리더나 서브 리더가 아닐 경우 신청 불가
-        // MatchPost, 동일한 MatchingDate 중 다른 신청의 ApproveStatus 가 WAITING 인 경우 해당 날짜에 신청 불가
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+
         val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("match", matchId)
         val (teamId) = request
+
+        val matchDate = matchPost.matchDate.toLocalDate()
+
+        val existingApplications = matchApplicationRepository.findByTeamIdAndMatchDate(teamId, matchDate)
+        if (existingApplications.any { it.approveStatus == ApproveStatus.WAITING || it.approveStatus == ApproveStatus.APPROVE }) {
+            throw RuntimeException("Your team already has a pending or approved application for the same match date.")
+        }
+
         return matchApplicationRepository.save(MatchApplication.of(matchPost, teamId, userId))
             .let { MatchApplicationResponse.from(it) }
     }
