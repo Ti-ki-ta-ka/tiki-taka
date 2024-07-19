@@ -18,7 +18,7 @@ class TeamController(
 ) {
     @GetMapping("/search")
     fun searchTeams(
-        region: String?,
+        @RequestParam("region", required = false) region: String?,
         @RequestParam("page", defaultValue = "0") page: Int,
         @RequestParam("size", defaultValue = "10") size: Int,
         @RequestParam("sort_by", defaultValue = "createdAt") sortBy: String,
@@ -58,7 +58,7 @@ class TeamController(
 
     @GetMapping
     fun getTeams(
-        region: String?,
+        @RequestParam("region", required = false) region: String?,
         @RequestParam("page", defaultValue = "0") page: Int,
         @RequestParam("size", defaultValue = "10") size: Int,
         @RequestParam("sort_by", defaultValue = "created_at") sortBy: String,
