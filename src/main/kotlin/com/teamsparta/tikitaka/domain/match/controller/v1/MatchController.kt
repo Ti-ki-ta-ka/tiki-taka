@@ -7,11 +7,13 @@ import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.domain.match.service.v1.MatchService
+import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -19,10 +21,12 @@ import org.springframework.web.bind.annotation.*
 class MatchController(
     private val matchService: MatchService,
 ) {
-    //@PreAuthorize("hasRole('LEADER')") //todo : 리더 외 권한 부여 ?
     @PostMapping("/create")
-    fun postMatch(@RequestBody request: PostMatchRequest): ResponseEntity<MatchStatusResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(matchService.postMatch(request))
+    fun postMatch(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @RequestBody request: PostMatchRequest
+    ): ResponseEntity<MatchStatusResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED).body(matchService.postMatch(principal, request))
     }
 
     //@PreAuthorize("hasRole('LEADER')") //todo : 리더 외 작성자

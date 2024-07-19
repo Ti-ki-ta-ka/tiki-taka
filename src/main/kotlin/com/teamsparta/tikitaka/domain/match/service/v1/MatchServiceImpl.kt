@@ -8,6 +8,7 @@ import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.Match
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
+import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -22,9 +23,7 @@ class MatchServiceImpl(
     ) : MatchService {
 
     @Transactional
-    override fun postMatch(
-        request: PostMatchRequest
-    ): MatchStatusResponse {
+    override fun postMatch(principal: UserPrincipal, request: PostMatchRequest): MatchStatusResponse {
 
         matchRepository.save(
             Match.of(
@@ -34,6 +33,7 @@ class MatchServiceImpl(
                 content = request.content,
                 matchStatus = false,
                 teamId = request.teamId,
+                userId = principal.id,
                 region = request.region,
             )
         )

@@ -6,12 +6,13 @@ import com.teamsparta.tikitaka.domain.match.dto.MatchStatusResponse
 import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
+import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface MatchService {
 
-    fun postMatch(request: PostMatchRequest): MatchStatusResponse
+    fun postMatch(principal: UserPrincipal, request: PostMatchRequest): MatchStatusResponse
     fun updateMatch(matchId: Long, request: UpdateMatchRequest): MatchStatusResponse
     fun deleteMatch(matchId: Long): MatchStatusResponse
     fun getMatches(pageable: Pageable): Page<MatchResponse>
