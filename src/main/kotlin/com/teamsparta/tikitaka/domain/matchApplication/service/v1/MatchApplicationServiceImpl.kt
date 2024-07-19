@@ -68,15 +68,14 @@ class MatchApplicationServiceImpl
     ): MatchApplicationResponse {
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val (approveStatus) = request
-
-        if (approveStatus == ApproveStatus.CANCELLED.toString()) {
-            throw IllegalStateException("Cannot modify application with status CANCELLED")
-        }
-
         val matchApply = matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
             "MatchApplication",
             applicationId
         )
+
+        if (matchApply.approveStatus == ApproveStatus.CANCELLED) {
+            throw IllegalStateException("Cannot modify application with status CANCELLED")
+        }
 
         val match = matchApply.matchPost
         val matchUserId = match.userId
@@ -89,6 +88,10 @@ class MatchApplicationServiceImpl
             if (teamLeader.teamRole != TeamRole.LEADER && userTeamMember.teamRole != TeamRole.LEADER) {
                 throw AccessDeniedException("Only the author or the team leader can respond to this application")
             }
+        }
+
+        if (approveStatus == ApproveStatus.CANCELLED.toString()) {
+            throw IllegalStateException("Only the applicant can cancel the match application.")
         }
 
         matchApply.approveStatus = ApproveStatus.fromString(approveStatus)
