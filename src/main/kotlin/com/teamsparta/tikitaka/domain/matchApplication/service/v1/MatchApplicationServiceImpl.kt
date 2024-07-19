@@ -84,8 +84,7 @@ class MatchApplicationServiceImpl
             ?: throw ModelNotFoundException("TeamMember", userId)
 
         if (userId != matchUserId) {
-            val teamLeader = teamMemberRepository.findByUserId(userId)
-            if (teamLeader.teamRole != TeamRole.LEADER && userTeamMember.teamRole != TeamRole.LEADER) {
+            if (userTeamMember.teamRole != TeamRole.LEADER) {
                 throw AccessDeniedException("Only the author or the team leader can respond to this application")
             }
         }
