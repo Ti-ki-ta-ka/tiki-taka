@@ -53,7 +53,7 @@ class UsersServiceImpl(
     }
 
     override fun logIn(request: LoginRequest): LoginResponse {
-        val user = usersRepository.findByEmail(request.email) ?: throw AnyThingNotFoundException("이메일을 찾을 수 없습니다")
+        val user = usersRepository.findByEmail(request.email) ?: throw ModelNotFoundException("Users", null)
         if (!passwordEncoder.matches(request.password, user.password)) {
             throw InvalidCredentialException("비밀번호가 일치하지 않습니다")
         }
