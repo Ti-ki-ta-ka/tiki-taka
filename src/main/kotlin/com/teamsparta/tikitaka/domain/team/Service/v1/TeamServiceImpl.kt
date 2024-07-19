@@ -1,6 +1,7 @@
 package com.teamsparta.tikitaka.domain.team.Service.v1
 
 import com.teamsparta.tikitaka.domain.common.baseentity.exception.NotFoundException
+import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.request.toEntity
 import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
@@ -9,6 +10,7 @@ import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamMember
 import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
+import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -24,7 +26,8 @@ import java.time.LocalDateTime
 @Service
 class TeamServiceImpl(
     private val teamRepository: TeamRepository,
-    private val teamMemberRepository: TeamMemberRepository
+    private val teamMemberRepository: TeamMemberRepository,
+    private val usersRepository: UsersRepository
 ) : TeamService {
 
     override fun searchTeamListByName(
@@ -53,6 +56,10 @@ class TeamServiceImpl(
         principal: UserPrincipal,
         request: TeamRequest
     ): TeamResponse {
+        val user = usersRepository.findByIdOrNull(principal.id) ?: throw ModelNotFoundException("User", principal.id)
+        if (user.teamStatus) throw IllegalStateException("유저는 하나의 팀에 소속될 수 있습니다.")
+        user.teamStatus = true
+
         val updatedUserPrincipal = UserPrincipal(
             principal.id,
             principal.name,
@@ -98,9 +105,10 @@ class TeamServiceImpl(
         teamId: Long
     ) {
         val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
-        val user = teamMemberRepository.findByIdOrNull(userId) ?: throw NotFoundException("user", userId)
-
-        if (user.teamRole != TeamRole.LEADER && user.team != team) throw IllegalStateException("팀 삭제 권한이 없습니다.")
+        val teamMember = teamMemberRepository.findByIdOrNull(userId) ?: throw NotFoundException("user", userId)
+        val user = usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("user", userId)
+        if (teamMember.teamRole != TeamRole.LEADER && teamMember.team != team) throw IllegalStateException("팀 삭제 권한이 없습니다.")
+        user.teamStatus = false
         team.softDelete()
     }
 
