@@ -5,31 +5,39 @@ import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.request.toEntity
 import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
-import com.teamsparta.tikitaka.domain.team.repository.QueryDslTeamRepository
+import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamMember
+import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
+import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
+import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 class TeamServiceImpl(
-    val teamRepository: TeamRepository,
-    val queryDslTeamRepository: QueryDslTeamRepository
+    private val teamRepository: TeamRepository,
+    private val teamMemberRepository: TeamMemberRepository
 ) : TeamService {
 
     override fun searchTeamListByName(
+        region: String?,
         page: Int,
         size: Int,
         sortBy: String,
         direction: String,
         name: String
     ): PageResponse<TeamResponse> {
-        val direction = getDirection(direction)
-        val pageable: Pageable = PageRequest.of(page, size, direction, sortBy)
-        val pageContent = teamRepository.findByName(pageable, name)
+        val sortDirection = getDirection(direction)
+        val pageable: Pageable = PageRequest.of(page, size, sortDirection, sortBy)
+        val pageContent = teamRepository.findByName(pageable, name, region)
 
 
 
@@ -42,45 +50,77 @@ class TeamServiceImpl(
 
     @Transactional
     override fun createTeam(
+        principal: UserPrincipal,
         request: TeamRequest
     ): TeamResponse {
-        return TeamResponse.from(teamRepository.save(request.toEntity()))
+        val updatedUserPrincipal = UserPrincipal(
+            principal.id,
+            principal.name,
+            principal.authorities + SimpleGrantedAuthority("ROLE_${TeamRole.LEADER}")
+        )
+        val authentication =
+            UsernamePasswordAuthenticationToken(updatedUserPrincipal, null, updatedUserPrincipal.authorities)
+        SecurityContextHolder.getContext().authentication = authentication
+
+        val team = request.toEntity(principal.id)
+        return TeamResponse.from(teamRepository.save(team))
+            .also {
+                teamMemberRepository.save(
+                    TeamMember(
+                        userId = principal.id,
+                        team = team,
+                        teamRole = TeamRole.LEADER,
+                        createdAt = LocalDateTime.now(),
+                    )
+                )
+            }
     }
 
 
     @Transactional
     override fun updateTeam(
+        userId: Long,
         request: TeamRequest,
         teamId: Long
     ): TeamResponse {
         val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
+        val user = teamMemberRepository.findByIdOrNull(userId) ?: throw NotFoundException("user", userId)
+
+        if (user.teamRole != TeamRole.LEADER && user.team != team) throw IllegalStateException("팀 수정 권한이 없습니다.")
+
         team.updateTeam(request.name, request.description, request.region)
         return TeamResponse.from(team)
     }
 
     @Transactional
     override fun deleteTeam(
+        userId: Long,
         teamId: Long
     ) {
         val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
+        val user = teamMemberRepository.findByIdOrNull(userId) ?: throw NotFoundException("user", userId)
+
+        if (user.teamRole != TeamRole.LEADER && user.team != team) throw IllegalStateException("팀 삭제 권한이 없습니다.")
         team.softDelete()
     }
 
     override fun getTeams(
+        region: String?,
         page: Int,
         size: Int,
         sortBy: String,
         direction: String
     ): PageResponse<TeamResponse> {
-        val direction = getDirection(direction)
-        val pageable: Pageable = PageRequest.of(page, size, direction, sortBy)
-        val pageContent = teamRepository.findAllByPageable(pageable)
+        val sortDirection = getDirection(direction)
+        val pageable: Pageable = PageRequest.of(page, size, sortDirection, sortBy)
+        val pageContent = teamRepository.findAllByPageable(pageable, region)
         return PageResponse(
             pageContent.content.map { TeamResponse.from(it) },
             page,
             size
         )
     }
+
 
     override fun getTeam(
         teamId: Long

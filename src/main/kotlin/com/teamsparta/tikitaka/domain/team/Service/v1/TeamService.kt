@@ -3,21 +3,23 @@ package com.teamsparta.tikitaka.domain.team.Service.v1
 import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
+import com.teamsparta.tikitaka.infra.security.UserPrincipal
 
 interface TeamService {
 
 
-    fun createTeam(request: TeamRequest): TeamResponse
+    fun createTeam(principal: UserPrincipal, request: TeamRequest): TeamResponse
 
-    fun updateTeam(request: TeamRequest, teamId: Long): TeamResponse
+    fun updateTeam(userId: Long, request: TeamRequest, teamId: Long): TeamResponse
 
-    fun deleteTeam(teamId: Long)
+    fun deleteTeam(userId: Long, teamId: Long)
 
-    fun getTeams(page: Int, size: Int, sortBy: String, direction: String): PageResponse<TeamResponse>
+    fun getTeams(region: String?, page: Int, size: Int, sortBy: String, direction: String): PageResponse<TeamResponse>
 
     fun getTeam(teamId: Long): TeamResponse
 
     fun searchTeamListByName(
+        region: String?,
         page: Int,
         size: Int,
         sortBy: String,

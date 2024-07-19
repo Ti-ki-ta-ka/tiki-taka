@@ -19,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class MatchServiceImpl(
     private val matchRepository: MatchRepository,
-
-    ) : MatchService {
+) : MatchService {
 
     @Transactional
     override fun postMatch(principal: UserPrincipal, request: PostMatchRequest): MatchStatusResponse {

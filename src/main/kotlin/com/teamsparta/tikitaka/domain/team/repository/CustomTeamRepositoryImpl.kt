@@ -6,6 +6,7 @@ import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.EntityPathBase
 import com.querydsl.core.types.dsl.PathBuilder
+import com.teamsparta.tikitaka.domain.common.Region
 import com.teamsparta.tikitaka.domain.team.model.QTeam
 import com.teamsparta.tikitaka.domain.team.model.Team
 import com.teamsparta.tikitaka.infra.querydsl.QueryDslSupport
@@ -20,9 +21,19 @@ class CustomTeamRepositoryImpl : CustomTeamRepository, QueryDslSupport() {
     private val team = QTeam.team
 
     override fun findAllByPageable(
-        pageable: Pageable
+        pageable: Pageable,
+        region: String?
     ): Page<Team> {
         val whereClause = BooleanBuilder()
+
+        if (region != null) {
+            val regionEnum = try {
+                Region.fromString(region)
+            } catch (e: IllegalArgumentException) {
+                throw IllegalArgumentException("Invalid region: $region")
+            }
+            whereClause.and(team.region.eq(regionEnum))
+        }
 
         val totalCount = queryFactory.select(team.count())
             .from(team)
@@ -39,9 +50,18 @@ class CustomTeamRepositoryImpl : CustomTeamRepository, QueryDslSupport() {
         return PageImpl(contents, pageable, totalCount)
     }
 
-    override fun findByName(pageable: Pageable, name: String): Page<Team> {
+    override fun findByName(pageable: Pageable, name: String, region: String?): Page<Team> {
         val whereClause = BooleanBuilder()
         whereClause.and(team.name.containsIgnoreCase(name))
+
+        if (region != null) {
+            val regionEnum = try {
+                Region.fromString(region)
+            } catch (e: IllegalArgumentException) {
+                throw IllegalArgumentException("Invalid region: $region")
+            }
+            whereClause.and(team.region.eq(regionEnum))
+        }
 
         val totalCount = queryFactory.select(team.count())
             .from(team)

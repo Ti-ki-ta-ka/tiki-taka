@@ -28,7 +28,7 @@ data class TeamResponse(
                 team.mannerScore,
                 team.attendanceScore,
                 team.recruitStatus,
-                team.region
+                team.region.name
             )
         }
     }
