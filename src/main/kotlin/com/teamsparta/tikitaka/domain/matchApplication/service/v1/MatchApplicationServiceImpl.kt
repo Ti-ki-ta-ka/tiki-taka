@@ -69,27 +69,21 @@ class MatchApplicationServiceImpl
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val (approveStatus) = request
 
-        // 현재의 applicationId의 approveStatus가 CANCELLED일 경우로 수정
         if (approveStatus == ApproveStatus.CANCELLED.toString()) {
             throw IllegalStateException("Cannot modify application with status CANCELLED")
         }
 
-
-        //ApplicationId가 존재하는지 여부를 체크
         val matchApply = matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
             "MatchApplication",
             applicationId
         )
 
-        //조회한 신청이 어떤 매치인지 조회
         val match = matchApply.matchPost
         val matchUserId = match.userId
 
-        //현재 해당 API에 접근을 시도하는 사용자가 PostMatch한 팀의 소속인지 체크
         val userTeamMember = teamMemberRepository.findByUserIdAndTeamId(userId, match.teamId)
             ?: throw ModelNotFoundException("TeamMember", userId)
 
-        // 만약 해당  API에 접근을 시도한 사용자가 MatchPost한 사용자와 다를경우, MatchPost한 사용자가 속한 팀의 리더가 맞는지 체크
         if (userId != matchUserId) {
             val teamLeader = teamMemberRepository.findByUserId(userId)
             if (teamLeader.teamRole != TeamRole.LEADER && userTeamMember.teamRole != TeamRole.LEADER) {
