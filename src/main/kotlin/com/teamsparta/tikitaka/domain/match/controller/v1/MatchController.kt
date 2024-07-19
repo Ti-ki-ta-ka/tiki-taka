@@ -34,7 +34,6 @@ class MatchController(
         }
     }
 
-    //@PreAuthorize("hasRole('LEADER')") //todo : 리더 외 작성자
     @PutMapping("/{match-id}")
     fun updateMatch(
         @AuthenticationPrincipal principal: UserPrincipal,
@@ -44,8 +43,7 @@ class MatchController(
         return ResponseEntity.status(HttpStatus.OK)
             .body(matchService.updateMatch(principal, matchId, request))
     }
-
-    //@PreAuthorize("hasRole('LEADER')")
+    
     @DeleteMapping("/{match-id}")
     fun deleteMatch(
         @AuthenticationPrincipal principal: UserPrincipal,
