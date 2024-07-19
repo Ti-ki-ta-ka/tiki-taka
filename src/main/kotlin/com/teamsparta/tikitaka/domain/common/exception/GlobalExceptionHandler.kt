@@ -53,4 +53,11 @@ class GlobalExceptionHandler {
             .body(ErrorResponse(message = e.message))
     }
 
+    @ExceptionHandler(TeamAlreadyAppliedException::class)
+    fun handleTeamAlreadyAppliedException(e: TeamAlreadyAppliedException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(message = e.message))
+    }
+
 }

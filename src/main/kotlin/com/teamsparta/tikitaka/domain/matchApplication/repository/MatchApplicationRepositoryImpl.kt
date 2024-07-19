@@ -10,9 +10,10 @@ import java.time.LocalDate
 
 class MatchApplicationRepositoryImpl : CustomMatchApplicationRepository, QueryDslSupport() {
 
+    private val qMatchApplication = QMatchApplication.matchApplication
+    private val qMatch = QMatch.match
+
     override fun findByTeamIdAndMatchDate(teamId: Long, matchDate: LocalDate): List<MatchApplication> {
-        val qMatchApplication = QMatchApplication.matchApplication
-        val qMatch = QMatch.match
 
         return queryFactory.selectFrom(qMatchApplication)
             .join(qMatchApplication.matchPost, qMatch)

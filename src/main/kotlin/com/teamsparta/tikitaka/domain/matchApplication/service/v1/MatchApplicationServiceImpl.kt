@@ -2,6 +2,7 @@ package com.teamsparta.tikitaka.domain.matchApplication.service.v1
 
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
+import com.teamsparta.tikitaka.domain.common.exception.TeamAlreadyAppliedException
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplicationRequest
 import com.teamsparta.tikitaka.domain.matchApplication.dto.MatchApplicationResponse
@@ -34,7 +35,7 @@ class MatchApplicationServiceImpl
 
         val existingApplications = matchApplicationRepository.findByTeamIdAndMatchDate(teamId, matchDate)
         if (existingApplications.any { it.approveStatus == ApproveStatus.WAITING || it.approveStatus == ApproveStatus.APPROVE }) {
-            throw RuntimeException("Your team already has a pending or approved application for the same match date.")
+            throw TeamAlreadyAppliedException("Your team already has a pending or approved application for the same match date.")
         }
 
         return matchApplicationRepository.save(MatchApplication.of(matchPost, teamId, userId))
