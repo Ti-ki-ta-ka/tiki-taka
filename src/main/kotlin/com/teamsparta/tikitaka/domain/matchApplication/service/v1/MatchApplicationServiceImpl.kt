@@ -10,6 +10,8 @@ import com.teamsparta.tikitaka.domain.matchApplication.dto.ReplyApplicationReque
 import com.teamsparta.tikitaka.domain.matchApplication.model.ApproveStatus
 import com.teamsparta.tikitaka.domain.matchApplication.model.MatchApplication
 import com.teamsparta.tikitaka.domain.matchApplication.repository.MatchApplicationRepository
+import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
@@ -23,6 +25,7 @@ class MatchApplicationServiceImpl
     private val matchApplicationRepository: MatchApplicationRepository,
     private val matchRepository: MatchRepository,
     private val usersRepository: UsersRepository,
+    private val teamMemberRepository: TeamMemberRepository
 ) : MatchApplicationService {
     @Transactional
     override fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse {
@@ -63,17 +66,38 @@ class MatchApplicationServiceImpl
         applicationId: Long,
         request: ReplyApplicationRequest
     ): MatchApplicationResponse {
-        // MatchRepository 에서 PostMatch 한 작성자와 답변하려는 작성자가 동일한지 확인하는 로직
+        usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val (approveStatus) = request
+
+        // 현재의 applicationId의 approveStatus가 CANCELLED일 경우로 수정
         if (approveStatus == ApproveStatus.CANCELLED.toString()) {
             throw IllegalStateException("Cannot modify application with status CANCELLED")
         }
+
+
+        //ApplicationId가 존재하는지 여부를 체크
         val matchApply = matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
-            "match",
+            "MatchApplication",
             applicationId
         )
+
+        //조회한 신청이 어떤 매치인지 조회
+        val match = matchApply.matchPost
+        val matchUserId = match.userId
+
+        //현재 해당 API에 접근을 시도하는 사용자가 PostMatch한 팀의 소속인지 체크
+        val userTeamMember = teamMemberRepository.findByUserIdAndTeamId(userId, match.teamId)
+            ?: throw ModelNotFoundException("TeamMember", userId)
+
+        // 만약 해당  API에 접근을 시도한 사용자가 MatchPost한 사용자와 다를경우, MatchPost한 사용자가 속한 팀의 리더가 맞는지 체크
+        if (userId != matchUserId) {
+            val teamLeader = teamMemberRepository.findByUserId(userId)
+            if (teamLeader.teamRole != TeamRole.LEADER && userTeamMember.teamRole != TeamRole.LEADER) {
+                throw AccessDeniedException("Only the author or the team leader can respond to this application")
+            }
+        }
+
         matchApply.approveStatus = ApproveStatus.fromString(approveStatus)
         return MatchApplicationResponse.from(matchApply)
-
     }
 }
