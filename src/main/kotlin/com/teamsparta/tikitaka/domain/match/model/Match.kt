@@ -31,7 +31,10 @@ class Match(
     var matchStatus: Boolean = false,
 
     @Column(name = "post_team_id", nullable = false)
-    var teamId: Long
+    var teamId: Long,
+
+    @Column(name = "post_user_id", nullable = false)
+    var userId: Long
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,6 +63,7 @@ class Match(
             teamId: Long,
             title: String,
             region: Region,
+            userId: Long
         ): Match {
             return Match(
                 matchDate = matchDate,
@@ -69,6 +73,7 @@ class Match(
                 teamId = teamId,
                 title = title,
                 region = region,
+                userId = userId
             ).apply {
                 validateTitle(title)
                 validateMatchDate(matchDate)

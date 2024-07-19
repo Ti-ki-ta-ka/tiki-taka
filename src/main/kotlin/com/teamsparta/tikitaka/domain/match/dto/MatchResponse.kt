@@ -8,6 +8,7 @@ data class MatchResponse(
 
     val id: Long,
     val teamId: Long,
+    val userId: Long,
     val title: String,
     val matchDate: LocalDateTime,
     val region: Region,
@@ -21,6 +22,7 @@ data class MatchResponse(
         fun from(match: Match) = MatchResponse(
             id = match.id!!,
             teamId = match.teamId,
+            userId = match.userId,
             title = match.title,
             matchDate = match.matchDate,
             location = match.location,

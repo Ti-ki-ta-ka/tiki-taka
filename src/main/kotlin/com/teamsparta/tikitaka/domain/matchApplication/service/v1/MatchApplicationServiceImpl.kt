@@ -2,6 +2,7 @@ package com.teamsparta.tikitaka.domain.matchApplication.service.v1
 
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
+import com.teamsparta.tikitaka.domain.common.exception.TeamAlreadyAppliedException
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplicationRequest
 import com.teamsparta.tikitaka.domain.matchApplication.dto.MatchApplicationResponse
@@ -9,6 +10,8 @@ import com.teamsparta.tikitaka.domain.matchApplication.dto.ReplyApplicationReque
 import com.teamsparta.tikitaka.domain.matchApplication.model.ApproveStatus
 import com.teamsparta.tikitaka.domain.matchApplication.model.MatchApplication
 import com.teamsparta.tikitaka.domain.matchApplication.repository.MatchApplicationRepository
+import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
@@ -22,14 +25,22 @@ class MatchApplicationServiceImpl
     private val matchApplicationRepository: MatchApplicationRepository,
     private val matchRepository: MatchRepository,
     private val usersRepository: UsersRepository,
+    private val teamMemberRepository: TeamMemberRepository
 ) : MatchApplicationService {
     @Transactional
     override fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse {
-        // 신청자의 역할이 리더나 서브 리더가 아닐 경우 신청 불가
-        // MatchPost, 동일한 MatchingDate 중 다른 신청의 ApproveStatus 가 WAITING 인 경우 해당 날짜에 신청 불가
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+
         val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("match", matchId)
         val (teamId) = request
+
+        val matchDate = matchPost.matchDate.toLocalDate()
+
+        val existingApplications = matchApplicationRepository.findByTeamIdAndMatchDate(teamId, matchDate)
+        if (existingApplications.any { it.approveStatus == ApproveStatus.WAITING || it.approveStatus == ApproveStatus.APPROVE }) {
+            throw TeamAlreadyAppliedException("Your team already has a pending or approved application for the same match date.")
+        }
+
         return matchApplicationRepository.save(MatchApplication.of(matchPost, teamId, userId))
             .let { MatchApplicationResponse.from(it) }
     }
@@ -55,17 +66,34 @@ class MatchApplicationServiceImpl
         applicationId: Long,
         request: ReplyApplicationRequest
     ): MatchApplicationResponse {
-        // MatchRepository 에서 PostMatch 한 작성자와 답변하려는 작성자가 동일한지 확인하는 로직
+        usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val (approveStatus) = request
-        if (approveStatus == ApproveStatus.CANCELLED.toString()) {
-            throw IllegalStateException("Cannot modify application with status CANCELLED")
-        }
         val matchApply = matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
-            "match",
+            "MatchApplication",
             applicationId
         )
+
+        if (matchApply.approveStatus == ApproveStatus.CANCELLED) {
+            throw IllegalStateException("Cannot modify application with status CANCELLED")
+        }
+
+        val match = matchApply.matchPost
+        val matchUserId = match.userId
+
+        val userTeamMember = teamMemberRepository.findByUserIdAndTeamId(userId, match.teamId)
+            ?: throw ModelNotFoundException("TeamMember", userId)
+
+        if (userId != matchUserId) {
+            if (userTeamMember.teamRole != TeamRole.LEADER) {
+                throw AccessDeniedException("Only the author or the team leader can respond to this application")
+            }
+        }
+
+        if (approveStatus == ApproveStatus.CANCELLED.toString()) {
+            throw IllegalStateException("Only the applicant can cancel the match application.")
+        }
+
         matchApply.approveStatus = ApproveStatus.fromString(approveStatus)
         return MatchApplicationResponse.from(matchApply)
-
     }
 }
