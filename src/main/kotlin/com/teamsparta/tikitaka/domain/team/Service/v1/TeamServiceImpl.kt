@@ -38,7 +38,7 @@ class TeamServiceImpl(
             page,
             size
         )
-
+    }
 
     @Transactional
     override fun createTeam(

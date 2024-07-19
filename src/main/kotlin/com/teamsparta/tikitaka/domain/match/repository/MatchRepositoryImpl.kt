@@ -48,6 +48,7 @@ class MatchRepositoryImpl : CustomMatchRepository, QueryDslSupport() {
             MatchResponse(
                 id = match.id!!,
                 teamId = match.teamId,
+                userId = match.userId,
                 title = match.title,
                 matchDate = match.matchDate,
                 location = match.location,
@@ -89,6 +90,7 @@ class MatchRepositoryImpl : CustomMatchRepository, QueryDslSupport() {
             MatchResponse(
                 id = match.id!!,
                 teamId = match.teamId,
+                userId = match.userId,
                 title = match.title,
                 matchDate = match.matchDate,
                 location = match.location,
@@ -142,6 +144,7 @@ class MatchRepositoryImpl : CustomMatchRepository, QueryDslSupport() {
             MatchResponse(
                 id = match.id!!,
                 teamId = match.teamId,
+                userId = match.userId,
                 title = match.title,
                 matchDate = match.matchDate,
                 location = match.location,

@@ -37,8 +37,9 @@ class MatchServiceImpl(
                 content = request.content,
                 matchStatus = false,
                 teamId = request.teamId,
+                userId = principal.id,
                 region = request.region,
-                authorId = principal.id
+                userId = principal.id
             )
         )
         //todo : team 구인공고 상태 변경
@@ -56,7 +57,7 @@ class MatchServiceImpl(
         val match = matchRepository.findByIdOrNull(matchId)
             ?: throw RuntimeException("") //todo : custom exception
 
-        if (match.teamId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
+        if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
             "You do not have permission to delete."
         )
 
@@ -73,7 +74,7 @@ class MatchServiceImpl(
         val match = matchRepository.findByIdOrNull(matchId)
             ?: throw RuntimeException("Match not found") //todo : custom exception
 
-        if (match.authorId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
+        if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
             "You do not have permission to delete."
         )
 

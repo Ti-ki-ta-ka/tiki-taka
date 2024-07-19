@@ -6,9 +6,9 @@ import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.domain.match.service.v1.MatchService
+import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
-import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -24,6 +24,11 @@ class MatchController(
     private val preAuthorize: CustomPreAuthorize,
 ) {
     @PostMapping("/create")
+    fun postMatch(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @RequestBody request: PostMatchRequest
+    ): ResponseEntity<MatchResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED).body(matchService.postMatch(principal, request))
     fun postMatch(
         @AuthenticationPrincipal principal: UserPrincipal,
         @RequestBody request: PostMatchRequest,
@@ -43,7 +48,7 @@ class MatchController(
         return ResponseEntity.status(HttpStatus.OK)
             .body(matchService.updateMatch(principal, matchId, request))
     }
-    
+
     @DeleteMapping("/{match-id}")
     fun deleteMatch(
         @AuthenticationPrincipal principal: UserPrincipal,
