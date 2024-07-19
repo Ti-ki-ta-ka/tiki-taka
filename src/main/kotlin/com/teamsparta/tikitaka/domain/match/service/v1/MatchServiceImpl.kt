@@ -39,7 +39,6 @@ class MatchServiceImpl(
                 teamId = request.teamId,
                 userId = principal.id,
                 region = request.region,
-                userId = principal.id
             )
         )
         //todo : team 구인공고 상태 변경
