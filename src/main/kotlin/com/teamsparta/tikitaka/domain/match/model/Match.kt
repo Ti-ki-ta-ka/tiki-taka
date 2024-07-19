@@ -31,8 +31,12 @@ class Match(
     var matchStatus: Boolean = false,
 
     @Column(name = "post_team_id", nullable = false)
-    var teamId: Long
-) : BaseEntity() {
+    var teamId: Long,
+
+    @Column(name = "author_id", nullable = false)
+    var authorId: Long,
+
+    ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
@@ -46,7 +50,7 @@ class Match(
         this.matchDate = request.matchDate
         this.location = request.location
         this.content = request.content
-        this.matchStatus = request.matchStatus
+        this.matchStatus = request.matchStatus //todo : version2에서 분리하기.
     }
 
 
@@ -60,6 +64,7 @@ class Match(
             teamId: Long,
             title: String,
             region: Region,
+            authorId: Long,
         ): Match {
             return Match(
                 matchDate = matchDate,
@@ -69,6 +74,7 @@ class Match(
                 teamId = teamId,
                 title = title,
                 region = region,
+                authorId = authorId,
             ).apply {
                 validateTitle(title)
                 validateMatchDate(matchDate)
