@@ -57,6 +57,7 @@ class MatchServiceImpl(
         val match = matchRepository.findByIdOrNull(matchId)
             ?: throw ModelNotFoundException("match", matchId)
 
+
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER")))
             throw AccessDeniedException(
                 "You do not have permission to update."
