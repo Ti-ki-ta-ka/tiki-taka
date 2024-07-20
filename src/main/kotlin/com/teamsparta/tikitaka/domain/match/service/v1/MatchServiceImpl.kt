@@ -2,6 +2,7 @@ package com.teamsparta.tikitaka.domain.match.service.v1
 
 import com.teamsparta.tikitaka.domain.common.Region
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
+import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
 import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
@@ -54,11 +55,13 @@ class MatchServiceImpl(
     ): MatchResponse {
 
         val match = matchRepository.findByIdOrNull(matchId)
-            ?: throw RuntimeException("") //todo : custom exception
+            ?: throw ModelNotFoundException("match", matchId)
 
-        if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
-            "You do not have permission to update."
-        )
+
+        if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER")))
+            throw AccessDeniedException(
+                "You do not have permission to update."
+            )
 
         match.updateMatch(request)
 
@@ -71,7 +74,7 @@ class MatchServiceImpl(
         matchId: Long,
     ): MatchResponse {
         val match = matchRepository.findByIdOrNull(matchId)
-            ?: throw RuntimeException("Match not found") //todo : custom exception
+            ?: throw ModelNotFoundException("match", matchId)
 
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
             "You do not have permission to delete."
@@ -104,7 +107,7 @@ class MatchServiceImpl(
     ): MatchResponse {
         return matchRepository.findByIdOrNull(matchId)
             ?.let { match -> MatchResponse.from(match) }
-            ?: throw RuntimeException("Match not found") //todo : custom exception
+            ?: throw ModelNotFoundException("match", matchId)
     }
 
     override fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse> {
