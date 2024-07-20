@@ -49,7 +49,7 @@ class Match(
         this.matchDate = request.matchDate
         this.location = request.location
         this.content = request.content
-        this.matchStatus = request.matchStatus
+        this.matchStatus = request.matchStatus //todo : version2에서 분리하기.
     }
 
 
