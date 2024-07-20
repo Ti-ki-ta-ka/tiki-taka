@@ -57,7 +57,7 @@ class MatchServiceImpl(
             ?: throw RuntimeException("") //todo : custom exception
 
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
-            "You do not have permission to delete."
+            "You do not have permission to update."
         )
 
         match.updateMatch(request)
