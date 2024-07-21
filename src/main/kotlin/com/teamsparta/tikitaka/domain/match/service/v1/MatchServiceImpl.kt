@@ -9,6 +9,7 @@ import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.Match
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
+import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -21,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class MatchServiceImpl(
     private val matchRepository: MatchRepository,
-
-    ) : MatchService {
+    private val teamRepository: TeamRepository,
+) : MatchService {
 
     @Transactional
     override fun postMatch(
@@ -42,7 +43,12 @@ class MatchServiceImpl(
                 region = request.region,
             )
         )
-        //todo : team 구인공고 상태 변경
+
+        val team = teamRepository.findByIdOrNull(request.teamId)
+            ?: throw ModelNotFoundException("team", request.teamId)
+
+        team.updateTeamStatus()
+
 
         return MatchResponse.from(match)
     }

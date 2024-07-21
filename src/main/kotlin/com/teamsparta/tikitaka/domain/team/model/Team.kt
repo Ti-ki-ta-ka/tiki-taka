@@ -30,7 +30,7 @@ class Team(
     var attendanceScore: Int = 0,
 
     @Column(name = "recruit_status", nullable = false)
-    val recruitStatus: Boolean = false,
+    var recruitStatus: Boolean = false,
 
     @Column(name = "region", nullable = false)
     var region: String
@@ -51,6 +51,9 @@ class Team(
         this.region = region
     }
 
+    fun updateTeamStatus() {
+        this.recruitStatus = true
+    }
 
 }
 
