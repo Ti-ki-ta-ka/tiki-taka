@@ -4,14 +4,8 @@ import com.teamsparta.tikitaka.domain.common.exception.AnyThingNotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.common.util.RedisUtils
-import com.teamsparta.tikitaka.domain.users.dto.LoginRequest
-import com.teamsparta.tikitaka.domain.users.dto.LoginResponse
-import com.teamsparta.tikitaka.domain.users.dto.NameRequest
-import com.teamsparta.tikitaka.domain.users.dto.NameResponse
-import com.teamsparta.tikitaka.domain.users.dto.PasswordRequest
-import com.teamsparta.tikitaka.domain.users.dto.PasswordResponse
-import com.teamsparta.tikitaka.domain.users.dto.SignUpRequest
-import com.teamsparta.tikitaka.domain.users.dto.UserDto
+import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
+import com.teamsparta.tikitaka.domain.users.dto.*
 import com.teamsparta.tikitaka.domain.users.model.Users
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
@@ -26,8 +20,9 @@ import org.springframework.transaction.annotation.Transactional
 class UsersServiceImpl(
     private val usersRepository: UsersRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val teamMemberRepository: TeamMemberRepository,
     private val jwtPlugin: JwtPlugin,
-    private val redisUtils: RedisUtils
+    private val redisUtils: RedisUtils,
 ) : UsersService {
     @Transactional
     override fun signUp(request: SignUpRequest): UserDto {
@@ -57,13 +52,25 @@ class UsersServiceImpl(
         if (!passwordEncoder.matches(request.password, user.password)) {
             throw InvalidCredentialException("비밀번호가 일치하지 않습니다")
         }
+
+
+        val role = when {
+            user.teamStatus -> {
+                val teamMember = teamMemberRepository.findByUserId(user.id!!)
+                teamMember.teamRole.name
+            }
+
+            else -> null
+        }
         val accessToken = jwtPlugin.generateAccessToken(
             subject = user.id.toString(),
-            email = user.email
+            email = user.email,
+            role = role
         )
         val refreshToken = jwtPlugin.generateRefreshToken(
             subject = user.id.toString(),
-            email = user.email
+            email = user.email,
+            role = role
         )
         redisUtils.saveRefreshToken(refreshToken)
         return LoginResponse(accessToken = accessToken, refreshToken = refreshToken)

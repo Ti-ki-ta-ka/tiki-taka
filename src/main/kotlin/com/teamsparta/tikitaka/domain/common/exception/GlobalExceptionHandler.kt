@@ -53,10 +53,10 @@ class GlobalExceptionHandler {
             .body(ErrorResponse(message = e.message))
     }
 
-    @ExceptionHandler(AnyThingNotFoundException::class)
-    fun handleEmailNotFoundException(e: AnyThingNotFoundException): ResponseEntity<ErrorResponse> {
+    @ExceptionHandler(TeamAlreadyAppliedException::class)
+    fun handleTeamAlreadyAppliedException(e: TeamAlreadyAppliedException): ResponseEntity<ErrorResponse> {
         return ResponseEntity
-            .status(HttpStatus.NOT_FOUND)
+            .status(HttpStatus.BAD_REQUEST)
             .body(ErrorResponse(message = e.message))
     }
 }

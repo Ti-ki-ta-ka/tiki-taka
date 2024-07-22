@@ -24,7 +24,7 @@ class Users(
     var createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "deleted_at", nullable = true)
-    var deletedAt: LocalDateTime = LocalDateTime.now(),
+    var deletedAt: LocalDateTime? = null,
 )
 {
     @Id

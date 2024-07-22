@@ -1,6 +1,7 @@
 package com.teamsparta.tikitaka.domain.team.Service.v1
 
 import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
+import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
 
 interface TeamService {
@@ -12,10 +13,15 @@ interface TeamService {
 
     fun deleteTeam(teamId: Long)
 
-    fun getTeams(): List<TeamResponse>
+    fun getTeams(page: Int, size: Int, sortBy: String, direction: String): PageResponse<TeamResponse>
 
     fun getTeam(teamId: Long): TeamResponse
 
-    fun searchTeamListByName(name: String): List<TeamResponse>
-
+    fun searchTeamListByName(
+        page: Int,
+        size: Int,
+        sortBy: String,
+        direction: String,
+        name: String
+    ): PageResponse<TeamResponse>
 }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 @SQLRestriction("deleted_at is null")
 class TeamMember(
     @Column(name = "user_id", nullable = false)
-    val UserId: Long,
+    val userId: Long,
 
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
