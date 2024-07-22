@@ -1,5 +1,6 @@
 package com.teamsparta.tikitaka.domain.team.model
 
+import com.teamsparta.tikitaka.domain.common.Region
 import com.teamsparta.tikitaka.domain.common.baseentity.BaseEntity
 import jakarta.persistence.*
 import org.hibernate.annotations.SQLRestriction
@@ -10,6 +11,9 @@ import org.hibernate.annotations.SQLRestriction
 class Team(
     @Column(name = "name", nullable = false)
     var name: String,
+
+    @Column(name = "user_id", nullable = false)
+    val userId: Long,
 
     @Column(name = "description")
     var description: String,
@@ -32,8 +36,9 @@ class Team(
     @Column(name = "recruit_status", nullable = false)
     var recruitStatus: Boolean = false,
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "region", nullable = false)
-    var region: String
+    var region: Region
 
 ) : BaseEntity() {
     @Id
@@ -44,7 +49,7 @@ class Team(
     fun updateTeam(
         name: String,
         description: String,
-        region: String
+        region: Region
     ) {
         this.name = name
         this.description = description
