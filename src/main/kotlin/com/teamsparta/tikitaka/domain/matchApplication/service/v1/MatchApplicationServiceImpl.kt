@@ -6,6 +6,8 @@ import com.teamsparta.tikitaka.domain.common.exception.TeamAlreadyAppliedExcepti
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplicationRequest
 import com.teamsparta.tikitaka.domain.matchApplication.dto.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.matchApplication.dto.MyApplicationRequest
+import com.teamsparta.tikitaka.domain.matchApplication.dto.MyApplicationsResponse
 import com.teamsparta.tikitaka.domain.matchApplication.dto.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.matchApplication.model.ApproveStatus
 import com.teamsparta.tikitaka.domain.matchApplication.model.MatchApplication
@@ -95,5 +97,12 @@ class MatchApplicationServiceImpl
 
         matchApply.approveStatus = ApproveStatus.fromString(approveStatus)
         return MatchApplicationResponse.from(matchApply)
+    }
+
+    override fun getMyApplications(
+        request: MyApplicationRequest
+    ): List<MyApplicationsResponse> {
+        return matchApplicationRepository.findByApplyTeamId(request.teamId)
+            .map { application -> MyApplicationsResponse.from(application) }
     }
 }

@@ -1,6 +1,8 @@
 package com.teamsparta.tikitaka.domain.users.service.v1
 
+import com.teamsparta.tikitaka.domain.common.exception.AnyThingNotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
+import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.common.util.RedisUtils
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.dto.*
@@ -8,6 +10,7 @@ import com.teamsparta.tikitaka.domain.users.model.Users
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import com.teamsparta.tikitaka.infra.security.jwt.JwtPlugin
+import org.apache.catalina.User
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -45,9 +48,9 @@ class UsersServiceImpl(
     }
 
     override fun logIn(request: LoginRequest): LoginResponse {
-        val user = usersRepository.findByEmail(request.email) ?: throw RuntimeException("email이 없습니다")
+        val user = usersRepository.findByEmail(request.email) ?: throw ModelNotFoundException("Users", null)
         if (!passwordEncoder.matches(request.password, user.password)) {
-            throw RuntimeException("비밀번호가 맞지 않습니다")
+            throw InvalidCredentialException("비밀번호가 일치하지 않습니다")
         }
 
 
@@ -90,12 +93,12 @@ class UsersServiceImpl(
     }
 
     override fun updateName(request: NameRequest, userPrincipal: UserPrincipal): NameResponse {
-        val user = usersRepository.findByIdOrNull(userPrincipal.id) ?: throw RuntimeException("임시")
+        val user = usersRepository.findByIdOrNull(userPrincipal.id) ?: throw ModelNotFoundException("Users",userPrincipal.id)
         if (user.id != userPrincipal.id) {
-            throw RuntimeException("인증되지 않은 사용자")
+            throw InvalidCredentialException("인증되지 않은 사용자입니다")
         }
         if (usersRepository.existsByName(request.name)) {
-            throw RuntimeException("이미 사용하고 있는 이름")
+            throw IllegalArgumentException("이미 사용하고 있는 이름입니다")
         }
         user.updateName(request.name)
         usersRepository.save(user)
@@ -103,13 +106,13 @@ class UsersServiceImpl(
     }
 
     override fun updatePassword(request: PasswordRequest, userPrincipal: UserPrincipal): PasswordResponse {
-        val user = usersRepository.findByIdOrNull(userPrincipal.id) ?: throw RuntimeException("임시")
+        val user = usersRepository.findByIdOrNull(userPrincipal.id) ?: throw ModelNotFoundException("Users",userPrincipal.id)
         if (user.id != userPrincipal.id) {
-            throw RuntimeException("인증되지 않은 사용자")
+            throw InvalidCredentialException("인증되지 않은 사용자입니다")
         }
-        if (usersRepository.existsByPassword(request.password)) {
-            throw RuntimeException("이미 사용하고 있는 패스워드")
-        }
+            if (passwordEncoder.matches(request.password, user.password)) {
+                throw IllegalArgumentException("기존에 사용한 패스워드입니다")
+            }
         Users.validatePassword(request.password)
         user.updatePassword(passwordEncoder.encode(request.password))
         usersRepository.save(user)
