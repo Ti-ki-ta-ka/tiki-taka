@@ -8,6 +8,7 @@ interface MatchApplicationService2 {
 
     fun replyMatchApplication(
         userId: Long,
+        matchId: Long,
         applicationId: Long,
         request: ReplyApplicationRequest
     ): MatchApplicationResponse

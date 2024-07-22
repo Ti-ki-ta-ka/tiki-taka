@@ -58,11 +58,13 @@ class MatchApplicationServiceImpl2
     @Transactional
     override fun replyMatchApplication(
         userId: Long,
+        matchId: Long,
         applicationId: Long,
         request: ReplyApplicationRequest
     ): MatchApplicationResponse {
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val (approveStatus) = request
+        val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("Match", matchId)
         val matchApply = matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
             "MatchApplication",
             applicationId
@@ -72,10 +74,9 @@ class MatchApplicationServiceImpl2
             throw IllegalStateException("Cannot modify application with status CANCELLED")
         }
 
-        val match = matchApply.matchPost
-        val matchUserId = match.userId
+        val matchUserId = matchPost.userId
 
-        val userTeamMember = teamMemberRepository.findByUserIdAndTeamId(userId, match.teamId)
+        val userTeamMember = teamMemberRepository.findByUserIdAndTeamId(userId, matchPost.teamId)
             ?: throw ModelNotFoundException("TeamMember", userId)
 
         if (userId != matchUserId) {
@@ -89,6 +90,11 @@ class MatchApplicationServiceImpl2
         }
 
         matchApply.approveStatus = ApproveStatus.fromString(approveStatus)
+
+        if (matchApply.approveStatus == ApproveStatus.APPROVE) {
+            rejectOtherApplications(matchId, applicationId)
+        }
+
         return MatchApplicationResponse.from(matchApply)
     }
 
@@ -123,6 +129,16 @@ class MatchApplicationServiceImpl2
     private fun validatePermission(principal: UserPrincipal, matchApply: MatchApplication) {
         if (matchApply.applyUserId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) {
             throw AccessDeniedException("You do not have permission to delete.")
+        }
+    }
+
+    private fun rejectOtherApplications(matchId: Long, approvedApplicationId: Long) {
+        val otherApplications =
+            matchApplicationRepository.findByMatchPostIdAndApproveStatus(matchId, ApproveStatus.WAITING)
+        for (application in otherApplications) {
+            if (application.id != approvedApplicationId) {
+                application.approveStatus = ApproveStatus.REJECT
+            }
         }
     }
 }
