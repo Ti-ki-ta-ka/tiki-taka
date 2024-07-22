@@ -2,6 +2,7 @@
 
 package com.teamsparta.tikitaka.domain.matchApplication.repository
 
+import com.querydsl.core.BooleanBuilder
 import com.teamsparta.tikitaka.domain.match.model.QMatch
 import com.teamsparta.tikitaka.domain.matchApplication.model.MatchApplication
 import com.teamsparta.tikitaka.domain.matchApplication.model.QMatchApplication
@@ -24,5 +25,21 @@ class MatchApplicationRepositoryImpl : CustomMatchApplicationRepository, QueryDs
                     .and(qMatch.matchDate.dayOfMonth().eq(matchDate.dayOfMonth))
             )
             .fetch()
+    }
+
+    override fun findByApplyTeamId(applyTeamId: Long): List<MatchApplication> {
+
+        val whereClause = BooleanBuilder()
+        applyTeamId.let { whereClause.and(qMatchApplication.applyTeamId.eq(applyTeamId)) }
+
+        val content = queryFactory
+            .selectFrom(qMatchApplication)
+            .leftJoin(qMatchApplication.matchPost, qMatch)
+            .fetchJoin()
+            .where(whereClause)
+            .orderBy(qMatchApplication.applyTeamId.desc())
+            .fetch()
+
+        return content
     }
 }
