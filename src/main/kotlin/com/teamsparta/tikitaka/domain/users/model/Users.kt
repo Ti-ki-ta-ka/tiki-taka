@@ -1,7 +1,7 @@
 package com.teamsparta.tikitaka.domain.users.model
 
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.persistence.*
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken

@@ -1,4 +1,4 @@
-package com.teamsparta.tikitaka.domain.matchApplication.model
+package com.teamsparta.tikitaka.domain.match.model.matchapplication
 
 enum class ApproveStatus {
     WAITING, APPROVE, REJECT, CANCELLED;

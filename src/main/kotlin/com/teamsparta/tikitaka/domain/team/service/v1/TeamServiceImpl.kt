@@ -1,13 +1,12 @@
-package com.teamsparta.tikitaka.domain.team.Service.v1
+package com.teamsparta.tikitaka.domain.team.service.v1
 
-import com.teamsparta.tikitaka.domain.common.baseentity.exception.NotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.request.toEntity
 import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamMember
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamMember
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
@@ -80,8 +79,8 @@ class TeamServiceImpl(
         request: TeamRequest,
         teamId: Long
     ): TeamResponse {
-        val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
-        val user = teamMemberRepository.findByIdOrNull(userId) ?: throw NotFoundException("user", userId)
+        val team = teamRepository.findByIdOrNull(teamId) ?: throw ModelNotFoundException("team", teamId)
+        val user = teamMemberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("user", userId)
 
         if (user.team != team) throw IllegalStateException("팀 수정 권한이 없습니다.")
 
@@ -94,8 +93,8 @@ class TeamServiceImpl(
         userId: Long,
         teamId: Long
     ) {
-        val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
-        val teamMember = teamMemberRepository.findByIdOrNull(userId) ?: throw NotFoundException("user", userId)
+        val team = teamRepository.findByIdOrNull(teamId) ?: throw ModelNotFoundException("team", teamId)
+        val teamMember = teamMemberRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("user", userId)
         val user = usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("user", userId)
         if (teamMember.team != team) throw IllegalStateException("팀 삭제 권한이 없습니다.")
         user.teamStatus = false
@@ -119,11 +118,10 @@ class TeamServiceImpl(
         )
     }
 
-
     override fun getTeam(
         teamId: Long
     ): TeamResponse {
-        val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
+        val team = teamRepository.findByIdOrNull(teamId) ?: throw ModelNotFoundException("team", teamId)
         return TeamResponse.from(team)
     }
 

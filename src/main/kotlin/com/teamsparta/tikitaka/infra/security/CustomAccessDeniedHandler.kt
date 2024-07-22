@@ -1,7 +1,7 @@
 package com.teamsparta.tikitaka.infra.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.teamsparta.tikitaka.domain.common.baseentity.ErrorResponse
+import com.teamsparta.tikitaka.domain.common.exception.dto.ErrorResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
@@ -15,8 +15,7 @@ class CustomAccessDeniedHandler : AccessDeniedHandler {
         request: HttpServletRequest,
         response: HttpServletResponse,
         accessDeniedException: AccessDeniedException
-    )
-    {
+    ) {
         response.status = HttpServletResponse.SC_FORBIDDEN
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.characterEncoding = "UTF-8"

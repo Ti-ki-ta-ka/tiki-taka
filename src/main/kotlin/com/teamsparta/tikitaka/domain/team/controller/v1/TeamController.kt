@@ -1,11 +1,11 @@
 package com.teamsparta.tikitaka.domain.team.controller.v1
 
 
-import com.teamsparta.tikitaka.domain.team.Service.v1.TeamService
 import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
+import com.teamsparta.tikitaka.domain.team.service.v1.TeamService
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.http.HttpStatus
@@ -19,7 +19,7 @@ class TeamController(
     private val teamService: TeamService,
     private val preAuthorize: CustomPreAuthorize
 ) {
-    @GetMapping("/search")
+    @GetMapping("/searches")
     fun searchTeams(
         @RequestParam("region", required = false) region: String?,
         @RequestParam("page", defaultValue = "0") page: Int,
@@ -44,7 +44,7 @@ class TeamController(
     @PutMapping("/{team-id}")
     fun updateTeam(
         @AuthenticationPrincipal principal: UserPrincipal,
-        @PathVariable("team-id") teamId: Long,
+        @PathVariable(name = "team-id") teamId: Long,
         @RequestBody request: TeamRequest
     ): ResponseEntity<TeamResponse> {
         return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
@@ -55,7 +55,7 @@ class TeamController(
     @DeleteMapping("/{team-id}")
     fun deleteTeam(
         @AuthenticationPrincipal principal: UserPrincipal,
-        @PathVariable("team-id") teamId: Long
+        @PathVariable(name = "team-id") teamId: Long
     ): ResponseEntity<Unit> {
         preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
             teamService.deleteTeam(principal.id, teamId)
@@ -78,7 +78,7 @@ class TeamController(
 
     @GetMapping("/{team-id}")
     fun getTeam(
-        @PathVariable("team-id") teamId: Long
+        @PathVariable(name = "team-id") teamId: Long
     ): ResponseEntity<TeamResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(teamService.getTeam(teamId))
     }

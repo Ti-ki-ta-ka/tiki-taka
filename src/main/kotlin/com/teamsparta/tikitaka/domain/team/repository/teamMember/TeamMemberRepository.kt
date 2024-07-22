@@ -1,6 +1,6 @@
 package com.teamsparta.tikitaka.domain.team.repository.teamMember
 
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamMember
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamMember
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface TeamMemberRepository : JpaRepository<TeamMember, Long> {

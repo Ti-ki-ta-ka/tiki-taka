@@ -1,18 +1,14 @@
-package com.teamsparta.tikitaka.domain.matchApplication.service.v1
+package com.teamsparta.tikitaka.domain.match.service.v1.matchapplication
 
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.TeamAlreadyAppliedException
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
+import com.teamsparta.tikitaka.domain.match.model.matchapplication.ApproveStatus
+import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
-import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplicationRequest
-import com.teamsparta.tikitaka.domain.matchApplication.dto.MatchApplicationResponse
-import com.teamsparta.tikitaka.domain.matchApplication.dto.MyApplicationRequest
-import com.teamsparta.tikitaka.domain.matchApplication.dto.MyApplicationsResponse
-import com.teamsparta.tikitaka.domain.matchApplication.dto.ReplyApplicationRequest
-import com.teamsparta.tikitaka.domain.matchApplication.model.ApproveStatus
-import com.teamsparta.tikitaka.domain.matchApplication.model.MatchApplication
-import com.teamsparta.tikitaka.domain.matchApplication.repository.MatchApplicationRepository
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.match.repository.matchapplication.MatchApplicationRepository
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal

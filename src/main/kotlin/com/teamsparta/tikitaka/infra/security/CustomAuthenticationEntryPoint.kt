@@ -1,7 +1,7 @@
 package com.teamsparta.tikitaka.infra.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.teamsparta.tikitaka.domain.common.baseentity.ErrorResponse
+import com.teamsparta.tikitaka.domain.common.exception.dto.ErrorResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
