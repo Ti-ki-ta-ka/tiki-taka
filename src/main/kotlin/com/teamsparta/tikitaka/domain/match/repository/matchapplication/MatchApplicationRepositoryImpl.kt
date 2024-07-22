@@ -5,7 +5,7 @@ package com.teamsparta.tikitaka.domain.match.repository.matchapplication
 import com.querydsl.core.BooleanBuilder
 import com.teamsparta.tikitaka.domain.match.model.QMatch
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
-import com.teamsparta.tikitaka.domain.matchApplication.model.QMatchApplication
+import com.teamsparta.tikitaka.domain.match.model.matchapplication.QMatchApplication
 import com.teamsparta.tikitaka.infra.querydsl.QueryDslSupport
 import java.time.LocalDate
 
