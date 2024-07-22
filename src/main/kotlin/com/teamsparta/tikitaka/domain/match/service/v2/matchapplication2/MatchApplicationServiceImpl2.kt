@@ -34,7 +34,6 @@ class MatchApplicationServiceImpl2
         val (teamId) = request
 
         validateMatchAvailability(matchPost, teamId)
-
         validateExistingApplications(teamId, matchId, matchPost.matchDate.toLocalDate())
 
         val newApplication = MatchApplication.of(matchPost, teamId, userId)
@@ -44,17 +43,16 @@ class MatchApplicationServiceImpl2
 
     @Transactional
     override fun deleteMatchApplication(principal: UserPrincipal, applicationId: Long) {
+        val matchApply = matchApplicationRepository.findByIdOrNull(applicationId)
+            ?: throw ModelNotFoundException("match", applicationId)
 
-        val matchApply = matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
-            "match",
-            applicationId
-        )
-        if (matchApply.applyUserId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
-            "You do not have permission to delete."
-        )
+        validatePermission(principal, matchApply)
+        if (matchApply.approveStatus == ApproveStatus.REJECT || matchApply.approveStatus == ApproveStatus.APPROVE) {
+            throw IllegalStateException("You cannot cancel an application that has already been approved or rejected.")
+        }
+
         matchApply.delete()
         matchApply.approveStatus = ApproveStatus.CANCELLED
-
     }
 
     @Transactional
@@ -122,5 +120,10 @@ class MatchApplicationServiceImpl2
         }
     }
 
+    private fun validatePermission(principal: UserPrincipal, matchApply: MatchApplication) {
+        if (matchApply.applyUserId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) {
+            throw AccessDeniedException("You do not have permission to delete.")
+        }
+    }
 }
 
