@@ -4,6 +4,7 @@ import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.TeamAlreadyAppliedException
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
+import com.teamsparta.tikitaka.domain.match.model.Match
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.ApproveStatus
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
@@ -16,6 +17,7 @@ import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class MatchApplicationServiceImpl2
@@ -31,24 +33,9 @@ class MatchApplicationServiceImpl2
         val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("Match", matchId)
         val (teamId) = request
 
-        if (matchPost.matchStatus) {
-            throw IllegalStateException("This match is already closed for applications.")
-        }
+        validateMatchAvailability(matchPost, teamId)
 
-        if (matchPost.teamId == teamId) {
-            throw IllegalArgumentException("Team cannot apply to a match posted by itself.")
-        }
-
-        val sameTeamApplications = matchApplicationRepository.findByApplyTeamIdAndMatchPostId(teamId, matchId)
-        if (sameTeamApplications.any { it.approveStatus == ApproveStatus.WAITING || it.approveStatus == ApproveStatus.APPROVE }) {
-            throw TeamAlreadyAppliedException("You cannot reapply to a match that already has an active or approved application from your team.")
-        }
-
-        val matchDate = matchPost.matchDate.toLocalDate()
-        val existingApplications = matchApplicationRepository.findByTeamIdAndMatchDate(teamId, matchDate)
-        if (existingApplications.any { it.approveStatus == ApproveStatus.WAITING || it.approveStatus == ApproveStatus.APPROVE }) {
-            throw TeamAlreadyAppliedException("Your team already has a pending or approved application for the same match date.")
-        }
+        validateExistingApplications(teamId, matchId, matchPost.matchDate.toLocalDate())
 
         val newApplication = MatchApplication.of(matchPost, teamId, userId)
         return MatchApplicationResponse.from(matchApplicationRepository.save(newApplication))
@@ -113,4 +100,27 @@ class MatchApplicationServiceImpl2
         return matchApplicationRepository.findByApplyTeamId(request.teamId)
             .map { application -> MyApplicationsResponse.from(application) }
     }
+
+    private fun validateMatchAvailability(matchPost: Match, teamId: Long) {
+        if (matchPost.matchStatus) {
+            throw IllegalStateException("This match is already closed for applications.")
+        }
+        if (matchPost.teamId == teamId) {
+            throw IllegalArgumentException("Team cannot apply to its own posted match.")
+        }
+    }
+
+    private fun validateExistingApplications(teamId: Long, matchId: Long, matchDate: LocalDate) {
+        val sameTeamApplications = matchApplicationRepository.findByApplyTeamIdAndMatchPostId(teamId, matchId)
+        val dateApplications = matchApplicationRepository.findByTeamIdAndMatchDate(teamId, matchDate)
+
+        if (sameTeamApplications.any { it.approveStatus == ApproveStatus.WAITING || it.approveStatus == ApproveStatus.APPROVE }) {
+            throw TeamAlreadyAppliedException("Your team already has a pending or approved application for this match.")
+        }
+        if (dateApplications.any { it.approveStatus == ApproveStatus.WAITING || it.approveStatus == ApproveStatus.APPROVE }) {
+            throw TeamAlreadyAppliedException("Your team already has a pending or approved application for the same date.")
+        }
+    }
+
 }
+
