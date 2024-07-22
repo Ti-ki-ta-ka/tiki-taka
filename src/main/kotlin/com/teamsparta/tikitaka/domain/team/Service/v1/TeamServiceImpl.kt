@@ -1,6 +1,6 @@
 package com.teamsparta.tikitaka.domain.team.Service.v1
 
-import com.teamsparta.tikitaka.domain.common.baseentity.exception.NotFoundException
+import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.request.toEntity
 import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
@@ -53,7 +53,7 @@ class TeamServiceImpl(
         request: TeamRequest,
         teamId: Long
     ): TeamResponse {
-        val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
+        val team = teamRepository.findByIdOrNull(teamId) ?: throw ModelNotFoundException("team", teamId)
         team.updateTeam(request.name, request.description, request.region)
         return TeamResponse.from(team)
     }
@@ -62,7 +62,7 @@ class TeamServiceImpl(
     override fun deleteTeam(
         teamId: Long
     ) {
-        val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
+        val team = teamRepository.findByIdOrNull(teamId) ?: throw ModelNotFoundException("team", teamId)
         team.softDelete()
     }
 
@@ -85,7 +85,7 @@ class TeamServiceImpl(
     override fun getTeam(
         teamId: Long
     ): TeamResponse {
-        val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
+        val team = teamRepository.findByIdOrNull(teamId) ?: throw ModelNotFoundException("team", teamId)
         return TeamResponse.from(team)
     }
 
