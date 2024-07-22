@@ -5,6 +5,8 @@ import com.teamsparta.tikitaka.domain.team.Service.v1.TeamService
 import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
+import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,7 +16,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/teams")
 @RestController
 class TeamController(
-    private val teamService: TeamService
+    private val teamService: TeamService,
+    private val preAuthorize: CustomPreAuthorize
 ) {
     @GetMapping("/search")
     fun searchTeams(
@@ -44,7 +47,9 @@ class TeamController(
         @PathVariable("team-id") teamId: Long,
         @RequestBody request: TeamRequest
     ): ResponseEntity<TeamResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(teamService.updateTeam(principal.id, request, teamId))
+        return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
+            ResponseEntity.status(HttpStatus.OK).body(teamService.updateTeam(principal.id, request, teamId))
+        }
     }
 
     @DeleteMapping("/{team-id}")
@@ -52,8 +57,11 @@ class TeamController(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable("team-id") teamId: Long
     ): ResponseEntity<Unit> {
-        teamService.deleteTeam(principal.id, teamId)
+        preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
+            teamService.deleteTeam(principal.id, teamId)
+        }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+
     }
 
     @GetMapping

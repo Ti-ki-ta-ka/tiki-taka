@@ -16,9 +16,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -60,14 +57,7 @@ class TeamServiceImpl(
         if (user.teamStatus) throw IllegalStateException("유저는 하나의 팀에 소속될 수 있습니다.")
         user.teamStatus = true
 
-        val updatedUserPrincipal = UserPrincipal(
-            principal.id,
-            principal.name,
-            principal.authorities + SimpleGrantedAuthority("ROLE_${TeamRole.LEADER}")
-        )
-        val authentication =
-            UsernamePasswordAuthenticationToken(updatedUserPrincipal, null, updatedUserPrincipal.authorities)
-        SecurityContextHolder.getContext().authentication = authentication
+        user.updateUserRole(principal, TeamRole.LEADER)
 
         val team = request.toEntity(principal.id)
         return TeamResponse.from(teamRepository.save(team))
@@ -93,7 +83,7 @@ class TeamServiceImpl(
         val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
         val user = teamMemberRepository.findByIdOrNull(userId) ?: throw NotFoundException("user", userId)
 
-        if (user.teamRole != TeamRole.LEADER && user.team != team) throw IllegalStateException("팀 수정 권한이 없습니다.")
+        if (user.team != team) throw IllegalStateException("팀 수정 권한이 없습니다.")
 
         team.updateTeam(request.name, request.description, request.region)
         return TeamResponse.from(team)
@@ -107,7 +97,7 @@ class TeamServiceImpl(
         val team = teamRepository.findByIdOrNull(teamId) ?: throw NotFoundException("team", teamId)
         val teamMember = teamMemberRepository.findByIdOrNull(userId) ?: throw NotFoundException("user", userId)
         val user = usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("user", userId)
-        if (teamMember.teamRole != TeamRole.LEADER && teamMember.team != team) throw IllegalStateException("팀 삭제 권한이 없습니다.")
+        if (teamMember.team != team) throw IllegalStateException("팀 삭제 권한이 없습니다.")
         user.teamStatus = false
         team.softDelete()
     }

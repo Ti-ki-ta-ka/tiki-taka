@@ -1,7 +1,12 @@
 package com.teamsparta.tikitaka.domain.users.model
 
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
+import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.persistence.*
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import java.time.LocalDateTime
 import java.util.regex.Pattern
 
@@ -64,5 +69,16 @@ class Users(
                 throw InvalidCredentialException("이메일은 영어 소문자와 숫자 및 @로 구성되어야합니다.")
             }
         }
+    }
+
+    fun updateUserRole(principal: UserPrincipal, role: TeamRole) {
+        val updatedUserPrincipal = UserPrincipal(
+            principal.id,
+            principal.name,
+            principal.authorities + SimpleGrantedAuthority("ROLE_${role}")
+        )
+        val authentication =
+            UsernamePasswordAuthenticationToken(updatedUserPrincipal, null, updatedUserPrincipal.authorities)
+        SecurityContextHolder.getContext().authentication = authentication
     }
 }
