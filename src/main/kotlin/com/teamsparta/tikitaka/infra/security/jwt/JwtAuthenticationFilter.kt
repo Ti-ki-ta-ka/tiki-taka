@@ -1,6 +1,6 @@
 package com.teamsparta.tikitaka.infra.security.jwt
 
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.users.service.v1.UsersServiceImpl
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.servlet.FilterChain

@@ -1,4 +1,4 @@
-package com.teamsparta.tikitaka.domain.team.Service.v1
+package com.teamsparta.tikitaka.domain.team.service.v1
 
 import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse

@@ -1,7 +1,7 @@
 package com.teamsparta.tikitaka.infra.security.jwt
 
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.users.dto.LoginResponse
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws

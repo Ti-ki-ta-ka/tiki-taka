@@ -1,4 +1,4 @@
-package com.teamsparta.tikitaka.domain.team.model.teamMember
+package com.teamsparta.tikitaka.domain.team.model.teammember
 
 import com.teamsparta.tikitaka.domain.team.model.Team
 import jakarta.persistence.*

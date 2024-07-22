@@ -1,12 +1,12 @@
-package com.teamsparta.tikitaka.domain.team.Service.v1
+package com.teamsparta.tikitaka.domain.team.service.v1
 
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.team.dto.request.TeamRequest
 import com.teamsparta.tikitaka.domain.team.dto.request.toEntity
 import com.teamsparta.tikitaka.domain.team.dto.response.PageResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamMember
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamMember
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository

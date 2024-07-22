@@ -1,4 +1,4 @@
-package com.teamsparta.tikitaka.domain.team.model.teamMember
+package com.teamsparta.tikitaka.domain.team.model.teammember
 
 enum class TeamRole {
     LEADER, SUB_LEADER, MEMBER;

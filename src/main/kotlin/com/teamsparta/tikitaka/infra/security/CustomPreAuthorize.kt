@@ -1,7 +1,7 @@
 package com.teamsparta.tikitaka.infra.security
 
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
 

@@ -2,7 +2,7 @@ package com.teamsparta.tikitaka.domain.match.controller.v1.matchapplication
 
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
 import com.teamsparta.tikitaka.domain.match.service.v1.matchapplication.MatchApplicationService
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.http.HttpStatus
@@ -16,10 +16,10 @@ class MatchApplicationController(
     private val matchApplicationService: MatchApplicationService,
     private val preAuthorize: CustomPreAuthorize,
 ) {
-    @PostMapping("/{matchId}/match-applications")
+    @PostMapping("/{match-id}/match-applications")
     fun applyMatch(
         @AuthenticationPrincipal principal: UserPrincipal,
-        @PathVariable matchId: Long,
+        @PathVariable(name = "match-id") matchId: Long,
         @RequestBody request: CreateApplicationRequest
     ): ResponseEntity<MatchApplicationResponse> {
         return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER, TeamRole.SUB_LEADER)) {
@@ -28,19 +28,19 @@ class MatchApplicationController(
         }
     }
 
-    @DeleteMapping("/{matchId}/match-applications/{applicationId}")
+    @DeleteMapping("/{match-id}/match-applications/{application-id}")
     fun deleteMatchApplication(
         @AuthenticationPrincipal principal: UserPrincipal,
-        @PathVariable applicationId: Long,
+        @PathVariable(name = "application-id") applicationId: Long,
     ): ResponseEntity<Unit> {
         matchApplicationService.deleteMatchApplication(principal, applicationId)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
-    @PatchMapping("/{matchId}/match-applications/{applicationId}")
+    @PatchMapping("/{match-id}/match-applications/{application-id}")
     fun replyMatchApplication(
         @AuthenticationPrincipal principal: UserPrincipal,
-        @PathVariable applicationId: Long,
+        @PathVariable(name = "application-id") applicationId: Long,
         @RequestBody request: ReplyApplicationRequest
     ): ResponseEntity<MatchApplicationResponse> {
         return ResponseEntity.status(HttpStatus.OK)

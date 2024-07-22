@@ -8,7 +8,7 @@ import com.teamsparta.tikitaka.domain.match.model.matchapplication.ApproveStatus
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import com.teamsparta.tikitaka.domain.match.repository.matchapplication.MatchApplicationRepository
-import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
