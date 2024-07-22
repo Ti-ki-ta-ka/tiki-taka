@@ -34,7 +34,7 @@ class Team(
     var attendanceScore: Int = 0,
 
     @Column(name = "recruit_status", nullable = false)
-    val recruitStatus: Boolean = false,
+    var recruitStatus: Boolean = false,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "region", nullable = false)
@@ -56,6 +56,9 @@ class Team(
         this.region = region
     }
 
+    fun updateTeamStatus() {
+        this.recruitStatus = true
+    }
 
 }
 
