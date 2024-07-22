@@ -1,7 +1,12 @@
 package com.teamsparta.tikitaka.domain.users.model
 
 import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialException
+import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
+import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.persistence.*
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import java.time.LocalDateTime
 import java.util.regex.Pattern
 
@@ -18,15 +23,14 @@ class Users(
     var name: String,
 
     @Column(name = "team_status")
-    val teamStatus: Boolean = false,
+    var teamStatus: Boolean = false,
 
     @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
 
     @Column(name = "deleted_at", nullable = true)
     var deletedAt: LocalDateTime? = null,
-)
-{
+) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
@@ -51,7 +55,11 @@ class Users(
             if (newPassword.length !in 8..15) {
                 throw InvalidCredentialException("비밀번호는 최소 8자 이상, 15자 이하여야만 합니다.")
             }
-            if (!Pattern.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,15}$", newPassword)) {
+            if (!Pattern.matches(
+                    "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,15}$",
+                    newPassword
+                )
+            ) {
                 throw InvalidCredentialException("비밀번호는 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자가 포함되어야 합니다.")
             }
         }
@@ -61,5 +69,16 @@ class Users(
                 throw InvalidCredentialException("이메일은 영어 소문자와 숫자 및 @로 구성되어야합니다.")
             }
         }
+    }
+
+    fun updateUserRole(principal: UserPrincipal, role: TeamRole) {
+        val updatedUserPrincipal = UserPrincipal(
+            principal.id,
+            principal.name,
+            principal.authorities + SimpleGrantedAuthority("ROLE_${role}")
+        )
+        val authentication =
+            UsernamePasswordAuthenticationToken(updatedUserPrincipal, null, updatedUserPrincipal.authorities)
+        SecurityContextHolder.getContext().authentication = authentication
     }
 }

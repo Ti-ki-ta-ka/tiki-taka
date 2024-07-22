@@ -13,5 +13,5 @@ data class UserPrincipal(
         id: Long,
         name: String,
         role: TeamRole?,
-    ) : this(id, name, if (role == null) emptySet<GrantedAuthority>() else setOf(SimpleGrantedAuthority("ROLE_$role")))
+    ) : this(id, name, role?.let { setOf(SimpleGrantedAuthority("ROLE_$it")) } ?: emptySet<GrantedAuthority>())
 }
