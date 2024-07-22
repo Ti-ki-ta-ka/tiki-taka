@@ -1,11 +1,7 @@
-package com.teamsparta.tikitaka.domain.matchApplication.controller.v1
+package com.teamsparta.tikitaka.domain.match.controller.v1.matchapplication
 
-import com.teamsparta.tikitaka.domain.matchApplication.dto.CreateApplicationRequest
-import com.teamsparta.tikitaka.domain.matchApplication.dto.MatchApplicationResponse
-import com.teamsparta.tikitaka.domain.matchApplication.dto.MyApplicationRequest
-import com.teamsparta.tikitaka.domain.matchApplication.dto.MyApplicationsResponse
-import com.teamsparta.tikitaka.domain.matchApplication.dto.ReplyApplicationRequest
-import com.teamsparta.tikitaka.domain.matchApplication.service.v1.MatchApplicationService
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
+import com.teamsparta.tikitaka.domain.match.service.v1.matchapplication.MatchApplicationService
 import com.teamsparta.tikitaka.domain.team.model.teamMember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
 import com.teamsparta.tikitaka.infra.security.UserPrincipal

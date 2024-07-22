@@ -1,7 +1,7 @@
-package com.teamsparta.tikitaka.domain.matchApplication.dto
+package com.teamsparta.tikitaka.domain.match.dto.matchapplication
 
 import com.teamsparta.tikitaka.domain.match.model.Match
-import com.teamsparta.tikitaka.domain.matchApplication.model.MatchApplication
+import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
 
 data class MatchApplicationResponse(
     val id: Long,

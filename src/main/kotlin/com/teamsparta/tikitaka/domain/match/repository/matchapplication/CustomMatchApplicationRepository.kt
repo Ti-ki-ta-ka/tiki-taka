@@ -1,6 +1,6 @@
-package com.teamsparta.tikitaka.domain.matchApplication.repository
+package com.teamsparta.tikitaka.domain.match.repository.matchapplication
 
-import com.teamsparta.tikitaka.domain.matchApplication.model.MatchApplication
+import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
 import java.time.LocalDate
 
 interface CustomMatchApplicationRepository {

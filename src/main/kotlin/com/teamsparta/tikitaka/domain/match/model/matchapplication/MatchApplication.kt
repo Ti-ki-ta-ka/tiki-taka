@@ -1,4 +1,4 @@
-package com.teamsparta.tikitaka.domain.matchApplication.model
+package com.teamsparta.tikitaka.domain.match.model.matchapplication
 
 import com.teamsparta.tikitaka.domain.match.model.Match
 import jakarta.persistence.*
