@@ -31,7 +31,7 @@ class LeaderTeamServiceImpl(
                 if (teamMember.teamRole == TeamRole.MEMBER) {
                     teamMember.teamRole = TeamRole.SUB_LEADER
                 } else {
-                    throw IllegalArgumentException(" 이미 SUB-LEADER 입니다! ")
+                    throw IllegalArgumentException(" The team member is already a sub-leader ")
                 }
             }
 
@@ -39,7 +39,7 @@ class LeaderTeamServiceImpl(
                 if (teamMember.teamRole == TeamRole.SUB_LEADER) {
                     teamMember.teamRole = TeamRole.MEMBER
                 } else {
-                    throw IllegalArgumentException(" 이미 MEMBER 입니다! ")
+                    throw IllegalArgumentException(" The team member is already a member ")
                 }
             }
 
