@@ -10,5 +10,6 @@ interface LeaderRecruitmentService {
     fun postRecruitment(principal: UserPrincipal, request: PostRecruitmentRequest): PostRecruitmentResponse
     fun updateRecruitmentPost(userId: Long, recruitmentId: Long, request: UpdateRecruitmentRequest): RecruitmentResponse
     fun closeRecruitmentPost(userId: Long, recruitmentId: Long): RecruitmentResponse
+    fun deleteRecruitmentPost(userId: Long, recruitmentId: Long)
 
 }

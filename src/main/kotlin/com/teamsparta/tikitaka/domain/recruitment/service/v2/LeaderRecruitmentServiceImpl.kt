@@ -81,4 +81,16 @@ class LeaderRecruitmentServiceImpl(
         recruitmentPost.closingStatus = true
         return RecruitmentResponse.from(recruitmentPost)
     }
+
+    @Transactional
+    override fun deleteRecruitmentPost(userId: Long, recruitmentId: Long) {
+        val recruitmentPost = recruitmentRepository.findByIdOrNull(recruitmentId) ?: throw ModelNotFoundException(
+            "recruitment",
+            recruitmentId
+        )
+        if (recruitmentPost.userId != userId) {
+            throw AccessDeniedException("You can only modify recruitment posted by your own team.")
+        }
+        recruitmentPost.softDelete()
+    }
 }
