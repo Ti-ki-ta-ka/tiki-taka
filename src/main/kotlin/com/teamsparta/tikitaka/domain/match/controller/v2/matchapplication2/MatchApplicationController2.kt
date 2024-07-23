@@ -1,7 +1,6 @@
 package com.teamsparta.tikitaka.domain.match.controller.v2.matchapplication2
 
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
-import com.teamsparta.tikitaka.domain.match.service.v1.matchapplication.MatchApplicationService
 import com.teamsparta.tikitaka.domain.match.service.v2.matchapplication2.MatchApplicationService2
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
@@ -30,22 +29,24 @@ class MatchApplicationController2(
     }
 
     @DeleteMapping("/{match-id}/match-applications/{application-id}")
-    fun deleteMatchApplication(
+    fun cancelMatchApplication(
         @AuthenticationPrincipal principal: UserPrincipal,
+        @PathVariable(name = "match-id") matchId: Long,
         @PathVariable(name = "application-id") applicationId: Long,
     ): ResponseEntity<Unit> {
-        matchApplicationService.deleteMatchApplication(principal, applicationId)
+        matchApplicationService.cancelMatchApplication(principal, matchId, applicationId)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
     @PatchMapping("/{match-id}/match-applications/{application-id}")
     fun replyMatchApplication(
         @AuthenticationPrincipal principal: UserPrincipal,
+        @PathVariable(name = "match-id") matchId: Long,
         @PathVariable(name = "application-id") applicationId: Long,
         @RequestBody request: ReplyApplicationRequest
     ): ResponseEntity<MatchApplicationResponse> {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(matchApplicationService.replyMatchApplication(principal.id, applicationId, request))
+            .body(matchApplicationService.replyMatchApplication(principal.id, matchId, applicationId, request))
     }
 
     @GetMapping("/match-applications/my-applications")
