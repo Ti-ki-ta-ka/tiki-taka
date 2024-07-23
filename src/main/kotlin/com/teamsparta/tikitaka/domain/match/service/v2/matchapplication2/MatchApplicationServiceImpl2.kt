@@ -20,19 +20,18 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class MatchApplicationServiceImpl2
-    (
+class MatchApplicationServiceImpl2(
     private val matchApplicationRepository: MatchApplicationRepository,
     private val matchRepository: MatchRepository,
     private val usersRepository: UsersRepository,
     private val teamMemberRepository: TeamMemberRepository
 ) : MatchApplicationService2 {
+
     @Transactional
     override fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse {
-        usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
-        val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("Match", matchId)
+        val user = findUserById(userId)
+        val matchPost = findMatchById(matchId)
         val (teamId) = request
-
         validateMatchAvailability(matchPost, teamId)
         validateExistingApplications(teamId, matchId, matchPost.matchDate.toLocalDate())
 
@@ -40,14 +39,12 @@ class MatchApplicationServiceImpl2
         return MatchApplicationResponse.from(matchApplicationRepository.save(newApplication))
     }
 
-
     @Transactional
     override fun cancelMatchApplication(principal: UserPrincipal, matchId: Long, applicationId: Long) {
-        matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("Match", matchId)
-        val matchApply = matchApplicationRepository.findByIdOrNull(applicationId)
-            ?: throw ModelNotFoundException("match", applicationId)
-
+        findMatchById(matchId)
+        val matchApply = findApplicationById(applicationId)
         validatePermission(principal, matchApply)
+        validateCancelable(matchApply)
 
         matchApply.approveStatus = ApproveStatus.CANCELLED
     }
@@ -61,17 +58,14 @@ class MatchApplicationServiceImpl2
     ): MatchApplicationResponse {
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val (approveStatus) = request
-        val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("Match", matchId)
-        val matchApply = matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
-            "MatchApplication",
-            applicationId
-        )
+        val matchPost = findMatchById(matchId)
+        val matchApply = findApplicationById(applicationId)
+
+        val matchUserId = matchPost.userId
 
         if (matchApply.approveStatus == ApproveStatus.CANCELLED) {
             throw IllegalStateException("Cannot modify application with status CANCELLED")
         }
-
-        val matchUserId = matchPost.userId
 
         val userTeamMember = teamMemberRepository.findByUserIdAndTeamId(userId, matchPost.teamId)
             ?: throw ModelNotFoundException("TeamMember", userId)
@@ -90,18 +84,28 @@ class MatchApplicationServiceImpl2
 
         if (matchApply.approveStatus == ApproveStatus.APPROVE) {
             rejectOtherApplications(matchId, applicationId)
+            matchPost.matchStatus = true
         }
 
-        matchPost.matchStatus = true
         return MatchApplicationResponse.from(matchApply)
     }
 
-    override fun getMyApplications(
-        request: MyApplicationRequest
-    ): List<MyApplicationsResponse> {
+    override fun getMyApplications(request: MyApplicationRequest): List<MyApplicationsResponse> {
         return matchApplicationRepository.findByApplyTeamId(request.teamId)
             .map { application -> MyApplicationsResponse.from(application) }
     }
+
+    private fun findUserById(userId: Long) =
+        usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
+
+    private fun findMatchById(matchId: Long) =
+        matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("Match", matchId)
+
+    private fun findApplicationById(applicationId: Long) =
+        matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
+            "MatchApplication",
+            applicationId
+        )
 
     private fun validateMatchAvailability(matchPost: Match, teamId: Long) {
         if (matchPost.matchStatus) {
@@ -124,14 +128,17 @@ class MatchApplicationServiceImpl2
         }
     }
 
-    private fun validatePermission(principal: UserPrincipal, matchApply: MatchApplication) {
-        if (matchApply.applyUserId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) {
-            throw AccessDeniedException("You do not have permission to delete.")
-        }
+    private fun validateCancelable(matchApply: MatchApplication) {
         when (matchApply.approveStatus) {
             ApproveStatus.REJECT, ApproveStatus.APPROVE -> throw IllegalStateException("You cannot cancel an application that has already been approved or rejected.")
             ApproveStatus.CANCELLED -> throw IllegalStateException("You already canceled this application.")
             else -> {}
+        }
+    }
+
+    private fun validatePermission(principal: UserPrincipal, matchApply: MatchApplication) {
+        if (matchApply.applyUserId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) {
+            throw AccessDeniedException("You do not have permission to cancel.")
         }
     }
 
@@ -144,5 +151,5 @@ class MatchApplicationServiceImpl2
             }
         }
     }
-}
 
+}
