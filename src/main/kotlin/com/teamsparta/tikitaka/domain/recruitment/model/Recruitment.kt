@@ -31,4 +31,28 @@ class Recruitment(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    //todo : updateMatch
+
+    companion object {
+        fun of(
+            teamId: Long,
+            userId: Long,
+            recruitType: RecruitType,
+            quantity: Int,
+            content: String,
+            closingStatus: Boolean,
+        ): Recruitment {
+            return Recruitment(
+                teamId = teamId,
+                userId = userId,
+                recruitType = recruitType,
+                quantity = quantity,
+                content = content,
+                closingStatus = closingStatus,
+            )
+        }
+    }
+
+
 }
