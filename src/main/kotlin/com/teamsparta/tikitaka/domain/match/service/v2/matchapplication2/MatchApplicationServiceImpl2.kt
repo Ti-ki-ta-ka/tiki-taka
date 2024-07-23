@@ -92,6 +92,7 @@ class MatchApplicationServiceImpl2
             rejectOtherApplications(matchId, applicationId)
         }
 
+        matchPost.matchStatus = true
         return MatchApplicationResponse.from(matchApply)
     }
 
