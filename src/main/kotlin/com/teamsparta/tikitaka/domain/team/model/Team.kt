@@ -55,10 +55,5 @@ class Team(
         this.description = description
         this.region = region
     }
-
-    fun updateTeamStatus() {
-        this.recruitStatus = true
-    }
-
 }
 

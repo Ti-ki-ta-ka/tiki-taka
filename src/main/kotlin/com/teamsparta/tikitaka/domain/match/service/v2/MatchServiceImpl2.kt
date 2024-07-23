@@ -47,9 +47,6 @@ class MatchServiceImpl2(
         val team = teamRepository.findByIdOrNull(request.teamId)
             ?: throw ModelNotFoundException("team", request.teamId)
 
-        team.updateTeamStatus()
-
-
         return MatchResponse.from(match)
     }
 
