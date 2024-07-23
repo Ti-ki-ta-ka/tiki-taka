@@ -65,4 +65,20 @@ class LeaderRecruitmentServiceImpl(
         )
         return RecruitmentResponse.from(recruitmentPost)
     }
+
+    @Transactional
+    override fun closeRecruitmentPost(userId: Long, recruitmentId: Long): RecruitmentResponse {
+        val recruitmentPost = recruitmentRepository.findByIdOrNull(recruitmentId) ?: throw ModelNotFoundException(
+            "recruitment",
+            recruitmentId
+        )
+        if (recruitmentPost.userId != userId) {
+            throw AccessDeniedException("You can only modify recruitment posted by your own team.")
+        }
+        if (recruitmentPost.closingStatus) {
+            throw IllegalStateException("This recruitment is already closed.")
+        }
+        recruitmentPost.closingStatus = true
+        return RecruitmentResponse.from(recruitmentPost)
+    }
 }

@@ -42,4 +42,15 @@ class LeaderRecruitmentController(
                 .body(leaderRecruitmentService.updateRecruitmentPost(principal.id, recruitmentId, request))
         }
     }
+
+    @PatchMapping("{recruitment-id}")
+    fun closeRecruitmentPost(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @PathVariable(name = "recruitment-id") recruitmentId: Long
+    ): ResponseEntity<RecruitmentResponse> {
+        return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
+            ResponseEntity.status(HttpStatus.OK)
+                .body(leaderRecruitmentService.closeRecruitmentPost(principal.id, recruitmentId))
+        }
+    }
 }

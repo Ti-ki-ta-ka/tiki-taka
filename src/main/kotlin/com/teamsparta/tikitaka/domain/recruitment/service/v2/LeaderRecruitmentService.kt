@@ -9,4 +9,6 @@ import com.teamsparta.tikitaka.infra.security.UserPrincipal
 interface LeaderRecruitmentService {
     fun postRecruitment(principal: UserPrincipal, request: PostRecruitmentRequest): PostRecruitmentResponse
     fun updateRecruitmentPost(userId: Long, recruitmentId: Long, request: UpdateRecruitmentRequest): RecruitmentResponse
+    fun closeRecruitmentPost(userId: Long, recruitmentId: Long): RecruitmentResponse
+
 }
