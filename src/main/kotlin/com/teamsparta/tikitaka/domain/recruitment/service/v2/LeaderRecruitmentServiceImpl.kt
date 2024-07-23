@@ -8,17 +8,16 @@ import com.teamsparta.tikitaka.domain.recruitment.repository.RecruitmentReposito
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
-class LeaderRecuritmentServiceImpl(
+class LeaderRecruitmentServiceImpl(
     private val teamMemberRepository: TeamMemberRepository,
     private val recruitmentRepository: RecruitmentRepository,
 ) : LeaderRecruitmentService {
     override fun postRecruitment(principal: UserPrincipal, request: PostRecruitmentRequest): PostRecruitmentResponse {
 
-        val leader = teamMemberRepository.findByIdOrNull(principal.id)
+        val leader = teamMemberRepository.findByUserId(principal.id)
             ?: throw ModelNotFoundException("leader", principal.id)
 
         if (leader.teamRole != TeamRole.LEADER) {

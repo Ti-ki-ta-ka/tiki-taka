@@ -1,8 +1,6 @@
 package com.teamsparta.tikitaka.domain.team.controller.v2
 
-import com.teamsparta.tikitaka.domain.team.dto.request.DelegateLeaderRequest
 import com.teamsparta.tikitaka.domain.team.dto.request.ReassignRoleRequest
-import com.teamsparta.tikitaka.domain.team.dto.request.RemoveMemberRequest
 import com.teamsparta.tikitaka.domain.team.dto.response.DelegateLeaderResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.ReassignRoleResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.RemoveMemberResopnse
@@ -16,31 +14,32 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v2/leader/teams")
+@RequestMapping("/api/v2/leader/team-members/{team-member-id}")
 class LeaderTeamController(
     private val preAuthorize: CustomPreAuthorize,
     private val leaderTeamService: LeaderTeamService,
 ) {
 
-    @PutMapping()
+    @PutMapping("/reassign")
     fun reassignRole(
         @AuthenticationPrincipal principal: UserPrincipal,
+        @PathVariable(name = "team-member-id") teamMemberId: Long,
         @RequestBody request: ReassignRoleRequest,
     ): ResponseEntity<ReassignRoleResponse> {
         return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
             ResponseEntity.status(HttpStatus.OK)
-                .body(leaderTeamService.reassignRole(principal, request))
+                .body(leaderTeamService.reassignRole(principal, teamMemberId, request))
         }
     }
 
-    @PutMapping()
+    @PutMapping("/delegate")
     fun delegateLeader(
         @AuthenticationPrincipal principal: UserPrincipal,
-        @RequestBody request: DelegateLeaderRequest,
+        @PathVariable(name = "team-member-id") teamMemberId: Long,
     ): ResponseEntity<DelegateLeaderResponse> {
         return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
             ResponseEntity.status(HttpStatus.OK)
-                .body(leaderTeamService.delegateLeader(principal, request))
+                .body(leaderTeamService.delegateLeader(principal, teamMemberId))
         }
 
     }
@@ -48,11 +47,11 @@ class LeaderTeamController(
     @DeleteMapping()
     fun removeMember(
         @AuthenticationPrincipal principal: UserPrincipal,
-        @RequestBody request: RemoveMemberRequest,
+        @PathVariable(name = "team-member-id") teamMemberId: Long,
     ): ResponseEntity<RemoveMemberResopnse> {
         return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
             ResponseEntity.status(HttpStatus.OK)
-                .body(leaderTeamService.removeMember(principal, request))
+                .body(leaderTeamService.removeMember(principal, teamMemberId))
         }
     }
 }
