@@ -29,11 +29,12 @@ class MatchApplicationController2(
     }
 
     @DeleteMapping("/{match-id}/match-applications/{application-id}")
-    fun deleteMatchApplication(
+    fun cancelMatchApplication(
         @AuthenticationPrincipal principal: UserPrincipal,
+        @PathVariable(name = "match-id") matchId: Long,
         @PathVariable(name = "application-id") applicationId: Long,
     ): ResponseEntity<Unit> {
-        matchApplicationService.deleteMatchApplication(principal, applicationId)
+        matchApplicationService.cancelMatchApplication(principal, matchId, applicationId)
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 

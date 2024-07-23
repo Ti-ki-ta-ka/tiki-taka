@@ -16,7 +16,7 @@ interface MatchApplicationService2 {
 
     fun getMyApplications(request: MyApplicationRequest): List<MyApplicationsResponse>
 
-    fun deleteMatchApplication(
-        principal: UserPrincipal, applicationId: Long
+    fun cancelMatchApplication(
+        principal: UserPrincipal, matchId: Long, applicationId: Long
     )
 }

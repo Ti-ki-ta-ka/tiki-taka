@@ -42,16 +42,13 @@ class MatchApplicationServiceImpl2
 
 
     @Transactional
-    override fun deleteMatchApplication(principal: UserPrincipal, applicationId: Long) {
+    override fun cancelMatchApplication(principal: UserPrincipal, matchId: Long, applicationId: Long) {
+        matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("Match", matchId)
         val matchApply = matchApplicationRepository.findByIdOrNull(applicationId)
             ?: throw ModelNotFoundException("match", applicationId)
 
         validatePermission(principal, matchApply)
-        if (matchApply.approveStatus == ApproveStatus.REJECT || matchApply.approveStatus == ApproveStatus.APPROVE) {
-            throw IllegalStateException("You cannot cancel an application that has already been approved or rejected.")
-        }
 
-        matchApply.delete()
         matchApply.approveStatus = ApproveStatus.CANCELLED
     }
 
@@ -129,6 +126,11 @@ class MatchApplicationServiceImpl2
     private fun validatePermission(principal: UserPrincipal, matchApply: MatchApplication) {
         if (matchApply.applyUserId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) {
             throw AccessDeniedException("You do not have permission to delete.")
+        }
+        when (matchApply.approveStatus) {
+            ApproveStatus.REJECT, ApproveStatus.APPROVE -> throw IllegalStateException("You cannot cancel an application that has already been approved or rejected.")
+            ApproveStatus.CANCELLED -> throw IllegalStateException("You already canceled this application.")
+            else -> {}
         }
     }
 
