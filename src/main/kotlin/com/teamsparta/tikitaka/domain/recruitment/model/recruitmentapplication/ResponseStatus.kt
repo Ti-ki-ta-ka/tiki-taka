@@ -1,7 +1,7 @@
 package com.teamsparta.tikitaka.domain.recruitment.model.recruitmentapplication
 
 enum class ResponseStatus {
-    WAITING, APPROVE, REJECT, CANCELLED, DELETE_RECRUITMENT;
+    WAITING, APPROVE, REJECT, CANCELLED;
 
     companion object {
         fun fromString(approveStatus: String): ResponseStatus {
