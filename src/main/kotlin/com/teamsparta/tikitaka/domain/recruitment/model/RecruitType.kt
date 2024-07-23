@@ -9,7 +9,7 @@ enum class RecruitType {
             return try {
                 valueOf(value.uppercase())
             } catch (e: IllegalArgumentException) {
-                throw IllegalArgumentException("Invalid sort criteria: $value")
+                throw IllegalArgumentException("Invalid RecruitType: $value")
             }
         }
     }
