@@ -11,6 +11,7 @@ import com.teamsparta.tikitaka.domain.recruitment.repository.RecruitmentReposito
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
+import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -42,6 +43,7 @@ class LeaderRecruitmentServiceImpl(
         return PostRecruitmentResponse.from(recruitment)
     }
 
+    @Transactional
     override fun updateRecruitmentPost(
         userId: Long,
         recruitmentId: Long,
@@ -51,7 +53,6 @@ class LeaderRecruitmentServiceImpl(
             "recruitment",
             recruitmentId
         )
-        val (recruitType, quantity, content) = request
 
         if (recruitmentPost.userId != userId) {
             throw AccessDeniedException("You can only modify recruitment posted by your own team.")
@@ -59,15 +60,9 @@ class LeaderRecruitmentServiceImpl(
         if (recruitmentPost.closingStatus) {
             throw IllegalStateException("This recruitment is already closed.")
         }
-        val revisedRecruitment =
-            Recruitment.of(
-                teamId = recruitmentPost.teamId,
-                userId = recruitmentPost.userId,
-                recruitType = recruitType,
-                quantity = quantity,
-                content = content,
-                closingStatus = false
-            )
-        return RecruitmentResponse.from(revisedRecruitment)
+        recruitmentPost.updateRecruitment(
+            request
+        )
+        return RecruitmentResponse.from(recruitmentPost)
     }
 }

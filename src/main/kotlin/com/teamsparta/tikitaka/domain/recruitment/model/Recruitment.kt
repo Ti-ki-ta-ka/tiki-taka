@@ -1,6 +1,7 @@
 package com.teamsparta.tikitaka.domain.recruitment.model
 
 import com.teamsparta.tikitaka.domain.common.baseentity.BaseEntity
+import com.teamsparta.tikitaka.domain.recruitment.dto.UpdateRecruitmentRequest
 import jakarta.persistence.*
 import org.hibernate.annotations.SQLRestriction
 
@@ -16,7 +17,7 @@ class Recruitment(
     val userId: Long,
 
     @Enumerated(EnumType.STRING)
-    val recruitType: RecruitType,
+    var recruitType: RecruitType,
 
     @Column(name = "quantity", nullable = false)
     var quantity: Int,
@@ -32,7 +33,13 @@ class Recruitment(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    //todo : updateMatch
+    fun updateRecruitment(
+        request: UpdateRecruitmentRequest,
+    ) {
+        this.content = request.content
+        this.quantity = request.quantity
+        this.recruitType = RecruitType.fromString(request.recruitType)
+    }
 
     companion object {
         fun of(
