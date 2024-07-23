@@ -38,7 +38,7 @@ class Recruitment(
         fun of(
             teamId: Long,
             userId: Long,
-            recruitType: RecruitType,
+            recruitType: String,
             quantity: Int,
             content: String,
             closingStatus: Boolean,
@@ -46,7 +46,7 @@ class Recruitment(
             return Recruitment(
                 teamId = teamId,
                 userId = userId,
-                recruitType = recruitType,
+                recruitType = RecruitType.fromString(recruitType),
                 quantity = quantity,
                 content = content,
                 closingStatus = closingStatus,

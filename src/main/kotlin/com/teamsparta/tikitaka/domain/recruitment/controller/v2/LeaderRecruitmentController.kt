@@ -37,7 +37,9 @@ class LeaderRecruitmentController(
         @PathVariable(name = "recruitment-id") recruitmentId: Long,
         @RequestBody request: UpdateRecruitmentRequest
     ): ResponseEntity<RecruitmentResponse> {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(leaderRecruitmentService.updateRecruitmentPost(principal.id, recruitmentId, request))
+        return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
+            ResponseEntity.status(HttpStatus.OK)
+                .body(leaderRecruitmentService.updateRecruitmentPost(principal.id, recruitmentId, request))
+        }
     }
 }

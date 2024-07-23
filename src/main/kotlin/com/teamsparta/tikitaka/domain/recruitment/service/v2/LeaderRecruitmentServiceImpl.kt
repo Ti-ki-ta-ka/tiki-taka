@@ -1,8 +1,11 @@
 package com.teamsparta.tikitaka.domain.recruitment.service.v2
 
+import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentRequest
 import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentResponse
+import com.teamsparta.tikitaka.domain.recruitment.dto.RecruitmentResponse
+import com.teamsparta.tikitaka.domain.recruitment.dto.UpdateRecruitmentRequest
 import com.teamsparta.tikitaka.domain.recruitment.model.Recruitment
 import com.teamsparta.tikitaka.domain.recruitment.repository.RecruitmentRepository
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
@@ -12,7 +15,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
-class LeaderRecuritmentServiceImpl(
+class LeaderRecruitmentServiceImpl(
     private val teamMemberRepository: TeamMemberRepository,
     private val recruitmentRepository: RecruitmentRepository,
 ) : LeaderRecruitmentService {
@@ -37,6 +40,34 @@ class LeaderRecuritmentServiceImpl(
         )
 
         return PostRecruitmentResponse.from(recruitment)
+    }
 
+    override fun updateRecruitmentPost(
+        userId: Long,
+        recruitmentId: Long,
+        request: UpdateRecruitmentRequest
+    ): RecruitmentResponse {
+        val recruitmentPost = recruitmentRepository.findByIdOrNull(recruitmentId) ?: throw ModelNotFoundException(
+            "recruitment",
+            recruitmentId
+        )
+        val (recruitType, quantity, content) = request
+
+        if (recruitmentPost.userId != userId) {
+            throw AccessDeniedException("You can only modify recruitment posted by your own team.")
+        }
+        if (recruitmentPost.closingStatus) {
+            throw IllegalStateException("This recruitment is already closed.")
+        }
+        val revisedRecruitment =
+            Recruitment.of(
+                teamId = recruitmentPost.teamId,
+                userId = recruitmentPost.userId,
+                recruitType = recruitType,
+                quantity = quantity,
+                content = content,
+                closingStatus = false
+            )
+        return RecruitmentResponse.from(revisedRecruitment)
     }
 }

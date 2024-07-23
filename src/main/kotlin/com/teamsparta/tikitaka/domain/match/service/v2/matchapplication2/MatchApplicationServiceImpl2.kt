@@ -29,7 +29,7 @@ class MatchApplicationServiceImpl2(
 
     @Transactional
     override fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse {
-        val user = findUserById(userId)
+        findUserById(userId)
         val matchPost = findMatchById(matchId)
         val (teamId) = request
         validateMatchAvailability(matchPost, teamId)
