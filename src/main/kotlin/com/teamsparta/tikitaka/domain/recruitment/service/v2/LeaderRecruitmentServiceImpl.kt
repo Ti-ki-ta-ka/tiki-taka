@@ -26,8 +26,8 @@ class LeaderRecruitmentServiceImpl(
 
         val recruitment = recruitmentRepository.save(
             Recruitment.of(
-                teamId = request.teamId,
-                userId = request.userId,
+                teamId = leader.team.id!!,
+                userId = principal.id,
                 recruitType = request.recruitType,
                 quantity = request.quantity,
                 content = request.content,
