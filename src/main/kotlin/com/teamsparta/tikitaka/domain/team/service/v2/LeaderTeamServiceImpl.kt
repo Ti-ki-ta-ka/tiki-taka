@@ -64,7 +64,6 @@ class LeaderTeamServiceImpl(
         val user = userRepository.findById(teamMember.userId)
             .orElseThrow { ModelNotFoundException("user", teamMember.userId) }
 
-        user.updateUserRole(principal, teamMember.teamRole)
 
         return ReassignRoleResponse.from(teamMember)
     }
@@ -100,8 +99,7 @@ class LeaderTeamServiceImpl(
 
         val userNew = userRepository.findById(newLeader.userId)
             .orElseThrow { ModelNotFoundException("user", newLeader.userId) }
-
-        userNew.updateUserRole(principal, newLeader.teamRole)
+        
 
         return DelegateLeaderResponse.from(newLeader)
     }
