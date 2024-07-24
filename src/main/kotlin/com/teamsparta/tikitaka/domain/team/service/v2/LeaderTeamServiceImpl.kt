@@ -28,7 +28,6 @@ class LeaderTeamServiceImpl(
     ): ReassignRoleResponse {
 
         val leader = teamMemberRepository.findByUserId(principal.id)
-            ?: throw ModelNotFoundException("leader", principal.id)
 
         if (leader.teamRole != TeamRole.LEADER) {
             throw IllegalArgumentException("Only the current leader can reassign roles")
@@ -73,8 +72,8 @@ class LeaderTeamServiceImpl(
 
     @Transactional
     override fun delegateLeader(principal: UserPrincipal, teamMemberId: Long): DelegateLeaderResponse {
+
         val currentLeader = teamMemberRepository.findByUserId(principal.id)
-            ?: throw ModelNotFoundException("leader", principal.id)
 
         if (currentLeader.teamRole != TeamRole.LEADER) {
             throw IllegalArgumentException("Only the current leader can delegate the leader role")
@@ -110,7 +109,6 @@ class LeaderTeamServiceImpl(
     @Transactional
     override fun removeMember(principal: UserPrincipal, teamMemberId: Long): RemoveMemberResopnse {
         val leader = teamMemberRepository.findByUserId(principal.id)
-            ?: throw ModelNotFoundException("leader", principal.id)
 
         if (leader.teamRole != TeamRole.LEADER) {
             throw IllegalArgumentException("Only the current leader can remove members")
