@@ -3,12 +3,13 @@ package com.teamsparta.tikitaka.domain.recruitment.service.v2
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentRequest
-import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentResponse
+import com.teamsparta.tikitaka.domain.recruitment.dto.RecruitmentResponse
+import com.teamsparta.tikitaka.domain.recruitment.dto.UpdateRecruitmentRequest
 import com.teamsparta.tikitaka.domain.recruitment.model.Recruitment
 import com.teamsparta.tikitaka.domain.recruitment.repository.RecruitmentRepository
+import com.teamsparta.tikitaka.domain.recruitment.repository.recruitmentapplication.RecruitmentApplicationRepository
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
-import com.teamsparta.tikitaka.domain.recruitment.repository.recruitmentapplication.RecruitmentApplicationRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
@@ -20,7 +21,7 @@ class LeaderRecruitmentServiceImpl(
     private val recruitmentRepository: RecruitmentRepository,
     private val recruitmentApplicationRepository: RecruitmentApplicationRepository,
 ) : LeaderRecruitmentService {
-    override fun postRecruitment(principal: UserPrincipal, request: PostRecruitmentRequest): PostRecruitmentResponse {
+    override fun postRecruitment(principal: UserPrincipal, request: PostRecruitmentRequest): RecruitmentResponse {
 
 
         val leader = teamMemberRepository.findByIdOrNull(principal.id)
@@ -41,7 +42,7 @@ class LeaderRecruitmentServiceImpl(
             )
         )
 
-        return PostRecruitmentResponse.from(recruitment)
+        return RecruitmentResponse.from(recruitment)
     }
 
     @Transactional

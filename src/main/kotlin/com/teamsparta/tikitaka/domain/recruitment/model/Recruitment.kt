@@ -1,6 +1,7 @@
 package com.teamsparta.tikitaka.domain.recruitment.model
 
 import com.teamsparta.tikitaka.domain.common.baseentity.BaseEntity
+import com.teamsparta.tikitaka.domain.recruitment.dto.UpdateRecruitmentRequest
 import jakarta.persistence.*
 import org.hibernate.annotations.SQLRestriction
 
