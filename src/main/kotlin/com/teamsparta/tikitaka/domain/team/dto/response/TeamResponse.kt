@@ -1,6 +1,7 @@
 package com.teamsparta.tikitaka.domain.team.dto.response
 
 import com.teamsparta.tikitaka.domain.team.model.Team
+import java.time.LocalDateTime
 
 data class TeamResponse(
     val id: Long,
@@ -12,7 +13,8 @@ data class TeamResponse(
     val mannerScore: Int,
     val attendanceScore: Int,
     val recruitStatus: Boolean,
-    val region: String
+    val region: String,
+    val createAt: LocalDateTime
 ) {
     companion object {
         fun from(
@@ -28,7 +30,8 @@ data class TeamResponse(
                 team.mannerScore,
                 team.attendanceScore,
                 team.recruitStatus,
-                team.region.name
+                team.region.name,
+                team.createdAt
             )
         }
     }

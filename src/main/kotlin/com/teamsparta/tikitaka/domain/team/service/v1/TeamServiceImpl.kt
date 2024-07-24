@@ -43,7 +43,8 @@ class TeamServiceImpl(
         return PageResponse(
             pageContent.content.map { TeamResponse.from(it) },
             page,
-            size
+            size,
+            pageContent.totalPages
         )
     }
 
@@ -114,7 +115,8 @@ class TeamServiceImpl(
         return PageResponse(
             pageContent.content.map { TeamResponse.from(it) },
             page,
-            size
+            size,
+            pageContent.totalPages
         )
     }
 
