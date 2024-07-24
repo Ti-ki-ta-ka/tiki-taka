@@ -10,6 +10,7 @@ import com.teamsparta.tikitaka.domain.match.model.Match
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
+import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional
 class MatchServiceImpl(
     private val matchRepository: MatchRepository,
     private val teamRepository: TeamRepository,
+    private val teamMemberRepository: TeamMemberRepository,
 ) : MatchService {
 
     @Transactional
@@ -31,6 +33,9 @@ class MatchServiceImpl(
         request: PostMatchRequest,
     ): MatchResponse {
 
+        val teamMember = teamMemberRepository.findByUserIdOrNull(principal.id)
+            ?: throw ModelNotFoundException("teamMember", principal.id)
+
         val match = matchRepository.save(
             Match.of(
                 title = request.title,
@@ -38,14 +43,12 @@ class MatchServiceImpl(
                 location = request.location,
                 content = request.content,
                 matchStatus = false,
-                teamId = request.teamId,
+                teamId = teamMember.team.id!!,
                 userId = principal.id,
                 region = request.region,
             )
         )
 
-        val team = teamRepository.findByIdOrNull(request.teamId)
-            ?: throw ModelNotFoundException("team", request.teamId)
 
         return MatchResponse.from(match)
     }

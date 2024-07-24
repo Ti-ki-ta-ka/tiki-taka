@@ -3,12 +3,16 @@ package com.teamsparta.tikitaka.domain.match.service.v1.matchapplication
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.TeamAlreadyAppliedException
-import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationRequest
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationsResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.ApproveStatus
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import com.teamsparta.tikitaka.domain.match.repository.matchapplication.MatchApplicationRepository
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
+import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
@@ -23,23 +27,25 @@ class MatchApplicationServiceImpl
     private val matchApplicationRepository: MatchApplicationRepository,
     private val matchRepository: MatchRepository,
     private val usersRepository: UsersRepository,
-    private val teamMemberRepository: TeamMemberRepository
+    private val teamMemberRepository: TeamMemberRepository,
+    private val teamRepository: TeamRepository,
 ) : MatchApplicationService {
     @Transactional
-    override fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse {
+    override fun applyMatch(userId: Long, matchId: Long): MatchApplicationResponse {
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
 
         val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("match", matchId)
-        val (teamId) = request
+        val teamMember =
+            teamMemberRepository.findByUserIdOrNull(userId) ?: throw ModelNotFoundException("teamMember", userId)
 
         val matchDate = matchPost.matchDate.toLocalDate()
 
-        val existingApplications = matchApplicationRepository.findByTeamIdAndMatchDate(teamId, matchDate)
+        val existingApplications = matchApplicationRepository.findByTeamIdAndMatchDate(teamMember.team.id!!, matchDate)
         if (existingApplications.any { it.approveStatus == ApproveStatus.WAITING || it.approveStatus == ApproveStatus.APPROVE }) {
             throw TeamAlreadyAppliedException("Your team already has a pending or approved application for the same match date.")
         }
 
-        return matchApplicationRepository.save(MatchApplication.of(matchPost, teamId, userId))
+        return matchApplicationRepository.save(MatchApplication.of(matchPost, teamMember.team.id!!, userId))
             .let { MatchApplicationResponse.from(it) }
     }
 

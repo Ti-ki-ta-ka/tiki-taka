@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface TeamMemberRepository : JpaRepository<TeamMember, Long> {
     fun findByUserId(userId: Long): TeamMember
+    fun findByUserIdOrNull(userId: Long): TeamMember?
     fun findByUserIdAndTeamId(userId: Long, teamId: Long): TeamMember?
 }
