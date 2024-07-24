@@ -3,6 +3,7 @@ package com.teamsparta.tikitaka.domain.recruitment.dto
 import com.teamsparta.tikitaka.domain.recruitment.model.Recruitment
 
 data class RecruitmentResponse(
+    val recruitmentId: Long,
     val userId: Long,
     val teamId: Long,
     val recruitType: String,
@@ -12,6 +13,7 @@ data class RecruitmentResponse(
 
     companion object {
         fun from(recruitment: Recruitment) = RecruitmentResponse(
+            recruitmentId = recruitment.id!!,
             userId = recruitment.userId,
             teamId = recruitment.teamId,
             recruitType = recruitment.recruitType.toString(),

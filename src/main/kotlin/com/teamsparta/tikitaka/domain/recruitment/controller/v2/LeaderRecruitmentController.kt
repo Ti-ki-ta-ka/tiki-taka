@@ -22,16 +22,14 @@ class LeaderRecruitmentController(
 
     @PostMapping()
     fun postRecruitment(
-        @AuthenticationPrincipal principal: UserPrincipal,
-        @RequestBody request: PostRecruitmentRequest
+        @AuthenticationPrincipal principal: UserPrincipal, @RequestBody request: PostRecruitmentRequest
     ): ResponseEntity<PostRecruitmentResponse> {
         return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
-            ResponseEntity.status(HttpStatus.OK)
-                .body(leaderRecruitmentService.postRecruitment(principal, request))
+            ResponseEntity.status(HttpStatus.OK).body(leaderRecruitmentService.postRecruitment(principal, request))
         }
     }
 
-    @PutMapping("{recruitment-id}")
+    @PutMapping("/{recruitment-id}")
     fun updateRecruitmentPost(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable(name = "recruitment-id") recruitmentId: Long,
@@ -41,5 +39,23 @@ class LeaderRecruitmentController(
             ResponseEntity.status(HttpStatus.OK)
                 .body(leaderRecruitmentService.updateRecruitmentPost(principal.id, recruitmentId, request))
         }
+    }
+
+    @PatchMapping("/{recruitment-id}")
+    fun closeRecruitmentPost(
+        @AuthenticationPrincipal principal: UserPrincipal, @PathVariable(name = "recruitment-id") recruitmentId: Long
+    ): ResponseEntity<RecruitmentResponse> {
+        return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
+            ResponseEntity.status(HttpStatus.OK)
+                .body(leaderRecruitmentService.closeRecruitmentPost(principal.id, recruitmentId))
+        }
+    }
+
+    @DeleteMapping("/{recruitment-id}")
+    fun deleteRecruitmentPost(
+        @AuthenticationPrincipal principal: UserPrincipal, @PathVariable(name = "recruitment-id") recruitmentId: Long
+    ): ResponseEntity<Unit> = preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
+        leaderRecruitmentService.deleteRecruitmentPost(principal.id, recruitmentId)
+        ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 }
