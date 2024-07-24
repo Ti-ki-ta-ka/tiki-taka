@@ -7,6 +7,7 @@ import com.teamsparta.tikitaka.domain.team.dto.response.ReassignRoleResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.RemoveMemberResopnse
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
+import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class LeaderTeamServiceImpl(
     private val teamMemberRepository: TeamMemberRepository,
+    private val userRepository: UsersRepository,
 ) : LeaderTeamService {
 
     @Transactional
@@ -25,7 +27,6 @@ class LeaderTeamServiceImpl(
     ): ReassignRoleResponse {
 
         val leader = teamMemberRepository.findByUserId(principal.id)
-            ?: throw ModelNotFoundException("leader", principal.id)
 
         if (leader.teamRole != TeamRole.LEADER) {
             throw IllegalArgumentException("Only the current leader can reassign roles")
@@ -55,7 +56,10 @@ class LeaderTeamServiceImpl(
             else -> throw IllegalArgumentException("Invalid role for reassignment: ${request.role}")
         }
 
-        teamMemberRepository.save(teamMember)
+        val user = userRepository.findById(teamMember.userId)
+            .orElseThrow { ModelNotFoundException("user", teamMember.userId) }
+
+        user.updateUserRole(principal, teamMember.teamRole)
 
         return ReassignRoleResponse.from(teamMember)
     }
@@ -64,7 +68,6 @@ class LeaderTeamServiceImpl(
     @Transactional
     override fun delegateLeader(principal: UserPrincipal, teamMemberId: Long): DelegateLeaderResponse {
         val currentLeader = teamMemberRepository.findByUserId(principal.id)
-            ?: throw ModelNotFoundException("leader", principal.id)
 
         if (currentLeader.teamRole != TeamRole.LEADER) {
             throw IllegalArgumentException("Only the current leader can delegate the leader role")
@@ -80,13 +83,22 @@ class LeaderTeamServiceImpl(
         currentLeader.teamRole = TeamRole.MEMBER
         newLeader.teamRole = TeamRole.LEADER
 
+        val userCurrent = userRepository.findById(currentLeader.userId)
+            .orElseThrow { ModelNotFoundException("user", currentLeader.userId) }
+
+        userCurrent.updateUserRole(principal, currentLeader.teamRole)
+
+        val userNew = userRepository.findById(newLeader.userId)
+            .orElseThrow { ModelNotFoundException("user", newLeader.userId) }
+
+        userNew.updateUserRole(principal, newLeader.teamRole)
+
         return DelegateLeaderResponse.from(newLeader)
     }
 
     @Transactional
     override fun removeMember(principal: UserPrincipal, teamMemberId: Long): RemoveMemberResopnse {
         val leader = teamMemberRepository.findByUserId(principal.id)
-            ?: throw ModelNotFoundException("leader", principal.id)
 
         if (leader.teamRole != TeamRole.LEADER) {
             throw IllegalArgumentException("Only the current leader can remove members")
