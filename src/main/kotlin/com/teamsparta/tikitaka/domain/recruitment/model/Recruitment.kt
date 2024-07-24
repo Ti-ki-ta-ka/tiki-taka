@@ -16,7 +16,7 @@ class Recruitment(
     val userId: Long,
 
     @Enumerated(EnumType.STRING)
-    val recruitType: RecruitType,
+    var recruitType: RecruitType,
 
     @Column(name = "quantity", nullable = false)
     var quantity: Int,
@@ -32,13 +32,19 @@ class Recruitment(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    //todo : updateMatch
+    fun updateRecruitment(
+        request: UpdateRecruitmentRequest,
+    ) {
+        this.content = request.content
+        this.quantity = request.quantity
+        this.recruitType = RecruitType.fromString(request.recruitType)
+    }
 
     companion object {
         fun of(
             teamId: Long,
             userId: Long,
-            recruitType: RecruitType,
+            recruitType: String,
             quantity: Int,
             content: String,
             closingStatus: Boolean,
@@ -46,7 +52,7 @@ class Recruitment(
             return Recruitment(
                 teamId = teamId,
                 userId = userId,
-                recruitType = recruitType,
+                recruitType = RecruitType.fromString(recruitType),
                 quantity = quantity,
                 content = content,
                 closingStatus = closingStatus,
