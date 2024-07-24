@@ -6,6 +6,7 @@ import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentRequest
 import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentResponse
 import com.teamsparta.tikitaka.domain.recruitment.dto.RecruitmentResponse
 import com.teamsparta.tikitaka.domain.recruitment.dto.UpdateRecruitmentRequest
+import com.teamsparta.tikitaka.domain.recruitment.dto.recruitmentapplication.RecruitmentApplicationResponse
 import com.teamsparta.tikitaka.domain.recruitment.model.Recruitment
 import com.teamsparta.tikitaka.domain.recruitment.repository.RecruitmentRepository
 import com.teamsparta.tikitaka.domain.recruitment.repository.recruitmentapplication.RecruitmentApplicationRepository
@@ -13,6 +14,8 @@ import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -100,5 +103,24 @@ class LeaderRecruitmentServiceImpl(
     private fun deleteRelatedApplications(recruitmentId: Long) {
         val applications = recruitmentApplicationRepository.findByRecruitmentId(recruitmentId)
         applications?.forEach { it.delete() }
+    }
+
+    @Transactional
+    override fun getRecruitmentApplications(
+        userId: Long,
+        recruitmentId: Long,
+        pageable: Pageable,
+        responseStatus: String?
+    ): Page<RecruitmentApplicationResponse> {
+        val recruitmentPost = recruitmentRepository.findByIdOrNull(recruitmentId) ?: throw ModelNotFoundException(
+            "recruitment",
+            recruitmentId
+        )
+        if (recruitmentPost.userId != userId) {
+            throw AccessDeniedException("You can only view membership applications for your own team.")
+        }
+        val applications =
+            recruitmentApplicationRepository.findApplicationsByRecruitmentId(pageable, recruitmentId, responseStatus)
+        return applications
     }
 }
