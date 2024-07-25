@@ -57,8 +57,7 @@ class MatchServiceImpl2(
         request: UpdateMatchRequest,
     ): MatchResponse {
 
-        val match = matchRepository.findByIdOrNull(matchId)
-            ?: throw ModelNotFoundException("match", matchId)
+        val match = findMatchById(matchId)
 
 
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER")))
@@ -76,8 +75,8 @@ class MatchServiceImpl2(
         principal: UserPrincipal,
         matchId: Long,
     ): MatchResponse {
-        val match = matchRepository.findByIdOrNull(matchId)
-            ?: throw ModelNotFoundException("match", matchId)
+
+        val match = findMatchById(matchId)
 
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
             "You do not have permission to delete."
@@ -116,5 +115,8 @@ class MatchServiceImpl2(
     override fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse> {
         return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword)
     }
+
+    private fun findMatchById(matchId: Long) =
+        matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("Match", matchId)
 
 }
