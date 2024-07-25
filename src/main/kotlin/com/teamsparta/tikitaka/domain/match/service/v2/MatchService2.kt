@@ -16,8 +16,13 @@ interface MatchService2 {
     fun deleteMatch(principal: UserPrincipal, matchId: Long): MatchResponse
     fun getMatches(pageable: Pageable): Page<MatchResponse>
     fun getAvailableMatchesAndSort(pageable: Pageable, sortCriteria: SortCriteria): Page<MatchResponse>
-    fun getMatchesByRegionAndSort(region: Region, pageable: Pageable, sortCriteria: SortCriteria): Page<MatchResponse>
+    fun getMatchesByRegionAndSort(
+        region: List<Region>,
+        pageable: Pageable,
+        sortCriteria: SortCriteria
+    ): Page<MatchResponse>
+
     fun getMatchDetails(matchId: Long): MatchResponse
-    fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse>
+    fun searchMatch(pageable: Pageable, keyword: String, sortCriteria: SortCriteria): Page<MatchResponse>
 
 }

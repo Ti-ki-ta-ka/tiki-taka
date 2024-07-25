@@ -62,8 +62,7 @@ class MatchServiceImpl2(
         request: UpdateMatchRequest,
     ): MatchResponse {
 
-        val match = matchRepository.findByIdOrNull(matchId)
-            ?: throw ModelNotFoundException("match", matchId)
+        val match = findMatchById(matchId)
 
 
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER")))
@@ -81,8 +80,8 @@ class MatchServiceImpl2(
         principal: UserPrincipal,
         matchId: Long,
     ): MatchResponse {
-        val match = matchRepository.findByIdOrNull(matchId)
-            ?: throw ModelNotFoundException("match", matchId)
+
+        val match = findMatchById(matchId)
 
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
             "You do not have permission to delete."
@@ -103,11 +102,11 @@ class MatchServiceImpl2(
     }
 
     override fun getMatchesByRegionAndSort(
-        region: Region,
+        region: List<Region>,
         pageable: Pageable,
         sortCriteria: SortCriteria
     ): Page<MatchResponse> {
-        return matchRepository.getMatchesByRegionAndSort(region, pageable, sortCriteria)
+        return matchRepository.getMatchesByRegionsAndSort(region, pageable, sortCriteria)
     }
 
     override fun getMatchDetails(
@@ -118,8 +117,11 @@ class MatchServiceImpl2(
             ?: throw ModelNotFoundException("match", matchId)
     }
 
-    override fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse> {
-        return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword)
+    override fun searchMatch(pageable: Pageable, keyword: String, sortCriteria: SortCriteria): Page<MatchResponse> {
+        return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword, sortCriteria)
     }
+
+    private fun findMatchById(matchId: Long) =
+        matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("Match", matchId)
 
 }

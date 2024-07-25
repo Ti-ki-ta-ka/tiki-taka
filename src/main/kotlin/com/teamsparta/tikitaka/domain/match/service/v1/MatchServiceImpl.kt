@@ -118,8 +118,8 @@ class MatchServiceImpl(
             ?: throw ModelNotFoundException("match", matchId)
     }
 
-    override fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse> {
-        return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword)
+    override fun searchMatch(pageable: Pageable, keyword: String, sortCriteria: SortCriteria): Page<MatchResponse> {
+        return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword, sortCriteria)
     }
 
 }
