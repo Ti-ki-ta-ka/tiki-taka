@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 interface RecruitmentApplicationRepository : JpaRepository<RecruitmentApplication, Long>,
     CustomRecruitmentApplicationRepository {
     fun findByRecruitmentId(recruitmentId: Long): List<RecruitmentApplication>?
+    fun findByIdAndRecruitmentId(ApplicationId: Long, RecruitmentId: Long): RecruitmentApplication?
 }
