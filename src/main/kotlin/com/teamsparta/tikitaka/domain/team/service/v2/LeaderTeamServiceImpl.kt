@@ -6,6 +6,7 @@ import com.teamsparta.tikitaka.domain.team.dto.request.ReassignRoleRequest
 import com.teamsparta.tikitaka.domain.team.dto.response.DelegateLeaderResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.ReassignRoleResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.RemoveMemberResopnse
+import com.teamsparta.tikitaka.domain.team.model.teammember.TeamMember
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
@@ -14,12 +15,14 @@ import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 class LeaderTeamServiceImpl(
     private val teamMemberRepository: TeamMemberRepository,
     private val teamRepository: TeamRepository,
     private val userRepository: UsersRepository,
+    private val teamRepository: TeamRepository,
 ) : LeaderTeamService {
 
     @Transactional
@@ -35,8 +38,10 @@ class LeaderTeamServiceImpl(
             throw IllegalArgumentException("Only the current leader can reassign roles")
         }
 
-        val teamMember = teamMemberRepository.findByIdOrNull(teamMemberId)
-            ?: throw ModelNotFoundException("team member", teamMemberId)
+        val teamMember = teamMemberRepository.findByIdOrNull(teamMemberId) ?: throw ModelNotFoundException(
+            "team member",
+            teamMemberId
+        )
 
         if (leader.team != teamMember.team) {
             throw AccessDeniedException("The leader does not have permission for this member.")
@@ -63,8 +68,8 @@ class LeaderTeamServiceImpl(
             else -> throw IllegalArgumentException("Invalid role for reassignment: ${request.role}")
         }
 
-        val user = userRepository.findById(teamMember.userId)
-            .orElseThrow { ModelNotFoundException("user", teamMember.userId) }
+        val user =
+            userRepository.findById(teamMember.userId).orElseThrow { ModelNotFoundException("user", teamMember.userId) }
 
 
         return ReassignRoleResponse.from(teamMember)
@@ -80,8 +85,10 @@ class LeaderTeamServiceImpl(
             throw IllegalArgumentException("Only the current leader can delegate the leader role")
         }
 
-        val newLeader = teamMemberRepository.findByIdOrNull(teamMemberId)
-            ?: throw ModelNotFoundException("new Leader", teamMemberId)
+        val newLeader = teamMemberRepository.findByIdOrNull(teamMemberId) ?: throw ModelNotFoundException(
+            "new Leader",
+            teamMemberId
+        )
 
         if (currentLeader.team != newLeader.team) {
             throw AccessDeniedException("The leader does not have permission for this member.")
@@ -99,8 +106,8 @@ class LeaderTeamServiceImpl(
 
         userCurrent.updateUserRole(principal, currentLeader.teamRole)
 
-        val userNew = userRepository.findById(newLeader.userId)
-            .orElseThrow { ModelNotFoundException("user", newLeader.userId) }
+        val userNew =
+            userRepository.findById(newLeader.userId).orElseThrow { ModelNotFoundException("user", newLeader.userId) }
 
 
         return DelegateLeaderResponse.from(newLeader)
@@ -114,8 +121,10 @@ class LeaderTeamServiceImpl(
             throw IllegalArgumentException("Only the current leader can remove members")
         }
 
-        val teamMember = teamMemberRepository.findByIdOrNull(teamMemberId)
-            ?: throw ModelNotFoundException("team member", teamMemberId)
+        val teamMember = teamMemberRepository.findByIdOrNull(teamMemberId) ?: throw ModelNotFoundException(
+            "team member",
+            teamMemberId
+        )
 
         if (leader.team != teamMember.team) {
             throw AccessDeniedException("The leader does not have permission for this member.")
@@ -125,6 +134,17 @@ class LeaderTeamServiceImpl(
 
         return RemoveMemberResopnse.from(teamMember)
     }
+    @Transactional
+    override fun addMember(userId: Long, teamId: Long): TeamMember {
+        val team = teamRepository.findById(teamId).orElseThrow { IllegalArgumentException("Invalid team ID: $teamId") }
 
+        val newMember = TeamMember(
+            userId = userId, team = team, createdAt = LocalDateTime.now()
+        )
+        val member = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("user", userId)
+        member.teamStatus = true
+        userRepository.save(member)
 
+        return teamMemberRepository.save(newMember)
+    }
 }

@@ -3,7 +3,9 @@ package com.teamsparta.tikitaka.domain.match.service.v2.matchapplication2
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.TeamAlreadyAppliedException
-import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationsResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.match.model.Match
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.ApproveStatus
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
@@ -28,11 +30,12 @@ class MatchApplicationServiceImpl2(
 ) : MatchApplicationService2 {
 
     @Transactional
-    override fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse {
+    override fun applyMatch(userId: Long, matchId: Long): MatchApplicationResponse {
         findUserById(userId)
         val matchPost = findMatchById(matchId)
-        val (teamId) = request
-        validateMatchAvailability(matchPost, teamId)
+        val teamMember = teamMemberRepository.findByUserId(userId)
+        val teamId = teamMember.team.id
+        validateMatchAvailability(matchPost, teamId!!)
         validateExistingApplications(teamId, matchId, matchPost.matchDate.toLocalDate())
 
         val newApplication = MatchApplication.of(matchPost, teamId, userId)
@@ -90,8 +93,12 @@ class MatchApplicationServiceImpl2(
         return MatchApplicationResponse.from(matchApply)
     }
 
-    override fun getMyApplications(request: MyApplicationRequest): List<MyApplicationsResponse> {
-        return matchApplicationRepository.findByApplyTeamId(request.teamId)
+    override fun getMyApplications(userId: Long): List<MyApplicationsResponse> {
+
+        val teamMember = teamMemberRepository.findByUserId(userId)
+        val teamId = teamMember.team.id
+
+        return matchApplicationRepository.findByApplyTeamId(teamId!!)
             .map { application -> MyApplicationsResponse.from(application) }
     }
 
