@@ -20,6 +20,7 @@ import java.time.LocalDateTime
 @Service
 class LeaderTeamServiceImpl(
     private val teamMemberRepository: TeamMemberRepository,
+    private val teamRepository: TeamRepository,
     private val userRepository: UsersRepository,
     private val teamRepository: TeamRepository,
 ) : LeaderTeamService {
@@ -133,7 +134,6 @@ class LeaderTeamServiceImpl(
 
         return RemoveMemberResopnse.from(teamMember)
     }
-
     @Transactional
     override fun addMember(userId: Long, teamId: Long): TeamMember {
         val team = teamRepository.findById(teamId).orElseThrow { IllegalArgumentException("Invalid team ID: $teamId") }
