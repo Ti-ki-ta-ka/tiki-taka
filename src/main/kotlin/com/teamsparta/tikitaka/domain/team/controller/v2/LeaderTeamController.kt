@@ -54,6 +54,8 @@ class LeaderTeamController(
                 .body(leaderTeamService.removeMember(principal, teamMemberId))
         }
     }
+
+
 }
 
 

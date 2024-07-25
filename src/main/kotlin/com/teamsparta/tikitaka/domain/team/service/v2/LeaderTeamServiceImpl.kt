@@ -7,6 +7,7 @@ import com.teamsparta.tikitaka.domain.team.dto.response.DelegateLeaderResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.ReassignRoleResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.RemoveMemberResopnse
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
+import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class LeaderTeamServiceImpl(
     private val teamMemberRepository: TeamMemberRepository,
+    private val teamRepository: TeamRepository,
     private val userRepository: UsersRepository,
 ) : LeaderTeamService {
 
@@ -99,7 +101,7 @@ class LeaderTeamServiceImpl(
 
         val userNew = userRepository.findById(newLeader.userId)
             .orElseThrow { ModelNotFoundException("user", newLeader.userId) }
-        
+
 
         return DelegateLeaderResponse.from(newLeader)
     }
@@ -123,4 +125,6 @@ class LeaderTeamServiceImpl(
 
         return RemoveMemberResopnse.from(teamMember)
     }
+
+
 }
