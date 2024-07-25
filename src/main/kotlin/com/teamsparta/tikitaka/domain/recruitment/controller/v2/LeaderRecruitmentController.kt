@@ -1,7 +1,6 @@
 package com.teamsparta.tikitaka.domain.recruitment.controller.v2
 
 import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentRequest
-import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentResponse
 import com.teamsparta.tikitaka.domain.recruitment.dto.RecruitmentResponse
 import com.teamsparta.tikitaka.domain.recruitment.dto.UpdateRecruitmentRequest
 import com.teamsparta.tikitaka.domain.recruitment.service.v2.LeaderRecruitmentService
@@ -23,7 +22,7 @@ class LeaderRecruitmentController(
     @PostMapping()
     fun postRecruitment(
         @AuthenticationPrincipal principal: UserPrincipal, @RequestBody request: PostRecruitmentRequest
-    ): ResponseEntity<PostRecruitmentResponse> {
+    ): ResponseEntity<RecruitmentResponse> {
         return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
             ResponseEntity.status(HttpStatus.OK).body(leaderRecruitmentService.postRecruitment(principal, request))
         }

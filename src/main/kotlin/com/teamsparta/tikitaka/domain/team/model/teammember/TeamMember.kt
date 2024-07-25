@@ -28,4 +28,8 @@ class TeamMember(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun softDelete() {
+        this.deletedAt = LocalDateTime.now()
+    }
 }

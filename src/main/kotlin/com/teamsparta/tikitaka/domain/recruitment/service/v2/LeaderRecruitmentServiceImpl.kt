@@ -3,7 +3,6 @@ package com.teamsparta.tikitaka.domain.recruitment.service.v2
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentRequest
-import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentResponse
 import com.teamsparta.tikitaka.domain.recruitment.dto.RecruitmentResponse
 import com.teamsparta.tikitaka.domain.recruitment.dto.UpdateRecruitmentRequest
 import com.teamsparta.tikitaka.domain.recruitment.model.Recruitment
@@ -20,9 +19,10 @@ import org.springframework.stereotype.Service
 class LeaderRecruitmentServiceImpl(
     private val teamMemberRepository: TeamMemberRepository,
     private val recruitmentRepository: RecruitmentRepository,
-    private val recruitmentApplicationRepository: RecruitmentApplicationRepository
+    private val recruitmentApplicationRepository: RecruitmentApplicationRepository,
 ) : LeaderRecruitmentService {
-    override fun postRecruitment(principal: UserPrincipal, request: PostRecruitmentRequest): PostRecruitmentResponse {
+    override fun postRecruitment(principal: UserPrincipal, request: PostRecruitmentRequest): RecruitmentResponse {
+
 
         val leader = teamMemberRepository.findByIdOrNull(principal.id)
             ?: throw ModelNotFoundException("leader", principal.id)
@@ -33,8 +33,8 @@ class LeaderRecruitmentServiceImpl(
 
         val recruitment = recruitmentRepository.save(
             Recruitment.of(
-                teamId = request.teamId,
-                userId = request.userId,
+                teamId = leader.team.id!!,
+                userId = principal.id,
                 recruitType = request.recruitType,
                 quantity = request.quantity,
                 content = request.content,
@@ -42,7 +42,7 @@ class LeaderRecruitmentServiceImpl(
             )
         )
 
-        return PostRecruitmentResponse.from(recruitment)
+        return RecruitmentResponse.from(recruitment)
     }
 
     @Transactional
