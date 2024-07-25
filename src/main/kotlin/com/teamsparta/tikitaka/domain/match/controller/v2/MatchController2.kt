@@ -5,7 +5,6 @@ import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
 import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
-import com.teamsparta.tikitaka.domain.match.service.v1.MatchService
 import com.teamsparta.tikitaka.domain.match.service.v2.MatchService2
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
@@ -76,7 +75,8 @@ class MatchController2(
         @RequestParam("sort", defaultValue = "CREATED_AT") sort: String,
         @PageableDefault(size = 20) pageable: Pageable
     ): ResponseEntity<Page<MatchResponse>> {
-        val region = Region.fromString(region)
+        val trimmedRegion = region.trim()
+        val region = Region.fromString(trimmedRegion)
         val sort = SortCriteria.fromString(sort)
         return ResponseEntity.status(HttpStatus.OK)
             .body(matchService.getMatchesByRegionAndSort(region, pageable, sort))

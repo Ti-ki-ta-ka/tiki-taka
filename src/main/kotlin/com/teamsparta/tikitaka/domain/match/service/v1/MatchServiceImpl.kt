@@ -33,14 +33,14 @@ class MatchServiceImpl(
 
         val match = matchRepository.save(
             Match.of(
-                title = request.title,
+                title = request.title.trim(),
                 matchDate = request.matchDate,
-                location = request.location,
-                content = request.content,
+                location = request.location.trim(),
+                content = request.content.trim(),
                 matchStatus = false,
                 teamId = request.teamId,
                 userId = principal.id,
-                region = request.region,
+                region = Region.fromString(request.region.trim()),
             )
         )
 
