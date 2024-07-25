@@ -75,7 +75,8 @@ class MatchController(
         @RequestParam("sort", defaultValue = "CREATED_AT") sort: String,
         @PageableDefault(size = 20) pageable: Pageable
     ): ResponseEntity<Page<MatchResponse>> {
-        val region = Region.fromString(region)
+        val trimmedRegion = region.trim()
+        val region = Region.fromString(trimmedRegion)
         val sort = SortCriteria.fromString(sort)
         return ResponseEntity.status(HttpStatus.OK)
             .body(matchService.getMatchesByRegionAndSort(region, pageable, sort))
