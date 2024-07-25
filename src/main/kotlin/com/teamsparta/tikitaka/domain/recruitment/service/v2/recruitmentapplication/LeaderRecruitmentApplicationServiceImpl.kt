@@ -41,6 +41,9 @@ class LeaderRecruitmentApplicationServiceImpl(
         if (application.responseStatus == ResponseStatus.CANCELLED) {
             throw IllegalStateException("This application is already cancelled.")
         }
+        if (application.responseStatus == ResponseStatus.APPROVE || application.responseStatus == ResponseStatus.REJECT) {
+            throw IllegalStateException("You cannot respond to an application that has already been resolved.")
+        }
 
         val team = teamRepository.findByIdOrNull(recruitmentPost.teamId) ?: throw ModelNotFoundException(
             "team",
@@ -49,6 +52,11 @@ class LeaderRecruitmentApplicationServiceImpl(
         if (team.countMember >= 50) {
             throw IllegalStateException("The team is full and cannot accept more members.")
         }
+
+        if (request.responseStatus == ResponseStatus.CANCELLED.toString() && application.userId != userId) {
+            throw AccessDeniedException("Only the applicant can cancel their application.")
+        }
+        
         if (request.responseStatus == ResponseStatus.APPROVE.toString()) {
             team.countMember += 1
             teamService.addMember(application.userId, recruitmentPost.teamId)
