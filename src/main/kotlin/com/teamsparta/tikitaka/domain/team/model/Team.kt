@@ -19,10 +19,7 @@ class Team(
     var description: String,
 
     @Column(name = "count_member", nullable = false)
-    var numMember: Int = 1,
-
-    @Column(name = "max_member", nullable = false)
-    var maxMember: Int = 50,
+    var countMember: Int = 1,
 
     @Column(name = "tier")
     var tierScore: Int = 0,
