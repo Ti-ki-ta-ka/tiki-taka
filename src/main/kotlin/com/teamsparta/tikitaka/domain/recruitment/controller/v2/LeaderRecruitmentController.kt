@@ -3,10 +3,14 @@ package com.teamsparta.tikitaka.domain.recruitment.controller.v2
 import com.teamsparta.tikitaka.domain.recruitment.dto.PostRecruitmentRequest
 import com.teamsparta.tikitaka.domain.recruitment.dto.RecruitmentResponse
 import com.teamsparta.tikitaka.domain.recruitment.dto.UpdateRecruitmentRequest
+import com.teamsparta.tikitaka.domain.recruitment.dto.recruitmentapplication.RecruitmentApplicationResponse
 import com.teamsparta.tikitaka.domain.recruitment.service.v2.LeaderRecruitmentService
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -57,4 +61,22 @@ class LeaderRecruitmentController(
         leaderRecruitmentService.deleteRecruitmentPost(principal.id, recruitmentId)
         ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
+
+    @GetMapping("/recruitments/{recruitment-id}/recruitment-applications")
+    fun getRecruitmentApplications(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @PathVariable(name = "recruitment-id") recruitmentId: Long,
+        @PageableDefault(size = 10) pageable: Pageable,
+        @RequestParam responseStatus: String?
+    ): ResponseEntity<Page<RecruitmentApplicationResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            leaderRecruitmentService.getRecruitmentApplications(
+                principal.id,
+                recruitmentId,
+                pageable,
+                responseStatus
+            )
+        )
+    }
 }
+

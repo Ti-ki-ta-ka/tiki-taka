@@ -14,7 +14,10 @@ class RecruitmentApplication(
     val recruitment: Recruitment,
 
     @Column(name = "user_id", nullable = false)
-    var userId: Long,
+    val userId: Long,
+
+    @Column(name = "team_id", nullable = false)
+    val teamId: Long,
 
     @Enumerated(EnumType.STRING)
     var responseStatus: ResponseStatus = ResponseStatus.WAITING,
