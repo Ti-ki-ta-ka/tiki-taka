@@ -94,8 +94,10 @@ class MatchController2(
     fun searchMatch(
         pageable: Pageable,
         @RequestParam keyword: String,
+        @RequestParam("sort", defaultValue = "CREATED_AT") sort: String,
     ): ResponseEntity<Page<MatchResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(matchService.searchMatch(pageable, keyword))
+        val sort = SortCriteria.fromString(sort)
+        return ResponseEntity.status(HttpStatus.OK).body(matchService.searchMatch(pageable, keyword, sort))
     }
 
 

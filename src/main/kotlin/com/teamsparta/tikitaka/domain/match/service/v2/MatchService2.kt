@@ -23,6 +23,6 @@ interface MatchService2 {
     ): Page<MatchResponse>
 
     fun getMatchDetails(matchId: Long): MatchResponse
-    fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse>
+    fun searchMatch(pageable: Pageable, keyword: String, sortCriteria: SortCriteria): Page<MatchResponse>
 
 }
