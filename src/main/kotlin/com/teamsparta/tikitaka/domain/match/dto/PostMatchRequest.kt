@@ -8,5 +8,4 @@ data class PostMatchRequest(
     val region: String,
     val location: String,
     val content: String,
-    val teamId: Long,
 )

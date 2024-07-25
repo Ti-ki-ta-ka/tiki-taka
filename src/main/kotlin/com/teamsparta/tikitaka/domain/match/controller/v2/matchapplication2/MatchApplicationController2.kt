@@ -1,6 +1,8 @@
 package com.teamsparta.tikitaka.domain.match.controller.v2.matchapplication2
 
-import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationsResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.match.service.v2.matchapplication2.MatchApplicationService2
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
@@ -20,11 +22,10 @@ class MatchApplicationController2(
     fun applyMatch(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable(name = "match-id") matchId: Long,
-        @RequestBody request: CreateApplicationRequest
     ): ResponseEntity<MatchApplicationResponse> {
         return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER, TeamRole.SUB_LEADER)) {
             ResponseEntity.status(HttpStatus.CREATED)
-                .body(matchApplicationService.applyMatch(principal.id, request, matchId))
+                .body(matchApplicationService.applyMatch(principal.id, matchId))
         }
     }
 
@@ -51,8 +52,8 @@ class MatchApplicationController2(
 
     @GetMapping("/match-applications/my-applications")
     fun getMyApplications(
-        @RequestBody request: MyApplicationRequest
+        @AuthenticationPrincipal principal: UserPrincipal,
     ): ResponseEntity<List<MyApplicationsResponse>> {
-        return ResponseEntity.ok(matchApplicationService.getMyApplications(request))
+        return ResponseEntity.ok(matchApplicationService.getMyApplications(principal.id))
     }
 }
