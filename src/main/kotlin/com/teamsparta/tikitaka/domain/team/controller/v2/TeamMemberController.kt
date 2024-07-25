@@ -21,7 +21,7 @@ class TeamMemberController(
         @AuthenticationPrincipal principal: UserPrincipal,
     ): ResponseEntity<List<TeamMemberResponse>> {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(teamMemberService.getMyTeamMembers(principal))
+            .body(teamMemberService.getMyTeamMembers(principal.id))
     }
 
 }
