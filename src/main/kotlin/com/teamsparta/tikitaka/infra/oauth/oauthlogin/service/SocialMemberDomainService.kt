@@ -12,7 +12,7 @@ class SocialMemberDomainService(
 ) {
     fun registerIfAbsentKakao(userInfo: KakaoOAuthUserInfo): Users {
         val email = usersRepository.findByEmail(userInfo.kakaoAccount.accountEmail)
-        if (email != null) throw IllegalArgumentException("이미 가입되어 있는 이메일 입니다")
+        if (email != null) throw IllegalArgumentException("이미 가입되어 있는 이메일입니다")
         return usersRepository.findByOAuthProviderId(userInfo.id.toString()) ?: usersRepository.save(
             Users(
                 oAuthProvider = "KAKAO",
@@ -27,7 +27,7 @@ class SocialMemberDomainService(
 
     fun registerIfAbsentNaver(userInfo: NaverOAuthUserInfo): Users {
         val email = usersRepository.findByEmail(userInfo.response.email)
-        if (email != null) throw IllegalArgumentException("이미 가입되어 있는 이메일 입니다")
+        if (email != null) throw IllegalArgumentException("이미 가입되어 있는 이메일입니다")
         return usersRepository.findByOAuthProviderId(userInfo.response.id) ?: usersRepository.save(
             Users(
                 oAuthProvider = "NAVER",
