@@ -157,4 +157,106 @@ class MatchRepositoryImpl : CustomMatchRepository, QueryDslSupport() {
 
         return PageImpl(matchResponse, pageable, totalCount)
     }
+
+    override fun getMatchesByRegionsAndSort(
+        regions: List<Region>,
+        pageable: Pageable,
+        sortCriteria: SortCriteria
+    ): Page<MatchResponse> {
+        val whereClause = BooleanBuilder().apply {
+            and(match.region.`in`(regions))
+            if (sortCriteria == SortCriteria.DEADLINE) {
+                and(match.matchStatus.eq(false))
+            }
+        }
+
+        val totalCount = queryFactory.select(match.count())
+            .from(match)
+            .where(whereClause)
+            .fetchOne() ?: 0L
+
+        val query = queryFactory.selectFrom(match)
+            .where(whereClause)
+
+        when (sortCriteria) {
+            SortCriteria.CREATED_AT -> query.orderBy(match.createdAt.desc())
+            SortCriteria.DEADLINE -> query.orderBy(
+                Expressions.dateTemplate(
+                    LocalDateTime::class.java,
+                    "dateadd(day, -1, {0})",
+                    match.matchDate
+                ).asc()
+            )
+        }
+
+        val matches = query
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetch()
+
+        val matchResponse = matches.map { match ->
+            MatchResponse(
+                id = match.id!!,
+                teamId = match.teamId,
+                userId = match.userId,
+                title = match.title,
+                matchDate = match.matchDate,
+                location = match.location,
+                content = match.content,
+                matchStatus = match.matchStatus,
+                region = match.region,
+                createdAt = match.createdAt,
+            )
+        }
+
+        return PageImpl(matchResponse, pageable, totalCount)
+    }
+
+    private fun getMatchesByWhereClauseAndSort(
+        whereClause: BooleanBuilder,
+        pageable: Pageable,
+        sortCriteria: SortCriteria
+    ): Page<MatchResponse> {
+        val totalCount = queryFactory.select(match.count())
+            .from(match)
+            .where(whereClause)
+            .fetchOne() ?: 0L
+
+        val query = queryFactory.selectFrom(match)
+            .where(whereClause)
+
+        when (sortCriteria) {
+            SortCriteria.CREATED_AT -> query.orderBy(match.createdAt.desc())
+            SortCriteria.DEADLINE -> query.orderBy(
+                Expressions.dateTemplate(
+                    LocalDateTime::class.java,
+                    "dateadd(day, -1, {0})",
+                    match.matchDate
+                ).asc()
+            )
+        }
+
+        val matches = query
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetch()
+
+        val matchResponse = matches.map { match ->
+            MatchResponse(
+                id = match.id!!,
+                teamId = match.teamId,
+                userId = match.userId,
+                title = match.title,
+                matchDate = match.matchDate,
+                location = match.location,
+                content = match.content,
+                matchStatus = match.matchStatus,
+                region = match.region,
+                createdAt = match.createdAt,
+            )
+        }
+
+        return PageImpl(matchResponse, pageable, totalCount)
+    }
+
 }

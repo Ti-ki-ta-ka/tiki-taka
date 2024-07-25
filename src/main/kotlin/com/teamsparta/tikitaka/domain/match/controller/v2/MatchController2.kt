@@ -71,15 +71,15 @@ class MatchController2(
 
     @GetMapping("/region/{region}")
     fun getMatchesByRegionAndSort(
-        @PathVariable("region") region: String,
+        @PathVariable("region") regions: List<String>,
         @RequestParam("sort", defaultValue = "CREATED_AT") sort: String,
         @PageableDefault(size = 20) pageable: Pageable
     ): ResponseEntity<Page<MatchResponse>> {
-        val trimmedRegion = region.trim()
-        val region = Region.fromString(trimmedRegion)
+        val trimmedRegions = regions.map { it.trim() }
+        val regions = trimmedRegions.map { Region.fromString(it) }
         val sort = SortCriteria.fromString(sort)
         return ResponseEntity.status(HttpStatus.OK)
-            .body(matchService.getMatchesByRegionAndSort(region, pageable, sort))
+            .body(matchService.getMatchesByRegionAndSort(regions, pageable, sort))
     }
 
     @GetMapping("/{match-id}")

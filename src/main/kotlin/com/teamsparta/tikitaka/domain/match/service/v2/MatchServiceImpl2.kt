@@ -98,11 +98,11 @@ class MatchServiceImpl2(
     }
 
     override fun getMatchesByRegionAndSort(
-        region: Region,
+        region: List<Region>,
         pageable: Pageable,
         sortCriteria: SortCriteria
     ): Page<MatchResponse> {
-        return matchRepository.getMatchesByRegionAndSort(region, pageable, sortCriteria)
+        return matchRepository.getMatchesByRegionsAndSort(region, pageable, sortCriteria)
     }
 
     override fun getMatchDetails(
