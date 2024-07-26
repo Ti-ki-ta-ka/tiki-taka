@@ -12,7 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v2/leader/recruitments/{recruitment-id}/recruitment-application")
+@RequestMapping("/api/v2/leader/recruitments/{recruitment-id}/recruitment-applications")
 class LeaderRecruitmentApplicationController(
     private val preAuthorize: CustomPreAuthorize,
     private val applicationService: LeaderRecruitmentApplicationService,
