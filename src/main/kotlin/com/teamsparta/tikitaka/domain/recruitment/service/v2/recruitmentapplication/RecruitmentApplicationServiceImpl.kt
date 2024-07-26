@@ -7,7 +7,6 @@ import com.teamsparta.tikitaka.domain.recruitment.model.recruitmentapplication.R
 import com.teamsparta.tikitaka.domain.recruitment.model.recruitmentapplication.ResponseStatus
 import com.teamsparta.tikitaka.domain.recruitment.repository.RecruitmentRepository
 import com.teamsparta.tikitaka.domain.recruitment.repository.recruitmentapplication.RecruitmentApplicationRepository
-import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
@@ -18,8 +17,7 @@ import org.springframework.stereotype.Service
 class RecruitmentApplicationServiceImpl(
     private val recruitmentRepository: RecruitmentRepository,
     private val recruitmentApplicationRepository: RecruitmentApplicationRepository,
-    private val userRepository: UsersRepository,
-    private val teamRepository: TeamRepository
+    private val userRepository: UsersRepository
 ) : RecruitmentApplicationService {
     @Transactional
     override fun applyRecruitment(
@@ -36,7 +34,7 @@ class RecruitmentApplicationServiceImpl(
 
         val newApplication = RecruitmentApplication.of(recruitment, userId, "WAITING")
         return RecruitmentApplicationResponse.from(recruitmentApplicationRepository.save(newApplication))
-    }내
+    }
 
     @Transactional
     override fun cancelApplication(
@@ -58,7 +56,7 @@ class RecruitmentApplicationServiceImpl(
         val applications = recruitmentApplicationRepository.findByUserId(principal.id)
             ?: throw ModelNotFoundException("applications by userId", principal.id)
 
-        return applications.map{ RecruitmentApplicationResponse.from(it)}
+        return applications.map { RecruitmentApplicationResponse.from(it) }
     }
 
     private fun findApplicationById(applicationId: Long) =
