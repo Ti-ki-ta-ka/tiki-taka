@@ -36,7 +36,7 @@ class RecruitmentApplicationServiceImpl(
 
         val newApplication = RecruitmentApplication.of(recruitment, userId, "WAITING")
         return RecruitmentApplicationResponse.from(recruitmentApplicationRepository.save(newApplication))
-    }
+    }내
 
     @Transactional
     override fun cancelApplication(
@@ -52,6 +52,14 @@ class RecruitmentApplicationServiceImpl(
         return RecruitmentApplicationResponse.from(application)
     }
 
+    override fun getMyApplications(
+        principal: UserPrincipal
+    ): List<RecruitmentApplicationResponse> {
+        val applications = recruitmentApplicationRepository.findByUserId(principal.id)
+            ?: throw ModelNotFoundException("applications by userId", principal.id)
+
+        return applications.map{ RecruitmentApplicationResponse.from(it)}
+    }
 
     private fun findApplicationById(applicationId: Long) =
         recruitmentApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(

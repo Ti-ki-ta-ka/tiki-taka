@@ -10,4 +10,6 @@ interface RecruitmentApplicationService {
         recruitmentId: Long,
         applicationId: Long
     ): RecruitmentApplicationResponse
+
+    fun getMyApplications(principal: UserPrincipal): List<RecruitmentApplicationResponse>
 }
