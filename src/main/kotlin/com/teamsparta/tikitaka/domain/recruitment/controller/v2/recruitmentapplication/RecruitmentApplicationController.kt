@@ -35,5 +35,7 @@ class RecruitmentApplicationController(
         return ResponseEntity.status(HttpStatus.OK)
             .body(recruitmentApplicationService.cancelApplication(principal, recruitmentId, applicationId))
     }
+
+
 }
 

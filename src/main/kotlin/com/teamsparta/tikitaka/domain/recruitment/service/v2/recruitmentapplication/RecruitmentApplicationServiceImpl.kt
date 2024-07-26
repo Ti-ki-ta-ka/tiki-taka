@@ -41,6 +41,30 @@ class RecruitmentApplicationServiceImpl(
     override fun cancelApplication(
         principal: UserPrincipal, recruitmentId: Long, applicationId: Long
     ): RecruitmentApplicationResponse {
-        TODO()
+        val application = findApplicationById(applicationId)
+        if (application.userId != principal.id) {
+            throw AccessDeniedException(" You do not have permission to cancel.")
+        }
+        validateCancelable(application)
+        application.responseStatus = ResponseStatus.CANCELLED
+
+        return RecruitmentApplicationResponse.from(application)
     }
+
+
+    private fun findApplicationById(applicationId: Long) =
+        recruitmentApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
+            "recruitmentApplication",
+            applicationId
+        )
+
+    private fun validateCancelable(application: RecruitmentApplication) {
+        when (application.responseStatus) {
+            ResponseStatus.REJECT, ResponseStatus.APPROVE -> throw IllegalStateException("You cannot cancel an application that has already been approved or rejected.")
+            ResponseStatus.CANCELLED -> throw IllegalStateException("You already canceled this application.")
+            else -> {}
+        }
+    }
+
+
 }
