@@ -4,6 +4,7 @@ import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.TeamAlreadyAppliedException
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationsByIdResponse
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationsResponse
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.match.model.Match
@@ -103,7 +104,7 @@ class MatchApplicationServiceImpl2(
 
     override fun getMatchApplications(
         principal: UserPrincipal, matchId: Long, pageable: Pageable, approveStatus: String?
-    ): Page<MatchApplicationResponse> {
+    ): Page<MatchApplicationsByIdResponse> {
         val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException(
             "recruitment",
             matchId

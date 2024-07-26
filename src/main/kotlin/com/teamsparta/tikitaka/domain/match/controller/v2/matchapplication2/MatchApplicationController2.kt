@@ -1,6 +1,7 @@
 package com.teamsparta.tikitaka.domain.match.controller.v2.matchapplication2
 
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationsByIdResponse
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationsResponse
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.match.service.v2.matchapplication2.MatchApplicationService2
@@ -66,7 +67,7 @@ class MatchApplicationController2(
         @PathVariable(name = "match-id") matchId: Long,
         @PageableDefault(size = 10) pageable: Pageable,
         @RequestParam approveStatus: String?
-    ): ResponseEntity<Page<MatchApplicationResponse>> {
+    ): ResponseEntity<Page<MatchApplicationsByIdResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(
             matchApplicationService.getMatchApplications(
                 principal,

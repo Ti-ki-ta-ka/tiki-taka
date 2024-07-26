@@ -1,6 +1,7 @@
 package com.teamsparta.tikitaka.domain.match.service.v2.matchapplication2
 
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationsByIdResponse
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationsResponse
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.ReplyApplicationRequest
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
@@ -24,6 +25,6 @@ interface MatchApplicationService2 {
 
     fun getMatchApplications(
         principal: UserPrincipal, matchId: Long, pageable: Pageable, approveStatus: String?
-    ): Page<MatchApplicationResponse>
+    ): Page<MatchApplicationsByIdResponse>
 
 }

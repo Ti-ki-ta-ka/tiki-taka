@@ -82,7 +82,6 @@ class MatchServiceImpl2(
     ): MatchResponse {
 
         val match = findMatchById(matchId)
-
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
             "You do not have permission to delete."
         )
