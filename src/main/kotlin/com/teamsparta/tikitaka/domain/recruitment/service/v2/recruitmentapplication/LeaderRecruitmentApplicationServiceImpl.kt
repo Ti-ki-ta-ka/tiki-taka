@@ -56,12 +56,26 @@ class LeaderRecruitmentApplicationServiceImpl(
         if (request.responseStatus == ResponseStatus.CANCELLED.toString() && application.userId != userId) {
             throw AccessDeniedException("Only the applicant can cancel their application.")
         }
-        
+
         if (request.responseStatus == ResponseStatus.APPROVE.toString()) {
             team.countMember += 1
             teamService.addMember(application.userId, recruitmentPost.teamId)
         }
+
         application.responseStatus = ResponseStatus.valueOf(request.responseStatus)
+        if (application.responseStatus == ResponseStatus.APPROVE) {
+            rejectOtherApplications(recruitmentId, applicationId)
+        }
         return RecruitmentApplicationResponse.from(application)
+    }
+
+    private fun rejectOtherApplications(recruitmentId: Long, approvedApplicationId: Long) {
+        val otherApplications =
+            recruitmentApplicationRepository.findByRecruitmentIdAndResponseStatus(recruitmentId, ResponseStatus.WAITING)
+        for (application in otherApplications) {
+            if (application.id != approvedApplicationId) {
+                application.responseStatus = ResponseStatus.REJECT
+            }
+        }
     }
 }
