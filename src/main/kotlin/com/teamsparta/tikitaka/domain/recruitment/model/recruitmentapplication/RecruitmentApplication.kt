@@ -16,9 +16,6 @@ class RecruitmentApplication(
     @Column(name = "user_id", nullable = false)
     val userId: Long,
 
-    @Column(name = "team_id", nullable = false)
-    val teamId: Long,
-
     @Enumerated(EnumType.STRING)
     var responseStatus: ResponseStatus = ResponseStatus.WAITING,
 
@@ -34,5 +31,20 @@ class RecruitmentApplication(
 
     fun delete() {
         this.deletedAt = LocalDateTime.now()
+    }
+
+    companion object {
+        fun of(
+            recruitment: Recruitment,
+            userId: Long,
+            responseStatus: String
+        ): RecruitmentApplication {
+            return RecruitmentApplication(
+                recruitment = recruitment,
+                userId = userId,
+                responseStatus = ResponseStatus.fromString(responseStatus),
+                createdAt = LocalDateTime.now()
+            )
+        }
     }
 }
