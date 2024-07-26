@@ -70,15 +70,4 @@ class Users(
             }
         }
     }
-
-    fun updateUserRole(principal: UserPrincipal, role: TeamRole) {
-        val updatedUserPrincipal = UserPrincipal(
-            principal.id,
-            principal.name,
-            principal.authorities + SimpleGrantedAuthority("ROLE_${role}")
-        )
-        val authentication =
-            UsernamePasswordAuthenticationToken(updatedUserPrincipal, null, updatedUserPrincipal.authorities)
-        SecurityContextHolder.getContext().authentication = authentication
-    }
 }

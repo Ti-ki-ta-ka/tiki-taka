@@ -21,8 +21,7 @@ import java.time.LocalDateTime
 class LeaderTeamServiceImpl(
     private val teamMemberRepository: TeamMemberRepository,
     private val teamRepository: TeamRepository,
-    private val userRepository: UsersRepository,
-    private val teamRepository: TeamRepository,
+    private val userRepository: UsersRepository
 ) : LeaderTeamService {
 
     @Transactional
@@ -104,7 +103,6 @@ class LeaderTeamServiceImpl(
         val userCurrent = userRepository.findById(currentLeader.userId)
             .orElseThrow { ModelNotFoundException("user", currentLeader.userId) }
 
-        userCurrent.updateUserRole(principal, currentLeader.teamRole)
 
         val userNew =
             userRepository.findById(newLeader.userId).orElseThrow { ModelNotFoundException("user", newLeader.userId) }
