@@ -69,7 +69,7 @@ class MatchApplicationController2(
     ): ResponseEntity<Page<MatchApplicationResponse>> {
         return ResponseEntity.status(HttpStatus.OK).body(
             matchApplicationService.getMatchApplications(
-                principal.id,
+                principal,
                 matchId,
                 pageable,
                 approveStatus

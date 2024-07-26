@@ -102,9 +102,18 @@ class MatchApplicationServiceImpl2(
     }
 
     override fun getMatchApplications(
-        userId: Long, matchId: Long, pageable: Pageable, approveStatus: String?
+        principal: UserPrincipal, matchId: Long, pageable: Pageable, approveStatus: String?
     ): Page<MatchApplicationResponse> {
-        TODO()
+        val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException(
+            "recruitment",
+            matchId
+        )
+        if (matchPost.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
+            "You do not have permission to get match applications."
+        )
+        val applications =
+            matchApplicationRepository.findApplicationsByMatchId(pageable, matchId, approveStatus)
+        return applications
     }
 
     private fun findUserById(userId: Long) =

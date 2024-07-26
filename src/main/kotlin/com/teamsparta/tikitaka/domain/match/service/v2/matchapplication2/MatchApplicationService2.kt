@@ -23,10 +23,7 @@ interface MatchApplicationService2 {
     )
 
     fun getMatchApplications(
-        userId: Long,
-        matchId: Long,
-        pageable: Pageable,
-        approveStatus: String?
+        principal: UserPrincipal, matchId: Long, pageable: Pageable, approveStatus: String?
     ): Page<MatchApplicationResponse>
 
 }
