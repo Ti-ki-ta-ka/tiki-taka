@@ -3,16 +3,21 @@
 package com.teamsparta.tikitaka.domain.match.repository.matchapplication
 
 import com.querydsl.core.BooleanBuilder
-import com.teamsparta.tikitaka.domain.match.model.QMatch
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationsByIdResponse
+import com.teamsparta.tikitaka.domain.match.model.QMatch.match
+import com.teamsparta.tikitaka.domain.match.model.matchapplication.ApproveStatus
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
-import com.teamsparta.tikitaka.domain.match.model.matchapplication.QMatchApplication
+import com.teamsparta.tikitaka.domain.match.model.matchapplication.QMatchApplication.matchApplication
 import com.teamsparta.tikitaka.infra.querydsl.QueryDslSupport
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import java.time.LocalDate
 
 class MatchApplicationRepositoryImpl : CustomMatchApplicationRepository, QueryDslSupport() {
 
-    private val qMatchApplication = QMatchApplication.matchApplication
-    private val qMatch = QMatch.match
+    private val qMatchApplication = matchApplication
+    private val qMatch = match
 
     override fun findByTeamIdAndMatchDate(teamId: Long, matchDate: LocalDate): List<MatchApplication> {
 
@@ -41,5 +46,36 @@ class MatchApplicationRepositoryImpl : CustomMatchApplicationRepository, QueryDs
             .fetch()
 
         return content
+    }
+
+    override fun findApplicationsByMatchId(
+        pageable: Pageable,
+        matchId: Long,
+        approveStatus: String?
+    ): Page<MatchApplicationsByIdResponse> {
+        val whereClause = BooleanBuilder()
+        approveStatus?.let { whereClause.and(matchApplication.approveStatus.eq(ApproveStatus.fromString(it))) }
+        matchId.let { whereClause.and(matchApplication.matchPost.id.eq(it)) }
+
+        val totalCount =
+            queryFactory.select(matchApplication.count()).from(matchApplication).where(whereClause)
+                .fetchOne() ?: 0L
+
+        val applications =
+            queryFactory.selectFrom(matchApplication).leftJoin(matchApplication.matchPost, match)
+                .fetchJoin()
+                .where(whereClause).orderBy(matchApplication.createdAt.asc()).offset(pageable.offset)
+                .limit(pageable.pageSize.toLong()).fetch()
+
+        val matchApplicationResponse = applications.map { application ->
+            MatchApplicationsByIdResponse(
+                id = application.id!!,
+                applyUserId = application.applyUserId,
+                applyTeamId = application.applyTeamId,
+                approveStatus = application.approveStatus.toString(),
+                createdAt = application.createdAt
+            )
+        }
+        return PageImpl(matchApplicationResponse, pageable, totalCount)
     }
 }
