@@ -59,8 +59,6 @@ class JwtAuthenticationFilter(
                     principal = principal, details = WebAuthenticationDetailsSource().buildDetails(request)
                 )
                 SecurityContextHolder.getContext().authentication = authentication
-                println("context holder 반영 완료")
-                println("현재 나의 role : ${teamMember.teamRole}")
             }.onFailure {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token")
                 return
