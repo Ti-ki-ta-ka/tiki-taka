@@ -33,13 +33,12 @@ class RecruitmentApplicationServiceImpl(
             recruitmentId
         )
         if (recruitment.closingStatus) throw IllegalStateException("This recruitment has already been closed.")
-        val teamId = recruitment.teamId
 
-        val newApplication = RecruitmentApplication.of(recruitment, recruitment.teamId, userId, "WAITING")
+        val newApplication = RecruitmentApplication.of(recruitment, userId, "WAITING")
         return RecruitmentApplicationResponse.from(recruitmentApplicationRepository.save(newApplication))
     }
 
-
+    @Transactional
     override fun cancelApplication(
         principal: UserPrincipal, recruitmentId: Long, applicationId: Long
     ): RecruitmentApplicationResponse {
