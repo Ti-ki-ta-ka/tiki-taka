@@ -35,4 +35,21 @@ class RecruitmentApplication(
     fun delete() {
         this.deletedAt = LocalDateTime.now()
     }
+
+    companion object {
+        fun of(
+            recruitment: Recruitment,
+            userId: Long,
+            teamId: Long,
+            responseStatus: String
+        ): RecruitmentApplication {
+            return RecruitmentApplication(
+                recruitment = recruitment,
+                userId = userId,
+                teamId = teamId,
+                responseStatus = ResponseStatus.fromString(responseStatus),
+                createdAt = LocalDateTime.now()
+            )
+        }
+    }
 }
