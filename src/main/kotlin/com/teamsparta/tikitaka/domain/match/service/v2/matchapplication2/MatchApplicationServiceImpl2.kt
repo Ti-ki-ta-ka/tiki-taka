@@ -16,6 +16,8 @@ import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepos
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
@@ -54,10 +56,7 @@ class MatchApplicationServiceImpl2(
 
     @Transactional
     override fun replyMatchApplication(
-        userId: Long,
-        matchId: Long,
-        applicationId: Long,
-        request: ReplyApplicationRequest
+        userId: Long, matchId: Long, applicationId: Long, request: ReplyApplicationRequest
     ): MatchApplicationResponse {
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val (approveStatus) = request
@@ -102,6 +101,12 @@ class MatchApplicationServiceImpl2(
             .map { application -> MyApplicationsResponse.from(application) }
     }
 
+    override fun getMatchApplications(
+        userId: Long, matchId: Long, pageable: Pageable, approveStatus: String?
+    ): Page<MatchApplicationResponse> {
+        TODO()
+    }
+
     private fun findUserById(userId: Long) =
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
 
@@ -110,8 +115,7 @@ class MatchApplicationServiceImpl2(
 
     private fun findApplicationById(applicationId: Long) =
         matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
-            "MatchApplication",
-            applicationId
+            "MatchApplication", applicationId
         )
 
     private fun validateMatchAvailability(matchPost: Match, teamId: Long) {

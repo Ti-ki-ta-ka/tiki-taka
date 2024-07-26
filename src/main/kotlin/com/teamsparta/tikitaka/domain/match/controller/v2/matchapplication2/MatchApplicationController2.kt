@@ -7,6 +7,9 @@ import com.teamsparta.tikitaka.domain.match.service.v2.matchapplication2.MatchAp
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -55,5 +58,22 @@ class MatchApplicationController2(
         @AuthenticationPrincipal principal: UserPrincipal,
     ): ResponseEntity<List<MyApplicationsResponse>> {
         return ResponseEntity.ok(matchApplicationService.getMyApplications(principal.id))
+    }
+
+    @GetMapping("/{match-id}/match-applications")
+    fun getMatchApplications(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @PathVariable(name = "match-id") matchId: Long,
+        @PageableDefault(size = 10) pageable: Pageable,
+        @RequestParam approveStatus: String?
+    ): ResponseEntity<Page<MatchApplicationResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            matchApplicationService.getMatchApplications(
+                principal.id,
+                matchId,
+                pageable,
+                approveStatus
+            )
+        )
     }
 }
