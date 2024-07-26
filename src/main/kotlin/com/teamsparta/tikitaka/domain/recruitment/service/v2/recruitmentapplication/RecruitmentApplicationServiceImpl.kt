@@ -7,6 +7,7 @@ import com.teamsparta.tikitaka.domain.recruitment.model.recruitmentapplication.R
 import com.teamsparta.tikitaka.domain.recruitment.model.recruitmentapplication.ResponseStatus
 import com.teamsparta.tikitaka.domain.recruitment.repository.RecruitmentRepository
 import com.teamsparta.tikitaka.domain.recruitment.repository.recruitmentapplication.RecruitmentApplicationRepository
+import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
@@ -17,11 +18,12 @@ import org.springframework.stereotype.Service
 class RecruitmentApplicationServiceImpl(
     private val recruitmentRepository: RecruitmentRepository,
     private val recruitmentApplicationRepository: RecruitmentApplicationRepository,
-    private val userRepository: UsersRepository
+    private val userRepository: UsersRepository,
+    private val teamRepository: TeamRepository
 ) : RecruitmentApplicationService {
     @Transactional
     override fun applyRecruitment(
-        userId: Long, recruitmentId: Long, applicationId: Long
+        userId: Long, recruitmentId: Long
     ): RecruitmentApplicationResponse {
         val applicant = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("user", userId)
         if (applicant.teamStatus) throw IllegalStateException("you are already affiliated with another team.")
@@ -33,7 +35,7 @@ class RecruitmentApplicationServiceImpl(
         if (recruitment.closingStatus) throw IllegalStateException("This recruitment has already been closed.")
         val teamId = recruitment.teamId
 
-        val newApplication = RecruitmentApplication.of(recruitment, teamId, userId, "WAITING")
+        val newApplication = RecruitmentApplication.of(recruitment, recruitment.teamId, userId, "WAITING")
         return RecruitmentApplicationResponse.from(recruitmentApplicationRepository.save(newApplication))
     }
 

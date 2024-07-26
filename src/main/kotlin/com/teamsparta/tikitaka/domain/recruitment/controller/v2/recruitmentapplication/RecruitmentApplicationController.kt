@@ -15,14 +15,13 @@ class RecruitmentApplicationController(
     private val preAuthorize: CustomPreAuthorize,
     private val recruitmentApplicationService: RecruitmentApplicationService,
 ) {
-    @PostMapping("/{application-id}")
+    @PostMapping
     fun applyRecruitment(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable(name = "recruitment-id") recruitmentId: Long,
-        @PathVariable(name = "application-id") applicationId: Long,
     ): ResponseEntity<RecruitmentApplicationResponse> {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(recruitmentApplicationService.applyRecruitment(principal.id, recruitmentId, applicationId))
+            .body(recruitmentApplicationService.applyRecruitment(principal.id, recruitmentId))
 
     }
 

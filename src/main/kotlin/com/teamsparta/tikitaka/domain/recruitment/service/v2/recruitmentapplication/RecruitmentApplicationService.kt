@@ -4,7 +4,7 @@ import com.teamsparta.tikitaka.domain.recruitment.dto.recruitmentapplication.Rec
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 
 interface RecruitmentApplicationService {
-    fun applyRecruitment(userId: Long, recruitmentId: Long, applicationId: Long): RecruitmentApplicationResponse
+    fun applyRecruitment(userId: Long, recruitmentId: Long): RecruitmentApplicationResponse
     fun cancelApplication(
         principal: UserPrincipal,
         recruitmentId: Long,
