@@ -38,7 +38,6 @@ class RecruitmentApplicationRepositoryImpl : CustomRecruitmentApplicationReposit
             RecruitmentApplicationResponse(
                 applicationId = application.id!!,
                 userId = application.userId,
-                teamId = application.teamId,
                 responseStatus = application.responseStatus.toString(),
                 createdAt = application.createdAt
             )

@@ -20,8 +20,8 @@ import java.time.LocalDateTime
 @Service
 class LeaderTeamServiceImpl(
     private val teamMemberRepository: TeamMemberRepository,
+    private val userRepository: UsersRepository,
     private val teamRepository: TeamRepository,
-    private val userRepository: UsersRepository
 ) : LeaderTeamService {
 
     @Transactional
@@ -74,7 +74,6 @@ class LeaderTeamServiceImpl(
         return ReassignRoleResponse.from(teamMember)
     }
 
-
     @Transactional
     override fun delegateLeader(principal: UserPrincipal, teamMemberId: Long): DelegateLeaderResponse {
 
@@ -107,7 +106,6 @@ class LeaderTeamServiceImpl(
         val userNew =
             userRepository.findById(newLeader.userId).orElseThrow { ModelNotFoundException("user", newLeader.userId) }
 
-
         return DelegateLeaderResponse.from(newLeader)
     }
 
@@ -132,6 +130,7 @@ class LeaderTeamServiceImpl(
 
         return RemoveMemberResopnse.from(teamMember)
     }
+
     @Transactional
     override fun addMember(userId: Long, teamId: Long): TeamMember {
         val team = teamRepository.findById(teamId).orElseThrow { IllegalArgumentException("Invalid team ID: $teamId") }
