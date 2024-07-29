@@ -74,7 +74,6 @@ class LeaderTeamServiceImpl(
         return ReassignRoleResponse.from(teamMember)
     }
 
-
     @Transactional
     override fun delegateLeader(principal: UserPrincipal, teamMemberId: Long): DelegateLeaderResponse {
 
@@ -107,7 +106,6 @@ class LeaderTeamServiceImpl(
 
         val userNew =
             userRepository.findById(newLeader.userId).orElseThrow { ModelNotFoundException("user", newLeader.userId) }
-
 
         return DelegateLeaderResponse.from(newLeader)
     }
