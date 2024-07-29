@@ -27,8 +27,7 @@ class LeaderRecruitmentServiceImpl(
     override fun postRecruitment(principal: UserPrincipal, request: PostRecruitmentRequest): RecruitmentResponse {
 
 
-        val leader = teamMemberRepository.findByIdOrNull(principal.id)
-            ?: throw ModelNotFoundException("leader", principal.id)
+        val leader = teamMemberRepository.findByUserId(principal.id)
 
         if (leader.teamRole != TeamRole.LEADER) {
             throw IllegalArgumentException("Only the current leader can reassign roles")

@@ -63,12 +63,10 @@ class UsersServiceImpl(
         val accessToken = jwtPlugin.generateAccessToken(
             subject = user.id.toString(),
             email = user.email,
-            role = role
         )
         val refreshToken = jwtPlugin.generateRefreshToken(
             subject = user.id.toString(),
             email = user.email,
-            role = role
         )
         redisUtils.saveRefreshToken(refreshToken)
         return LoginResponse(userId = user.id!!, accessToken = accessToken, refreshToken = refreshToken)

@@ -102,7 +102,6 @@ class LeaderTeamServiceImpl(
         val userCurrent = userRepository.findById(currentLeader.userId)
             .orElseThrow { ModelNotFoundException("user", currentLeader.userId) }
 
-        userCurrent.updateUserRole(principal, currentLeader.teamRole)
 
         val userNew =
             userRepository.findById(newLeader.userId).orElseThrow { ModelNotFoundException("user", newLeader.userId) }

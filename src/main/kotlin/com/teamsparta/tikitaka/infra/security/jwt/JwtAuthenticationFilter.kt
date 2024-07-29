@@ -1,11 +1,16 @@
 package com.teamsparta.tikitaka.infra.security.jwt
 
+import com.teamsparta.tikitaka.domain.team.model.QTeam.team
+import com.teamsparta.tikitaka.domain.team.model.Team
+import com.teamsparta.tikitaka.domain.team.model.teammember.QTeamMember.teamMember
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
+import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.service.v1.UsersServiceImpl
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpHeaders
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
@@ -14,7 +19,10 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthenticationFilter(
-    private val jwtPlugin: JwtPlugin, private val usersService: UsersServiceImpl
+    private val jwtPlugin: JwtPlugin,
+    private val usersService: UsersServiceImpl,
+    private val teamMemberRepository: TeamMemberRepository
+
 ) : OncePerRequestFilter() {
 
     companion object {
@@ -34,7 +42,14 @@ class JwtAuthenticationFilter(
             jwtPlugin.validateToken(jwt).onSuccess { claims ->
                 val userId = claims.payload.subject.toLong()
                 val name = claims.payload.get("email", String::class.java)
-                val role: TeamRole? = claims.payload["role"]?.let { TeamRole.valueOf(it as String) }
+                val role: TeamRole? = try {
+                    val teamMember = teamMemberRepository.findByUserId(userId)
+                    teamMember.teamRole
+                } catch (e: Exception){
+                    null
+                }
+
+
 
                 val principal = UserPrincipal(
                     id = userId, name = name, role = role

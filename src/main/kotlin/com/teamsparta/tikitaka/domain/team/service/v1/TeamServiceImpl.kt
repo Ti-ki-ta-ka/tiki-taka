@@ -57,8 +57,6 @@ class TeamServiceImpl(
         if (user.teamStatus) throw IllegalStateException("유저는 하나의 팀에 소속될 수 있습니다.")
         user.teamStatus = true
 
-        user.updateUserRole(principal, TeamRole.LEADER)
-
         val team = request.toEntity(principal.id)
         return TeamResponse.from(teamRepository.save(team))
             .also {
