@@ -51,7 +51,6 @@ class UsersServiceImpl(
             throw InvalidCredentialException("비밀번호가 일치하지 않습니다")
         }
 
-
         val role = when {
             user.teamStatus -> {
                 val teamMember = teamMemberRepository.findByUserId(user.id!!)
