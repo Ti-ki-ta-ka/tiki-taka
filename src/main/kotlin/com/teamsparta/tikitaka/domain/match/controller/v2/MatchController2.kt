@@ -2,6 +2,7 @@ package com.teamsparta.tikitaka.domain.match.controller.v2
 
 import com.teamsparta.tikitaka.domain.common.Region
 import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
+import com.teamsparta.tikitaka.domain.match.dto.MyTeamMatchResponse
 import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
@@ -100,5 +101,16 @@ class MatchController2(
         return ResponseEntity.status(HttpStatus.OK).body(matchService.searchMatch(pageable, keyword, sort))
     }
 
-
+    @GetMapping("/my-team-matches")
+    fun getMyTeamMatches(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @PageableDefault(size = 10) pageable: Pageable,
+        @RequestParam matchStatus: Boolean?
+    ): ResponseEntity<Page<MyTeamMatchResponse>> {
+        return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER, TeamRole.SUB_LEADER, TeamRole.MEMBER)) {
+            ResponseEntity.status(HttpStatus.OK).body(
+                matchService.getMyTeamMatches(principal, pageable, matchStatus)
+            )
+        }
+    }
 }
