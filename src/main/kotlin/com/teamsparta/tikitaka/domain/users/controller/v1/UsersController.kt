@@ -1,4 +1,4 @@
-package com.teamsparta.tikitaka.domain.users.controller
+package com.teamsparta.tikitaka.domain.users.controller.v1
 
 import com.teamsparta.tikitaka.domain.users.dto.*
 import com.teamsparta.tikitaka.domain.users.dto.LoginRequest

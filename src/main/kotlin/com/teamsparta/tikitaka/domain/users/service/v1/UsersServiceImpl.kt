@@ -71,7 +71,7 @@ class UsersServiceImpl(
             role = role
         )
         redisUtils.saveRefreshToken(refreshToken)
-        return LoginResponse(accessToken = accessToken, refreshToken = refreshToken)
+        return LoginResponse(userId = user.id!!, accessToken = accessToken, refreshToken = refreshToken)
     }
 
     override fun logOut(token: String) {

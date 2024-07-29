@@ -3,7 +3,10 @@ package com.teamsparta.tikitaka.domain.match.service.v2.matchapplication2
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.TeamAlreadyAppliedException
-import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationsByIdResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationsResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.match.model.Match
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.ApproveStatus
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
@@ -14,6 +17,8 @@ import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepos
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
@@ -28,11 +33,12 @@ class MatchApplicationServiceImpl2(
 ) : MatchApplicationService2 {
 
     @Transactional
-    override fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse {
+    override fun applyMatch(userId: Long, matchId: Long): MatchApplicationResponse {
         findUserById(userId)
         val matchPost = findMatchById(matchId)
-        val (teamId) = request
-        validateMatchAvailability(matchPost, teamId)
+        val teamMember = teamMemberRepository.findByUserId(userId)
+        val teamId = teamMember.team.id
+        validateMatchAvailability(matchPost, teamId!!)
         validateExistingApplications(teamId, matchId, matchPost.matchDate.toLocalDate())
 
         val newApplication = MatchApplication.of(matchPost, teamId, userId)
@@ -51,10 +57,7 @@ class MatchApplicationServiceImpl2(
 
     @Transactional
     override fun replyMatchApplication(
-        userId: Long,
-        matchId: Long,
-        applicationId: Long,
-        request: ReplyApplicationRequest
+        userId: Long, matchId: Long, applicationId: Long, request: ReplyApplicationRequest
     ): MatchApplicationResponse {
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
         val (approveStatus) = request
@@ -90,9 +93,28 @@ class MatchApplicationServiceImpl2(
         return MatchApplicationResponse.from(matchApply)
     }
 
-    override fun getMyApplications(request: MyApplicationRequest): List<MyApplicationsResponse> {
-        return matchApplicationRepository.findByApplyTeamId(request.teamId)
+    override fun getMyApplications(userId: Long): List<MyApplicationsResponse> {
+
+        val teamMember = teamMemberRepository.findByUserId(userId)
+        val teamId = teamMember.team.id
+
+        return matchApplicationRepository.findByApplyTeamId(teamId!!)
             .map { application -> MyApplicationsResponse.from(application) }
+    }
+
+    override fun getMatchApplications(
+        principal: UserPrincipal, matchId: Long, pageable: Pageable, approveStatus: String?
+    ): Page<MatchApplicationsByIdResponse> {
+        val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException(
+            "recruitment",
+            matchId
+        )
+        if (matchPost.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
+            "You do not have permission to get match applications."
+        )
+        val applications =
+            matchApplicationRepository.findApplicationsByMatchId(pageable, matchId, approveStatus)
+        return applications
     }
 
     private fun findUserById(userId: Long) =
@@ -103,8 +125,7 @@ class MatchApplicationServiceImpl2(
 
     private fun findApplicationById(applicationId: Long) =
         matchApplicationRepository.findByIdOrNull(applicationId) ?: throw ModelNotFoundException(
-            "MatchApplication",
-            applicationId
+            "MatchApplication", applicationId
         )
 
     private fun validateMatchAvailability(matchPost: Match, teamId: Long) {

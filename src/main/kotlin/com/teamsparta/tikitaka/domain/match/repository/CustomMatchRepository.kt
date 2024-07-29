@@ -7,7 +7,18 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
 interface CustomMatchRepository {
-    fun searchMatchByPageableAndKeyword(pageable: Pageable, keyword: String?): Page<MatchResponse>
+    fun searchMatchByPageableAndKeyword(
+        pageable: Pageable,
+        keyword: String?,
+        sortCriteria: SortCriteria
+    ): Page<MatchResponse>
+
     fun getAvailableMatchesAndSort(pageable: Pageable, sortCriteria: SortCriteria): Page<MatchResponse>
     fun getMatchesByRegionAndSort(region: Region, pageable: Pageable, sortCriteria: SortCriteria): Page<MatchResponse>
+    fun getMatchesByRegionsAndSort(
+        region: List<Region>,
+        pageable: Pageable,
+        sortCriteria: SortCriteria
+    ): Page<MatchResponse>
+
 }

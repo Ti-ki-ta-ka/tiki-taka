@@ -10,6 +10,7 @@ import com.teamsparta.tikitaka.domain.match.model.Match
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
+import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional
 class MatchServiceImpl2(
     private val matchRepository: MatchRepository,
     private val teamRepository: TeamRepository,
+    private val teamMemberRepository: TeamMemberRepository,
 ) : MatchService2 {
 
     @Transactional
@@ -31,21 +33,24 @@ class MatchServiceImpl2(
         request: PostMatchRequest,
     ): MatchResponse {
 
+        val teamMember = teamMemberRepository.findByUserId(principal.id)
+        val teamId = teamMember.team.id
+
         val match = matchRepository.save(
             Match.of(
-                title = request.title,
+                title = request.title.trim(),
                 matchDate = request.matchDate,
-                location = request.location,
-                content = request.content,
+                location = request.location.trim(),
+                content = request.content.trim(),
                 matchStatus = false,
-                teamId = request.teamId,
+                teamId = teamId!!,
                 userId = principal.id,
-                region = request.region,
+                region = Region.fromString(request.region.trim()),
             )
         )
 
-        val team = teamRepository.findByIdOrNull(request.teamId)
-            ?: throw ModelNotFoundException("team", request.teamId)
+        val team = teamRepository.findByIdOrNull(teamId)
+            ?: throw ModelNotFoundException("team", teamId)
 
         return MatchResponse.from(match)
     }
@@ -57,8 +62,7 @@ class MatchServiceImpl2(
         request: UpdateMatchRequest,
     ): MatchResponse {
 
-        val match = matchRepository.findByIdOrNull(matchId)
-            ?: throw ModelNotFoundException("match", matchId)
+        val match = findMatchById(matchId)
 
 
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER")))
@@ -76,9 +80,8 @@ class MatchServiceImpl2(
         principal: UserPrincipal,
         matchId: Long,
     ): MatchResponse {
-        val match = matchRepository.findByIdOrNull(matchId)
-            ?: throw ModelNotFoundException("match", matchId)
 
+        val match = findMatchById(matchId)
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
             "You do not have permission to delete."
         )
@@ -98,11 +101,11 @@ class MatchServiceImpl2(
     }
 
     override fun getMatchesByRegionAndSort(
-        region: Region,
+        region: List<Region>,
         pageable: Pageable,
         sortCriteria: SortCriteria
     ): Page<MatchResponse> {
-        return matchRepository.getMatchesByRegionAndSort(region, pageable, sortCriteria)
+        return matchRepository.getMatchesByRegionsAndSort(region, pageable, sortCriteria)
     }
 
     override fun getMatchDetails(
@@ -113,8 +116,11 @@ class MatchServiceImpl2(
             ?: throw ModelNotFoundException("match", matchId)
     }
 
-    override fun searchMatch(pageable: Pageable, keyword: String): Page<MatchResponse> {
-        return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword)
+    override fun searchMatch(pageable: Pageable, keyword: String, sortCriteria: SortCriteria): Page<MatchResponse> {
+        return matchRepository.searchMatchByPageableAndKeyword(pageable, keyword, sortCriteria)
     }
+
+    private fun findMatchById(matchId: Long) =
+        matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("Match", matchId)
 
 }

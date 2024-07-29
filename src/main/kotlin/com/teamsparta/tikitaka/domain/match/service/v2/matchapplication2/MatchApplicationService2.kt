@@ -1,10 +1,15 @@
 package com.teamsparta.tikitaka.domain.match.service.v2.matchapplication2
 
-import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationsByIdResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationsResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.ReplyApplicationRequest
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
 interface MatchApplicationService2 {
-    fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse
+    fun applyMatch(userId: Long, matchId: Long): MatchApplicationResponse
 
     fun replyMatchApplication(
         userId: Long,
@@ -13,10 +18,13 @@ interface MatchApplicationService2 {
         request: ReplyApplicationRequest
     ): MatchApplicationResponse
 
-
-    fun getMyApplications(request: MyApplicationRequest): List<MyApplicationsResponse>
-
+    fun getMyApplications(userId: Long): List<MyApplicationsResponse>
     fun cancelMatchApplication(
         principal: UserPrincipal, matchId: Long, applicationId: Long
     )
+
+    fun getMatchApplications(
+        principal: UserPrincipal, matchId: Long, pageable: Pageable, approveStatus: String?
+    ): Page<MatchApplicationsByIdResponse>
+
 }

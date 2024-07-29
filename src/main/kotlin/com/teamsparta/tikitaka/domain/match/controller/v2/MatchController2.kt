@@ -5,7 +5,6 @@ import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
 import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
-import com.teamsparta.tikitaka.domain.match.service.v1.MatchService
 import com.teamsparta.tikitaka.domain.match.service.v2.MatchService2
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
@@ -72,14 +71,15 @@ class MatchController2(
 
     @GetMapping("/region/{region}")
     fun getMatchesByRegionAndSort(
-        @PathVariable("region") region: String,
+        @PathVariable("region") regions: List<String>,
         @RequestParam("sort", defaultValue = "CREATED_AT") sort: String,
         @PageableDefault(size = 20) pageable: Pageable
     ): ResponseEntity<Page<MatchResponse>> {
-        val region = Region.fromString(region)
+        val trimmedRegions = regions.map { it.trim() }
+        val regions = trimmedRegions.map { Region.fromString(it) }
         val sort = SortCriteria.fromString(sort)
         return ResponseEntity.status(HttpStatus.OK)
-            .body(matchService.getMatchesByRegionAndSort(region, pageable, sort))
+            .body(matchService.getMatchesByRegionAndSort(regions, pageable, sort))
     }
 
     @GetMapping("/{match-id}")
@@ -94,8 +94,10 @@ class MatchController2(
     fun searchMatch(
         pageable: Pageable,
         @RequestParam keyword: String,
+        @RequestParam("sort", defaultValue = "CREATED_AT") sort: String,
     ): ResponseEntity<Page<MatchResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(matchService.searchMatch(pageable, keyword))
+        val sort = SortCriteria.fromString(sort)
+        return ResponseEntity.status(HttpStatus.OK).body(matchService.searchMatch(pageable, keyword, sort))
     }
 
 

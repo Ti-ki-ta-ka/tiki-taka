@@ -3,7 +3,9 @@ package com.teamsparta.tikitaka.domain.match.service.v1.matchapplication
 import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.common.exception.TeamAlreadyAppliedException
-import com.teamsparta.tikitaka.domain.match.dto.matchapplication.*
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationsResponse
+import com.teamsparta.tikitaka.domain.match.dto.matchapplication.ReplyApplicationRequest
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.ApproveStatus
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
@@ -26,15 +28,17 @@ class MatchApplicationServiceImpl
     private val teamMemberRepository: TeamMemberRepository
 ) : MatchApplicationService {
     @Transactional
-    override fun applyMatch(userId: Long, request: CreateApplicationRequest, matchId: Long): MatchApplicationResponse {
+    override fun applyMatch(userId: Long, matchId: Long): MatchApplicationResponse {
         usersRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
 
         val matchPost = matchRepository.findByIdOrNull(matchId) ?: throw ModelNotFoundException("match", matchId)
-        val (teamId) = request
+
+        val teamMember = teamMemberRepository.findByUserId(userId)
+        val teamId = teamMember.team.id
 
         val matchDate = matchPost.matchDate.toLocalDate()
 
-        val existingApplications = matchApplicationRepository.findByTeamIdAndMatchDate(teamId, matchDate)
+        val existingApplications = matchApplicationRepository.findByTeamIdAndMatchDate(teamId!!, matchDate)
         if (existingApplications.any { it.approveStatus == ApproveStatus.WAITING || it.approveStatus == ApproveStatus.APPROVE }) {
             throw TeamAlreadyAppliedException("Your team already has a pending or approved application for the same match date.")
         }
@@ -95,10 +99,11 @@ class MatchApplicationServiceImpl
         return MatchApplicationResponse.from(matchApply)
     }
 
-    override fun getMyApplications(
-        request: MyApplicationRequest
-    ): List<MyApplicationsResponse> {
-        return matchApplicationRepository.findByApplyTeamId(request.teamId)
+    override fun getMyApplications(userId: Long): List<MyApplicationsResponse> {
+
+        val teamMember = teamMemberRepository.findByUserId(userId)
+        val teamId = teamMember.team.id
+        return matchApplicationRepository.findByApplyTeamId(teamId!!)
             .map { application -> MyApplicationsResponse.from(application) }
     }
 }
