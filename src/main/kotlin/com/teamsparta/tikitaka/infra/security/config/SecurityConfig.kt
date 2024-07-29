@@ -39,7 +39,6 @@ class SecurityConfig(
                     "/api/v1/matches/available",
                     "/api/v2/users/log-in",
                     "/api/v2/users/sign-up",
-                    "/api/v2/matches/**",
                     "/api/v2/users/token/refresh",
                     "/api/v2/matches/searches",
                     "/api/v2/matches/by-deadline",

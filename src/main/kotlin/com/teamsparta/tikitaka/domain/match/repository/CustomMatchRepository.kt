@@ -2,6 +2,7 @@ package com.teamsparta.tikitaka.domain.match.repository
 
 import com.teamsparta.tikitaka.domain.common.Region
 import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
+import com.teamsparta.tikitaka.domain.match.dto.MyTeamMatchResponse
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -20,5 +21,11 @@ interface CustomMatchRepository {
         pageable: Pageable,
         sortCriteria: SortCriteria
     ): Page<MatchResponse>
+
+    fun findMatchesByTeamId(
+        pageable: Pageable,
+        teamId: Long,
+        matchStatus: Boolean?
+    ): Page<MyTeamMatchResponse>
 
 }
