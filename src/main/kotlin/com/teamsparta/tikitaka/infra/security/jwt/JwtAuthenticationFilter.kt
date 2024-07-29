@@ -59,6 +59,7 @@ class JwtAuthenticationFilter(
                     principal = principal, details = WebAuthenticationDetailsSource().buildDetails(request)
                 )
                 SecurityContextHolder.getContext().authentication = authentication
+                request.setAttribute("accessToken", jwt)
             }.onFailure {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token")
                 return
