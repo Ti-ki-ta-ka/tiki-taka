@@ -15,7 +15,6 @@ class WebConfig {
                     .allowedOrigins("http://localhost:3000")
                     .allowedOrigins("http://localhost:5173")
                     .allowedOrigins("https://futeamatching.vercel.app")
-                    .allowedOrigins("https://www.futeamatching.com")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS")
                     .allowedHeaders("*")
                     .exposedHeaders("Authorization", "RefreshToken")
