@@ -19,4 +19,9 @@ interface LeaderRecruitmentService {
         pageable: Pageable,
         responseStatus: String?
     ): Page<RecruitmentApplicationResponse>
+
+    fun getMyTeamRecruitments(
+        principal: UserPrincipal,
+        pageable: Pageable
+    ): Page<RecruitmentResponse>
 }

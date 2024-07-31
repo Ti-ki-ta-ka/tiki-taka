@@ -10,6 +10,7 @@ import com.teamsparta.tikitaka.domain.recruitment.model.Recruitment
 import com.teamsparta.tikitaka.domain.recruitment.repository.RecruitmentRepository
 import com.teamsparta.tikitaka.domain.recruitment.repository.recruitmentapplication.RecruitmentApplicationRepository
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
+import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import jakarta.transaction.Transactional
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class LeaderRecruitmentServiceImpl(
+    private val teamRepository: TeamRepository,
     private val teamMemberRepository: TeamMemberRepository,
     private val recruitmentRepository: RecruitmentRepository,
     private val recruitmentApplicationRepository: RecruitmentApplicationRepository,
@@ -121,5 +123,24 @@ class LeaderRecruitmentServiceImpl(
         val applications =
             recruitmentApplicationRepository.findApplicationsByRecruitmentId(pageable, recruitmentId, responseStatus)
         return applications
+    }
+
+    override fun getMyTeamRecruitments(
+        principal: UserPrincipal,
+        pageable: Pageable
+    ): Page<RecruitmentResponse> {
+
+        val leader = teamMemberRepository.findByUserId(principal.id)
+        val team = teamRepository.findByIdOrNull(leader.team.id!!)
+            ?: throw ModelNotFoundException("f", leader.team.id)
+
+        if (leader.teamRole != TeamRole.LEADER) {
+            throw AccessDeniedException(" only leader can access it.")
+        }
+
+        val recruitments = recruitmentRepository.findByTeamId(team.id!!, pageable)
+
+        return recruitments.map { recruitment -> RecruitmentResponse.from(recruitment) }
+
     }
 }

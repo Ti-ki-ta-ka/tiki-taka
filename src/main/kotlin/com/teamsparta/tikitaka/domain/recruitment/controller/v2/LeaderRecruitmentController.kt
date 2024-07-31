@@ -62,7 +62,7 @@ class LeaderRecruitmentController(
         ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 
-    @GetMapping("/recruitments/{recruitment-id}/recruitment-applications")
+    @GetMapping("/{recruitment-id}/recruitment-applications")
     fun getRecruitmentApplications(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable(name = "recruitment-id") recruitmentId: Long,
@@ -78,5 +78,17 @@ class LeaderRecruitmentController(
             )
         )
     }
+
+    @GetMapping()
+    fun getMyTeamRecruitmentPosts(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @PageableDefault(size = 20) pageable: Pageable,
+    ): ResponseEntity<Page<RecruitmentResponse>> {
+        return preAuthorize.hasAnyRole(principal, setOf(TeamRole.LEADER)) {
+            ResponseEntity.status(HttpStatus.OK)
+                .body(leaderRecruitmentService.getMyTeamRecruitments(principal, pageable))
+        }
+    }
 }
+
 
