@@ -8,6 +8,8 @@ import com.teamsparta.tikitaka.domain.match.model.QMatch.match
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.ApproveStatus
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.MatchApplication
 import com.teamsparta.tikitaka.domain.match.model.matchapplication.QMatchApplication.matchApplication
+import com.teamsparta.tikitaka.domain.team.model.QTeam.team
+import com.teamsparta.tikitaka.domain.users.model.QUsers.users
 import com.teamsparta.tikitaka.infra.querydsl.QueryDslSupport
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -18,6 +20,9 @@ class MatchApplicationRepositoryImpl : CustomMatchApplicationRepository, QueryDs
 
     private val qMatchApplication = matchApplication
     private val qMatch = match
+    private val qUsers = users
+    private val qTeam = team
+
 
     override fun findByTeamIdAndMatchDate(teamId: Long, matchDate: LocalDate): List<MatchApplication> {
 
@@ -57,25 +62,40 @@ class MatchApplicationRepositoryImpl : CustomMatchApplicationRepository, QueryDs
         approveStatus?.let { whereClause.and(matchApplication.approveStatus.eq(ApproveStatus.fromString(it))) }
         matchId.let { whereClause.and(matchApplication.matchPost.id.eq(it)) }
 
-        val totalCount =
-            queryFactory.select(matchApplication.count()).from(matchApplication).where(whereClause)
-                .fetchOne() ?: 0L
-
-        val applications =
-            queryFactory.selectFrom(matchApplication).leftJoin(matchApplication.matchPost, match)
-                .fetchJoin()
-                .where(whereClause).orderBy(matchApplication.createdAt.asc()).offset(pageable.offset)
-                .limit(pageable.pageSize.toLong()).fetch()
-
-        val matchApplicationResponse = applications.map { application ->
-            MatchApplicationsByIdResponse(
-                id = application.id!!,
-                applyUserId = application.applyUserId,
-                applyTeamId = application.applyTeamId,
-                approveStatus = application.approveStatus.toString(),
-                createdAt = application.createdAt
+        val applications = queryFactory
+            .select(
+                matchApplication.id,
+                users.name,
+                team.name,
+                matchApplication.approveStatus,
+                matchApplication.createdAt
             )
+            .from(matchApplication)
+            .leftJoin(users).on(users.id.eq(matchApplication.applyUserId))
+            .leftJoin(team).on(team.id.eq(matchApplication.applyTeamId))
+            .where(whereClause)
+            .orderBy(matchApplication.createdAt.asc())
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetch()
+
+        val totalCount = queryFactory
+            .select(matchApplication.count())
+            .from(matchApplication)
+            .where(whereClause)
+            .fetchOne() ?: 0L
+
+        val matchApplicationResponses = applications.mapNotNull { tuple ->
+            if (tuple.get(matchApplication.id) != null && tuple.get(matchApplication.createdAt) != null) {
+                MatchApplicationsByIdResponse(
+                    id = tuple.get(matchApplication.id)!!,
+                    applyUserName = tuple.get(users.name) ?: "Unknown",
+                    applyTeamName = tuple.get(team.name) ?: "Unknown",
+                    approveStatus = tuple.get(matchApplication.approveStatus)?.toString() ?: "Pending",
+                    createdAt = tuple.get(matchApplication.createdAt)!!
+                )
+            } else null
         }
-        return PageImpl(matchApplicationResponse, pageable, totalCount)
+        return PageImpl(matchApplicationResponses, pageable, totalCount)
     }
 }

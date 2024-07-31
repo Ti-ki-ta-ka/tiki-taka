@@ -4,6 +4,7 @@ import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.types.dsl.Expressions
 import com.teamsparta.tikitaka.domain.common.Region
 import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
+import com.teamsparta.tikitaka.domain.match.dto.MyTeamMatchResponse
 import com.teamsparta.tikitaka.domain.match.model.QMatch
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.infra.querydsl.QueryDslSupport
@@ -118,4 +119,37 @@ class MatchRepositoryImpl : CustomMatchRepository, QueryDslSupport() {
         return PageImpl(matchResponse, pageable, totalCount)
     }
 
+    override fun findMatchesByTeamId(
+        pageable: Pageable,
+        teamId: Long,
+        matchStatus: Boolean?
+    ): Page<MyTeamMatchResponse> {
+        val whereClause = BooleanBuilder()
+        matchStatus?.let { whereClause.and(match.matchStatus.eq(matchStatus)) }
+        teamId.let { whereClause.and(match.teamId.eq(it)) }
+
+        val totalCount =
+            queryFactory.select(match.count()).from(match).where(whereClause)
+                .fetchOne() ?: 0L
+
+        val matches =
+            queryFactory.selectFrom(match)
+                .where(whereClause).orderBy(match.createdAt.desc()).offset(pageable.offset)
+                .limit(pageable.pageSize.toLong()).fetch()
+
+        val myTeamMatchResponse = matches.map { match ->
+            MyTeamMatchResponse(
+                id = match.id!!,
+                userId = match.userId,
+                title = match.title,
+                matchDate = match.matchDate,
+                region = match.region,
+                location = match.location,
+                content = match.content,
+                matchStatus = match.matchStatus,
+                createdAt = match.createdAt
+            )
+        }
+        return PageImpl(myTeamMatchResponse, pageable, totalCount)
+    }
 }

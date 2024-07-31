@@ -5,20 +5,27 @@ import java.time.LocalDateTime
 
 data class MatchApplicationsByIdResponse(
     val id: Long,
-    val applyUserId: Long,
-    val applyTeamId: Long,
+    val applyUserName: String,
+    val applyTeamName: String,
     val approveStatus: String,
     val createdAt: LocalDateTime
 ) {
     companion object {
-        fun from(matchApplication: MatchApplication): MatchApplicationsByIdResponse {
+        fun from(
+            matchApplication: MatchApplication,
+            userName: String,
+            teamName: String
+        ): MatchApplicationsByIdResponse {
             return MatchApplicationsByIdResponse(
                 id = matchApplication.id!!,
-                applyUserId = matchApplication.applyUserId,
-                applyTeamId = matchApplication.applyTeamId,
+                applyUserName = userName,
+                applyTeamName = teamName,
                 approveStatus = matchApplication.approveStatus.name,
                 createdAt = matchApplication.createdAt
             )
         }
     }
 }
+
+
+

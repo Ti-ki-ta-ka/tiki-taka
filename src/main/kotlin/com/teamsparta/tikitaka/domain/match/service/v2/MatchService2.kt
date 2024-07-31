@@ -2,6 +2,7 @@ package com.teamsparta.tikitaka.domain.match.service.v2
 
 import com.teamsparta.tikitaka.domain.common.Region
 import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
+import com.teamsparta.tikitaka.domain.match.dto.MyTeamMatchResponse
 import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
@@ -24,5 +25,9 @@ interface MatchService2 {
 
     fun getMatchDetails(matchId: Long): MatchResponse
     fun searchMatch(pageable: Pageable, keyword: String, sortCriteria: SortCriteria): Page<MatchResponse>
-
+    fun getMyTeamMatches(
+        principal: UserPrincipal,
+        pageable: Pageable,
+        matchStatus: Boolean?
+    ): Page<MyTeamMatchResponse>
 }
