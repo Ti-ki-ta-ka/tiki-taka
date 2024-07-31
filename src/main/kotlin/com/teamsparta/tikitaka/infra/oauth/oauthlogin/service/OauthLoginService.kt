@@ -22,7 +22,7 @@ class OauthLoginService(
         val accessToken = kakaoOAuthLoginClient.getAccessToken(code)
         val userInfo = kakaoOAuthLoginClient.retrieveUserInfo(accessToken)
         val users = socialMemberDomainService.registerIfAbsentKakao(userInfo)
-
+        
         return jwtPlugin.generateAccessToken(users.id.toString(), users.email)
     }
 
