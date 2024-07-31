@@ -68,7 +68,7 @@ class UsersServiceImpl(
             email = user.email,
         )
         redisUtils.saveRefreshToken(refreshToken)
-        return LoginResponse(userId = user.id!!, accessToken = accessToken, refreshToken = refreshToken)
+        return LoginResponse(userId = user.id!!, userName = user.name,accessToken = accessToken, refreshToken = refreshToken)
     }
 
     override fun logOut(token: String) {
