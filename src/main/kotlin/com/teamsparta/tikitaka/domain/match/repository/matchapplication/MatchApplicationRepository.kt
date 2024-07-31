@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface MatchApplicationRepository : JpaRepository<MatchApplication, Long>, CustomMatchApplicationRepository {
     fun findByApplyTeamIdAndMatchPostId(applyTeamId: Long, matchPostId: Long): List<MatchApplication>
     fun findByMatchPostIdAndApproveStatus(matchPostId: Long, approveStatus: ApproveStatus): List<MatchApplication>
+    fun findByMatchPostId(matchId: Long): List<MatchApplication>?
 }
