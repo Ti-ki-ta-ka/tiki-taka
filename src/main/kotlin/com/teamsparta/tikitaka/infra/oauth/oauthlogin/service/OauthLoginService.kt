@@ -30,7 +30,7 @@ class OauthLoginService(
 
             else -> null
         }
-        return jwtPlugin.generateAccessToken(users.id.toString(), users.email, role)
+        return jwtPlugin.generateAccessToken(users.id.toString(), users.email)
     }
 
     fun generateNaverLoginPageUrl(): String {
@@ -49,6 +49,6 @@ class OauthLoginService(
 
             else -> null
         }
-        return jwtPlugin.generateAccessToken(users.id.toString(), users.email, role)
+        return jwtPlugin.generateAccessToken(users.id.toString(), users.email)
     }
 }

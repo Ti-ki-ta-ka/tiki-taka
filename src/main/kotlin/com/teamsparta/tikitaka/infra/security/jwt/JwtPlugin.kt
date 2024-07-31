@@ -60,12 +60,13 @@ class JwtPlugin(
         val claims =
             validateToken(refreshToken).getOrElse { throw InvalidCredentialException("Invalid Refresh Token") }.payload
         val userId = claims.subject.toLong()
+        val userName = claims.subject
         val subject = claims.subject
         val email = claims["email"].toString()
 
         val newAccessToken = generateAccessToken(subject, email)
         val newRefreshToken = generateRefreshToken(subject, email)
 
-        return LoginResponse(userId, newAccessToken, newRefreshToken)
+        return LoginResponse(userId, userName,newAccessToken, newRefreshToken)
     }
 }
