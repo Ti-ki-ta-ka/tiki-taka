@@ -27,7 +27,7 @@ class SuccessMatch(
     @Column(name = "created_at", nullable = false)
     val createdAt: LocalDateTime,
 
-    @Column(name = "deleted_at", nullable = false)
+    @Column(name = "deleted_at", nullable = true)
     val deletedAt: LocalDateTime
 ) {
     @Id
