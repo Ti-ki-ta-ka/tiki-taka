@@ -20,6 +20,8 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 @Service
@@ -98,6 +100,14 @@ class MatchServiceImpl2(
         return matchRepository.findAll(pageable)
             .map { match -> MatchResponse.from(match) }
     }
+
+    override fun getMatchesByDateAndRegion(pageable: Pageable, matchDate: LocalDate, regions: List<Region>?): Page<MatchResponse> {
+        val startOfDay = matchDate.atStartOfDay()
+        val endOfDay = matchDate.atTime(23, 59, 59, 999)
+        return matchRepository.findByDateAndRegions(startOfDay, endOfDay, regions, pageable)
+            .map { match -> MatchResponse.from(match) }
+    }
+
 
     override fun getAvailableMatchesAndSort(pageable: Pageable, sortCriteria: SortCriteria): Page<MatchResponse> {
         return matchRepository.getAvailableMatchesAndSort(pageable, sortCriteria)
