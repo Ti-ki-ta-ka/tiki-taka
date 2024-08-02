@@ -6,4 +6,5 @@ import com.teamsparta.tikitaka.infra.security.UserPrincipal
 
 interface EvaluationService {
     fun evaluate(evaluationId: Long, principal: UserPrincipal, request: EvaluationRequest): EvaluationResponse
+    fun calculateAndUpdateScores()
 }

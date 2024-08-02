@@ -1,6 +1,6 @@
 package com.teamsparta.tikitaka.infra.security.config
 
-import com.teamsparta.tikitaka.domain.evaluation.service.EvaluationService
+import com.teamsparta.tikitaka.domain.evaluation.service.v3.EvaluationService
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.core.step.tasklet.Tasklet
