@@ -45,11 +45,14 @@ class EvaluationServiceImpl(
 
     @Transactional
     override fun calculateAndUpdateScores() {
-        val startDate = LocalDateTime.now().minusDays(90)
+        val now = LocalDateTime.now()
+        val startDate = now.minusDays(90)
+        val endDate = now.withHour(0).withMinute(0).withSecond(0).withNano(0)
+
         val teams = teamRepository.findAll()
 
         teams.forEach { team ->
-            val evaluations = evaluationRepository.findEvaluationsForTeamFromLast90Days(team.id!!, startDate)
+            val evaluations = evaluationRepository.findEvaluationsForTeamFromLast90Days(team.id!!, startDate, endDate)
             val totalMannerScore = evaluations.sumOf { it.mannerScore }
             val totalSkillScore = evaluations.sumOf { it.skillScore }
             val totalAttendanceScore = evaluations.sumOf { it.attendanceScore }
