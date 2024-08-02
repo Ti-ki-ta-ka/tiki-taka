@@ -1,4 +1,6 @@
 package com.teamsparta.tikitaka.domain.evaluation.repository
 
-interface EvaluationRepository {
-}
+import com.teamsparta.tikitaka.domain.evaluation.model.Evaluation
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface EvaluationRepository : JpaRepository<Evaluation, Long>, CustomEvaluationRepository
