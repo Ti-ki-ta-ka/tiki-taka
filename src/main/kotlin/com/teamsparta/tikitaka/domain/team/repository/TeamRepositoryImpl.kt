@@ -16,7 +16,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 
 @Repository
-class CustomTeamRepositoryImpl : CustomTeamRepository, QueryDslSupport() {
+class TeamRepositoryImpl : CustomTeamRepository, QueryDslSupport() {
 
     private val team = QTeam.team
 

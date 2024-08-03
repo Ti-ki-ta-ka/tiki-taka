@@ -58,6 +58,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
     kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
+    implementation("org.springframework.boot:spring-boot-starter-batch")
 
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

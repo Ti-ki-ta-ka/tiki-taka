@@ -10,6 +10,7 @@ import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.Match
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.domain.match.repository.MatchRepository
+import com.teamsparta.tikitaka.domain.match.repository.matchapplication.MatchApplicationRepository
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
@@ -30,6 +31,7 @@ class MatchServiceImpl2(
     private val teamRepository: TeamRepository,
     private val teamMemberRepository: TeamMemberRepository,
     private val usersRepository: UsersRepository,
+    private val matchApplicationRepository: MatchApplicationRepository,
 ) : MatchService2 {
 
     @Transactional
@@ -90,10 +92,15 @@ class MatchServiceImpl2(
         if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
             "You do not have permission to delete."
         )
-
         match.softDelete()
+        deleteRelatedApplications(matchId)
 
         return MatchResponse.from(match)
+    }
+
+    private fun deleteRelatedApplications(matchId: Long) {
+        val applications = matchApplicationRepository.findByMatchPostId(matchId)
+        applications?.forEach { it.delete() }
     }
 
     override fun getMatches(pageable: Pageable): Page<MatchResponse> {

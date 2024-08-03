@@ -22,11 +22,6 @@ class OauthLoginService(
         val accessToken = kakaoOAuthLoginClient.getAccessToken(code)
         val userInfo = kakaoOAuthLoginClient.retrieveUserInfo(accessToken)
         val users = socialMemberDomainService.registerIfAbsentKakao(userInfo)
-
-
-            else -> null
-        }
-
         return jwtPlugin.generateAccessToken(users.id.toString(), users.email)
     }
 
@@ -38,11 +33,6 @@ class OauthLoginService(
         val accessToken = naverOAuthLoginClient.getAccessToken(code)
         val userInfo = naverOAuthLoginClient.retrieveUserInfo(accessToken)
         val users = socialMemberDomainService.registerIfAbsentNaver(userInfo)
-
-
-            else -> null
-        }
-
         return jwtPlugin.generateAccessToken(users.id.toString(), users.email)
     }
 }
