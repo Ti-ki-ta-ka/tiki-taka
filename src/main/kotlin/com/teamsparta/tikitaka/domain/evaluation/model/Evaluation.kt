@@ -40,4 +40,33 @@ class Evaluation(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
+
+    fun updateEvaluation(
+        request: EvaluationRequest
+    ) {
+        validateMannerScore(request.mannerScore)
+        validateSkillScore(request.skillScore)
+        validateAttendanceScore(request.attendanceScore)
+        this.mannerScore = request.mannerScore
+        this.skillScore = request.skillScore
+        this.attendanceScore = request.attendanceScore
+    }
+}
+
+private fun validateMannerScore(score: Int) {
+    if (score < 0 || score > 100) {
+        throw IllegalArgumentException("올바른 값을 입력해주세요!")
+    }
+}
+
+private fun validateSkillScore(score: Int) {
+    if (score < 0 || score > 100) {
+        throw IllegalArgumentException("올바른 값을 입력해주세요!")
+    }
+}
+
+private fun validateAttendanceScore(score: Int) {
+    if (score < 0 || score > 100) {
+        throw IllegalArgumentException("올바른 값을 입력해주세요!")
+    }
 }
