@@ -61,6 +61,7 @@ dependencies {
     kapt("jakarta.annotation:jakarta.annotation-api")
     kapt("jakarta.persistence:jakarta.persistence-api")
     implementation("org.springframework.boot:spring-boot-starter-batch")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
