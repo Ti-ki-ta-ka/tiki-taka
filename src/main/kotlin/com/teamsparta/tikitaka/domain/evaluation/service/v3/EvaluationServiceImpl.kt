@@ -92,4 +92,11 @@ class EvaluationServiceImpl(
 
 
     }
+
+    @Transactional
+    override fun softDeleteOldEvaluations() {
+        val now = LocalDateTime.now()
+        val threshold = now.minusMonths(3)
+        evaluationRepository.softDeleteOldEvaluations(threshold, now)
+    }
 }

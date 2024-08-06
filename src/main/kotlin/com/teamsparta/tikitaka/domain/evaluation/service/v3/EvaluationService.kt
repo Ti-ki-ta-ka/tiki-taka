@@ -9,4 +9,5 @@ interface EvaluationService {
     fun evaluate(evaluationId: Long, principal: UserPrincipal, request: EvaluationRequest): EvaluationResponse
     fun calculateAndUpdateScores()
     fun createEvaluationsForMatch(match: SuccessMatch)
+    fun softDeleteOldEvaluations()
 }
