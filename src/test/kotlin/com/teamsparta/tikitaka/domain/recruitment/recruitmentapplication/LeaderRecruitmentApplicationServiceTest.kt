@@ -336,7 +336,7 @@ class LeaderRecruitmentApplicationServiceTest {
     }
 
     @Test
-    fun `지원서를 승인하고 팀 멤버 수를 업데이트`() {
+    fun `지원서를 승인하면 팀 멤버 수를 업데이트하고 다른 지원서를 거부 상태로 변경`() {
         val usersId = 1L
         val recruitmentId = 1L
         val applicationId = 1L
@@ -353,7 +353,7 @@ class LeaderRecruitmentApplicationServiceTest {
             id = recruitmentId
         }
 
-        val application = RecruitmentApplication(
+        val approvedApplication = RecruitmentApplication(
             userId = 2L,
             recruitment = recruitmentPost,
             responseStatus = ResponseStatus.WAITING,
@@ -361,6 +361,20 @@ class LeaderRecruitmentApplicationServiceTest {
         ).apply {
             id = applicationId
         }
+
+        val otherApplication1 = RecruitmentApplication(
+            userId = 3L,
+            recruitment = recruitmentPost,
+            responseStatus = ResponseStatus.WAITING,
+            createdAt = LocalDateTime.now()
+        ).apply { id = 2L }
+
+        val otherApplication2 = RecruitmentApplication(
+            userId = 4L,
+            recruitment = recruitmentPost,
+            responseStatus = ResponseStatus.WAITING,
+            createdAt = LocalDateTime.now()
+        ).apply { id = 3L }
 
         val team = Team(
             name = "Test Team",
@@ -382,13 +396,13 @@ class LeaderRecruitmentApplicationServiceTest {
                 applicationId,
                 recruitmentId
             )
-        } returns application
+        } returns approvedApplication
         every {
             recruitmentApplicationRepository.findByRecruitmentIdAndResponseStatus(
                 recruitmentId,
                 ResponseStatus.WAITING
             )
-        } returns listOf(application)
+        } returns listOf(approvedApplication, otherApplication1, otherApplication2)
         every { teamRepository.findByIdOrNull(1L) } returns team
         every { userRepository.findByIdOrNull(2L) } returns user
         every { teamService.addMember(2L, 1L) } answers {
@@ -406,6 +420,8 @@ class LeaderRecruitmentApplicationServiceTest {
         response.responseStatus shouldBe ResponseStatus.APPROVE.toString()
         team.countMember shouldBe 11
 
+        otherApplication1.responseStatus shouldBe ResponseStatus.REJECT
+        otherApplication2.responseStatus shouldBe ResponseStatus.REJECT
     }
 
 }
