@@ -14,16 +14,13 @@ import com.teamsparta.tikitaka.domain.recruitment.service.v2.recruitmentapplicat
 import com.teamsparta.tikitaka.domain.team.model.Team
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamMember
 import com.teamsparta.tikitaka.domain.team.repository.TeamRepository
-import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
 import com.teamsparta.tikitaka.domain.team.service.v2.LeaderTeamService
-import com.teamsparta.tikitaka.domain.team.service.v2.LeaderTeamServiceImpl
 import com.teamsparta.tikitaka.domain.users.model.Users
 import com.teamsparta.tikitaka.domain.users.repository.UsersRepository
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -33,22 +30,16 @@ import java.time.LocalDateTime
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class LeaderRecruitmentApplicationServiceTest {
-    val recruitmentRepository = mockk<RecruitmentRepository>()
-    val recruitmentApplicationRepository = mockk<RecruitmentApplicationRepository>()
-    val teamRepository = mockk<TeamRepository>()
-    private val teamMemberRepository = mockk<TeamMemberRepository>()
+    private val recruitmentRepository = mockk<RecruitmentRepository>()
+    private val recruitmentApplicationRepository = mockk<RecruitmentApplicationRepository>()
+    private val teamRepository = mockk<TeamRepository>()
     private val userRepository = mockk<UsersRepository>()
-    val teamService = mockk<LeaderTeamService>()
+    private val teamService = mockk<LeaderTeamService>()
     private val service = LeaderRecruitmentApplicationServiceImpl(
         recruitmentRepository,
         recruitmentApplicationRepository,
         teamRepository,
         teamService
-    )
-    private val leaderTeamService = LeaderTeamServiceImpl(
-        teamMemberRepository,
-        userRepository,
-        teamRepository
     )
 
     @Test
@@ -381,12 +372,9 @@ class LeaderRecruitmentApplicationServiceTest {
 
         val user = Users(
             email = "test",
-            password = "testpw",
+            password = "test_pw",
             name = "testUser",
         ).apply { id = 2L }
-
-        val teamMemberSlot = slot<TeamMember>()
-        val userSlot = slot<Users>()
 
         every { recruitmentRepository.findByIdOrNull(recruitmentId) } returns recruitmentPost
         every {
@@ -403,8 +391,6 @@ class LeaderRecruitmentApplicationServiceTest {
         } returns listOf(application)
         every { teamRepository.findByIdOrNull(1L) } returns team
         every { userRepository.findByIdOrNull(2L) } returns user
-        every { userRepository.save(capture(userSlot)) } answers { userSlot.captured }
-        every { teamMemberRepository.save(capture(teamMemberSlot)) } answers { teamMemberSlot.captured }
         every { teamService.addMember(2L, 1L) } answers {
             val newTeamMember = TeamMember(
                 userId = 2L,
