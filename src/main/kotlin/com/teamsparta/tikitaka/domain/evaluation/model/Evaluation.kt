@@ -1,5 +1,6 @@
 package com.teamsparta.tikitaka.domain.evaluation.model
 
+import com.teamsparta.tikitaka.domain.evaluation.dto.EvaluationRequest
 import jakarta.persistence.*
 import org.hibernate.annotations.SQLRestriction
 import java.time.LocalDateTime
