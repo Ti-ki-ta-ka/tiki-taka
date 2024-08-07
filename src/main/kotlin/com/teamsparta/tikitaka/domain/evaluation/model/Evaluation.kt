@@ -1,12 +1,7 @@
 package com.teamsparta.tikitaka.domain.evaluation.model
 
 import com.teamsparta.tikitaka.domain.evaluation.dto.EvaluationRequest
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.hibernate.annotations.SQLRestriction
 import java.time.LocalDateTime
 
@@ -39,12 +34,13 @@ class Evaluation(
     val createdAt: LocalDateTime,
 
     @Column(name = "deleted_at", nullable = true)
-    val deletedAt: LocalDateTime
+    val deletedAt: LocalDateTime? = null,
 
-) {
+    ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
 
     fun updateEvaluation(
         request: EvaluationRequest
