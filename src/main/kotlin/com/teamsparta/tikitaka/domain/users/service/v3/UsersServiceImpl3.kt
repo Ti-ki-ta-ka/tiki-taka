@@ -5,7 +5,7 @@ import com.teamsparta.tikitaka.domain.common.exception.InvalidCredentialExceptio
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.common.util.RedisUtils
 import com.teamsparta.tikitaka.domain.team.repository.teamMember.TeamMemberRepository
-import com.teamsparta.tikitaka.domain.users.dto.CodeDto
+import com.teamsparta.tikitaka.domain.users.dto.CodeResponse
 import com.teamsparta.tikitaka.domain.users.dto.LoginRequest
 import com.teamsparta.tikitaka.domain.users.dto.LoginResponse
 import com.teamsparta.tikitaka.domain.users.dto.NameRequest
@@ -38,7 +38,7 @@ class UsersServiceImpl3(
 
     override fun createCode(
         email: String
-    ): CodeDto {
+    ): CodeResponse {
         val authCode = emailService.createNumber()
         verificationCodes[email] = authCode
 
@@ -47,7 +47,7 @@ class UsersServiceImpl3(
         } catch (e: MessagingException) {
             throw IllegalArgumentException("메일 발송 중 오류가 발생했습니다.")
         }
-        return CodeDto(authCode)
+        return CodeResponse(authCode)
     }
 
     @Transactional

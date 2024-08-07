@@ -1,6 +1,6 @@
 package com.teamsparta.tikitaka.domain.users.service.v3
 
-import com.teamsparta.tikitaka.domain.users.dto.EmailDto
+import com.teamsparta.tikitaka.domain.users.dto.EmailRequest
 import jakarta.mail.internet.MimeMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
@@ -53,7 +53,7 @@ class EmailServiceImpl(
         }
     }
 
-    override fun emailCheck(request: EmailDto): String {
+    override fun emailCheck(request: EmailRequest): String {
         val authCode = createNumber()
         sendVerificationEmail(request.email, authCode)
 

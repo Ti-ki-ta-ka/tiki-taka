@@ -2,7 +2,7 @@ package com.teamsparta.tikitaka.domain.users.controller.v3
 
 import com.teamsparta.tikitaka.domain.recruitment.dto.recruitmentapplication.RecruitmentApplicationResponse
 import com.teamsparta.tikitaka.domain.recruitment.service.v2.recruitmentapplication.RecruitmentApplicationService
-import com.teamsparta.tikitaka.domain.users.dto.CodeDto
+import com.teamsparta.tikitaka.domain.users.dto.CodeResponse
 import com.teamsparta.tikitaka.domain.users.dto.LoginRequest
 import com.teamsparta.tikitaka.domain.users.dto.LoginResponse
 import com.teamsparta.tikitaka.domain.users.dto.NameRequest
@@ -35,7 +35,7 @@ class UsersController3(
     @PostMapping("/create-code")
     fun createCode(
         @RequestParam email: String,
-    ): ResponseEntity<CodeDto> {
+    ): ResponseEntity<CodeResponse> {
         return ResponseEntity.ok(userService.createCode(email))
     }
 
