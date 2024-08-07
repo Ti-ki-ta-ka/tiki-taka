@@ -4,7 +4,7 @@ import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicatio
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MatchApplicationsByIdResponse
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.MyApplicationsResponse
 import com.teamsparta.tikitaka.domain.match.dto.matchapplication.ReplyApplicationRequest
-import com.teamsparta.tikitaka.domain.match.service.v2.matchapplication2.MatchApplicationService2
+import com.teamsparta.tikitaka.domain.match.service.v3.matchapplication3.MatchApplicationService3
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v3/matches")
 @RestController
 class MatchApplicationController3(
-    private val matchApplicationService: MatchApplicationService2,
+    private val matchApplicationService: MatchApplicationService3,
     private val preAuthorize: CustomPreAuthorize,
 ) {
     @PostMapping("/{match-id}/match-applications")

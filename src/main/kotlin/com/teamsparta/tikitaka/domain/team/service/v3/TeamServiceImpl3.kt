@@ -104,7 +104,7 @@ class TeamServiceImpl3(
     }
 
     @StopWatch
-    @Cacheable("getTeams", cacheManager = "redisCacheManager")
+    @Cacheable("getTeams")
     override fun getTeams(
         region: String?,
         page: Int,

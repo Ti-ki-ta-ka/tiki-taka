@@ -104,14 +104,14 @@ class MatchServiceImpl3(
         applications?.forEach { it.delete() }
     }
 
-    @Cacheable("getMatches", cacheManager = "redisCacheManager")
+    @Cacheable("getMatches")
     override fun getMatches(pageable: Pageable): Page<MatchResponse> {
         return matchRepository.findAll(pageable)
             .map { match -> MatchResponse.from(match) }
     }
 
     @StopWatch
-    @Cacheable("getMatchesByDateAndRegion", cacheManager = "redisCacheManager")
+    @Cacheable("getMatchesByDateAndRegion")
     override fun getMatchesByDateAndRegion(
         pageable: Pageable,
         matchDate: LocalDate,
@@ -123,12 +123,12 @@ class MatchServiceImpl3(
             .map { match -> MatchResponse.from(match) }
     }
 
-    @Cacheable("getAvailableMatchesAndSort", cacheManager = "redisCacheManager")
+    @Cacheable("getAvailableMatchesAndSort")
     override fun getAvailableMatchesAndSort(pageable: Pageable, sortCriteria: SortCriteria): Page<MatchResponse> {
         return matchRepository.getAvailableMatchesAndSort(pageable, sortCriteria)
     }
 
-    @Cacheable("getMatchesByRegionAndSort", cacheManager = "redisCacheManager")
+    @Cacheable("getMatchesByRegionAndSort")
     override fun getMatchesByRegionAndSort(
         region: List<Region>,
         pageable: Pageable,
@@ -137,7 +137,7 @@ class MatchServiceImpl3(
         return matchRepository.getMatchesByRegionsAndSort(region, pageable, sortCriteria)
     }
 
-    @Cacheable("getMatchDetails", cacheManager = "redisCacheManager")
+    @Cacheable("getMatchDetails")
     override fun getMatchDetails(
         matchId: Long
     ): MatchResponse {

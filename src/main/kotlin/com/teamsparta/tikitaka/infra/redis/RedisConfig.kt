@@ -37,7 +37,7 @@ class RedisConfig {
         return template
     }
 
-    @Bean("redisCacheManager")
+    @Bean()
     fun cacheManager(): CacheManager {
         val redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofMinutes(1))

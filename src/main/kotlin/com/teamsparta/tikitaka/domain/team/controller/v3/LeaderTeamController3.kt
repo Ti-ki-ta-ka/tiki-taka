@@ -5,7 +5,7 @@ import com.teamsparta.tikitaka.domain.team.dto.response.DelegateLeaderResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.ReassignRoleResponse
 import com.teamsparta.tikitaka.domain.team.dto.response.RemoveMemberResopnse
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
-import com.teamsparta.tikitaka.domain.team.service.v2.LeaderTeamService2
+import com.teamsparta.tikitaka.domain.team.service.v3.LeaderTeamService3
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.http.HttpStatus
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v3/leader/team-members/{team-member-id}")
 class LeaderTeamController3(
     private val preAuthorize: CustomPreAuthorize,
-    private val leaderTeamService2: LeaderTeamService2,
+    private val leaderTeamService2: LeaderTeamService3,
 ) {
 
     @PutMapping("/reassign")

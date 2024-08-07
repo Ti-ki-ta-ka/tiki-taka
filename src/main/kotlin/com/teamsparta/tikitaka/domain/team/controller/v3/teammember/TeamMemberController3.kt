@@ -2,7 +2,7 @@ package com.teamsparta.tikitaka.domain.team.controller.v3.teammember
 
 import com.teamsparta.tikitaka.domain.team.dto.response.RemoveMemberResopnse
 import com.teamsparta.tikitaka.domain.team.dto.response.TeamMemberResponse
-import com.teamsparta.tikitaka.domain.team.service.v2.teammember.TeamMemberService2
+import com.teamsparta.tikitaka.domain.team.service.v3.teammember.TeamMemberService3
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v3/team-members")
 @RestController
 class TeamMemberController3(
-    private val teamMemberService: TeamMemberService2,
+    private val teamMemberService: TeamMemberService3,
 ) {
 
     @GetMapping()

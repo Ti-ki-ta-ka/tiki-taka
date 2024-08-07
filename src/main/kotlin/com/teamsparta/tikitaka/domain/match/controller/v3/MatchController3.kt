@@ -6,7 +6,7 @@ import com.teamsparta.tikitaka.domain.match.dto.MyTeamMatchResponse
 import com.teamsparta.tikitaka.domain.match.dto.PostMatchRequest
 import com.teamsparta.tikitaka.domain.match.dto.UpdateMatchRequest
 import com.teamsparta.tikitaka.domain.match.model.SortCriteria
-import com.teamsparta.tikitaka.domain.match.service.v2.MatchService2
+import com.teamsparta.tikitaka.domain.match.service.v3.MatchService3
 import com.teamsparta.tikitaka.domain.team.model.teammember.TeamRole
 import com.teamsparta.tikitaka.infra.security.CustomPreAuthorize
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
@@ -22,7 +22,7 @@ import java.time.LocalDate
 @RestController
 @RequestMapping("/api/v3/matches")
 class MatchController3(
-    private val matchService: MatchService2,
+    private val matchService: MatchService3,
     private val preAuthorize: CustomPreAuthorize,
 ) {
     @PostMapping("/create")
