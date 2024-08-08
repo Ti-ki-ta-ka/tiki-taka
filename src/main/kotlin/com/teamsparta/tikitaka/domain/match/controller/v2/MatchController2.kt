@@ -46,7 +46,7 @@ class MatchController2(
 
         return preAuthorize.matchPermission(principal, match) {
             ResponseEntity.status(HttpStatus.OK)
-                .body(matchService.updateMatch(principal, matchId, request))
+                .body(matchService.updateMatch(principal, matchId, request, match))
         }
     }
 
@@ -59,7 +59,7 @@ class MatchController2(
 
         return preAuthorize.matchPermission(principal, match) {
             ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(matchService.deleteMatch(principal, matchId))
+                .body(matchService.deleteMatch(principal, matchId, match))
         }
     }
 

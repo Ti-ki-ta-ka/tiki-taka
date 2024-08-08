@@ -64,9 +64,8 @@ class MatchServiceImpl2(
         principal: UserPrincipal,
         matchId: Long,
         request: UpdateMatchRequest,
+        match: Match
     ): MatchResponse {
-        val match = findMatchById(matchId)
-
         match.updateMatch(request)
         return MatchResponse.from(match)
     }
@@ -75,9 +74,8 @@ class MatchServiceImpl2(
     override fun deleteMatch(
         principal: UserPrincipal,
         matchId: Long,
+        match: Match
     ): MatchResponse {
-        val match = findMatchById(matchId)
-
         match.softDelete()
         deleteRelatedApplications(matchId)
 
