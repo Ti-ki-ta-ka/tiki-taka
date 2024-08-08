@@ -72,7 +72,7 @@ class EvaluationServiceImpl(
             teamRepository.save(team)
         }
     }
-
+    
     private val verificationEmail = mutableMapOf<String, String>()
 
     @Transactional
