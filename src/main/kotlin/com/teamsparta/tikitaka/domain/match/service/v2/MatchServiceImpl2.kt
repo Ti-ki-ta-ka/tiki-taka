@@ -1,7 +1,6 @@
 package com.teamsparta.tikitaka.domain.match.service.v2
 
 import com.teamsparta.tikitaka.domain.common.Region
-import com.teamsparta.tikitaka.domain.common.exception.AccessDeniedException
 import com.teamsparta.tikitaka.domain.common.exception.ModelNotFoundException
 import com.teamsparta.tikitaka.domain.match.dto.MatchResponse
 import com.teamsparta.tikitaka.domain.match.dto.MyTeamMatchResponse
@@ -18,11 +17,9 @@ import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 
 @Service
@@ -68,17 +65,9 @@ class MatchServiceImpl2(
         matchId: Long,
         request: UpdateMatchRequest,
     ): MatchResponse {
-
         val match = findMatchById(matchId)
 
-
-        if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER")))
-            throw AccessDeniedException(
-                "You do not have permission to update."
-            )
-
         match.updateMatch(request)
-
         return MatchResponse.from(match)
     }
 
@@ -87,11 +76,8 @@ class MatchServiceImpl2(
         principal: UserPrincipal,
         matchId: Long,
     ): MatchResponse {
-
         val match = findMatchById(matchId)
-        if (match.userId != principal.id && !principal.authorities.contains(SimpleGrantedAuthority("ROLE_LEADER"))) throw AccessDeniedException(
-            "You do not have permission to delete."
-        )
+
         match.softDelete()
         deleteRelatedApplications(matchId)
 
@@ -108,7 +94,11 @@ class MatchServiceImpl2(
             .map { match -> MatchResponse.from(match) }
     }
 
-    override fun getMatchesByDateAndRegion(pageable: Pageable, matchDate: LocalDate, regions: List<Region>?): Page<MatchResponse> {
+    override fun getMatchesByDateAndRegion(
+        pageable: Pageable,
+        matchDate: LocalDate,
+        regions: List<Region>?
+    ): Page<MatchResponse> {
         val startOfDay = matchDate.atStartOfDay()
         val endOfDay = matchDate.atTime(23, 59, 59, 999)
         return matchRepository.findByDateAndRegions(startOfDay, endOfDay, regions, pageable)
@@ -152,6 +142,11 @@ class MatchServiceImpl2(
 
         val myMatches = matchRepository.findMatchesByTeamId(pageable, teamId!!, matchStatus)
         return myMatches
+    }
+
+    override fun getMatch(matchId: Long): Match {
+        val match = findMatchById(matchId)
+        return match
     }
 
     private fun findMatchById(matchId: Long) =

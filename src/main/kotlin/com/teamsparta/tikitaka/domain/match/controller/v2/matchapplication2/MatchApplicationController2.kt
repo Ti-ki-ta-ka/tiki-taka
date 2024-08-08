@@ -42,7 +42,7 @@ class MatchApplicationController2(
         val matchApplication = matchApplicationService.getMatchApplication(applicationId)
 
         matchApplicationService.cancelMatchApplication(principal, matchId, applicationId)
-        return preAuthorize.hasPermission(principal, matchApplication) {
+        return preAuthorize.applicationPermission(principal, matchApplication) {
             ResponseEntity.status(HttpStatus.NO_CONTENT).build()
         }
     }

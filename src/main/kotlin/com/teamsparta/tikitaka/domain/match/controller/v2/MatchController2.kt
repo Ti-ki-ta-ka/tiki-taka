@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/v2/matches")
@@ -43,8 +42,12 @@ class MatchController2(
         @PathVariable(name = "match-id") matchId: Long,
         @RequestBody request: UpdateMatchRequest,
     ): ResponseEntity<MatchResponse> {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(matchService.updateMatch(principal, matchId, request))
+        val match = matchService.getMatch(matchId)
+
+        return preAuthorize.matchPermission(principal, match) {
+            ResponseEntity.status(HttpStatus.OK)
+                .body(matchService.updateMatch(principal, matchId, request))
+        }
     }
 
     @DeleteMapping("/{match-id}")
@@ -52,8 +55,12 @@ class MatchController2(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable(name = "match-id") matchId: Long,
     ): ResponseEntity<MatchResponse> {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-            .body(matchService.deleteMatch(principal, matchId))
+        val match = matchService.getMatch(matchId)
+
+        return preAuthorize.matchPermission(principal, match) {
+            ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(matchService.deleteMatch(principal, matchId))
+        }
     }
 
     @GetMapping()
