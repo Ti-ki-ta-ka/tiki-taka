@@ -61,6 +61,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
     kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
     kapt("jakarta.annotation:jakarta.annotation-api")
     kapt("jakarta.persistence:jakarta.persistence-api")

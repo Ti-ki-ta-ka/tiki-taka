@@ -44,7 +44,8 @@ class SecurityConfig(
                     "/api/v2/matches/by-deadline",
                     "/api/v2/matches/available",
                     "/oauth/**",
-                    "/login/oauth2/**"
+                    "/login/oauth2/**",
+                    "/api/v3/weather/**"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
