@@ -1,9 +1,10 @@
 package com.teamsparta.tikitaka.api.weather.service
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.teamsparta.tikitaka.api.weather.dto.ForecastValue
 import com.teamsparta.tikitaka.api.weather.dto.WeatherData
 import com.teamsparta.tikitaka.api.weather.dto.WeatherResponse
+import com.teamsparta.tikitaka.api.weather.dto.WeatherResponseContainer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,9 +25,9 @@ class WeatherService(private val webBuilder: WebClient.Builder) {
     @Value("\${kma.service_key}")
     lateinit var serviceKey: String
 
-    private val xmlMapper = XmlMapper()
+    private val objectMapper = ObjectMapper()
 
-    fun searchWeather(): Mono<WeatherData> {
+    fun searchWeather(nx: Int, ny: Int): Mono<WeatherData> {
         val factory = DefaultUriBuilderFactory(baseUrl).apply {
             encodingMode = DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY
         }
@@ -43,27 +44,27 @@ class WeatherService(private val webBuilder: WebClient.Builder) {
                     .queryParam("serviceKey", serviceKey)
                     .queryParam("pageNo", "1")
                     .queryParam("numOfRows", "1000")
-                    .queryParam("dataType", "XML")
+                    .queryParam("dataType", "JSON")
                     .queryParam("base_date", getBaseDate())
                     .queryParam("base_time", getBaseTime(LocalTime.now()))
-                    .queryParam("nx", "69")
-                    .queryParam("ny", "106")
+                    .queryParam("nx", nx)
+                    .queryParam("ny", ny)
                     .build()
             }
             .header("Content-type", "application/json")
             .retrieve()
             .bodyToMono(String::class.java)
-            .map { xmlMapper.readValue(it, WeatherResponse::class.java) }
-            .map { extractRelevantData(it) }
+            .map { objectMapper.readValue(it, WeatherResponseContainer::class.java) }
+            .map { extractRelevantData(it.response) }
     }
 
-    private fun extractRelevantData(response: WeatherResponse): WeatherData {
+    private fun extractRelevantData(response: WeatherResponse?): WeatherData {
         val temperature = mutableListOf<ForecastValue>()
         val skyCondition = mutableListOf<ForecastValue>()
         val humidity = mutableListOf<ForecastValue>()
         val precipitationType = mutableListOf<ForecastValue>()
 
-        response.body?.items?.forEach { item ->
+        response?.body?.items?.item?.forEach { item ->
             val forecastValue = ForecastValue(
                 date = item.fcstDate ?: "",
                 time = item.fcstTime ?: "",

@@ -3,6 +3,10 @@ package com.teamsparta.tikitaka.api.weather.dto
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
+data class WeatherResponseContainer @JsonCreator constructor(
+    @JsonProperty("response") val response: WeatherResponse?
+)
+
 data class WeatherResponse @JsonCreator constructor(
     @JsonProperty("header") val header: Header?,
     @JsonProperty("body") val body: Body?
@@ -15,10 +19,14 @@ data class Header @JsonCreator constructor(
 
 data class Body @JsonCreator constructor(
     @JsonProperty("dataType") val dataType: String?,
-    @JsonProperty("items") val items: List<Item>?,
+    @JsonProperty("items") val items: Items?,
     @JsonProperty("numOfRows") val numOfRows: Int?,
     @JsonProperty("pageNo") val pageNo: Int?,
     @JsonProperty("totalCount") val totalCount: Int?
+)
+
+data class Items @JsonCreator constructor(
+    @JsonProperty("item") val item: List<Item>?
 )
 
 data class Item @JsonCreator constructor(
