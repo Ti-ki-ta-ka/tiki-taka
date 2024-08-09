@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/v2/matches")
@@ -56,9 +58,13 @@ class MatchController2(
 
     @GetMapping()
     fun getMatches(
+        @RequestParam matchDate: String,
+        @RequestParam(required = false) regions: List<Region>?,
         @PageableDefault(size = 20, sort = ["createdAt,desc"]) pageable: Pageable
     ): ResponseEntity<Page<MatchResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(matchService.getMatches(pageable))
+        println("Received date: $matchDate, region: $regions")
+        val matches = matchService.getMatchesByDateAndRegion(pageable, LocalDate.parse(matchDate), regions)
+        return ResponseEntity.status(HttpStatus.OK).body(matches)
     }
 
     @GetMapping("/available")

@@ -21,7 +21,7 @@ class Match(
     var location: String,
 
     @Enumerated(EnumType.STRING)
-    //@Column(name = "region", nullable = false)
+    @Column(name = "region", nullable = false)
     var region: Region,
 
     @Column(name = "content", nullable = false)
@@ -55,6 +55,9 @@ class Match(
         this.matchStatus = !this.matchStatus
     }
 
+    fun matchingSuccess() {
+        this.matchStatus = true
+    }
 
     companion object {
 

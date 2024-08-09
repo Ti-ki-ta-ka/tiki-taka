@@ -20,5 +20,15 @@ class EvaluationRepositoryImpl : CustomEvaluationRepository, QueryDslSupport() {
             )
             .fetch()
     }
-}
 
+    override fun softDeleteOldEvaluations(threshold: LocalDateTime, now: LocalDateTime) {
+        val evaluation = QEvaluation.evaluation
+        queryFactory.update(evaluation)
+            .set(evaluation.deletedAt, now)
+            .where(
+                evaluation.createdAt.lt(threshold)
+                    .and(evaluation.deletedAt.isNull)
+            )
+            .execute()
+    }
+}

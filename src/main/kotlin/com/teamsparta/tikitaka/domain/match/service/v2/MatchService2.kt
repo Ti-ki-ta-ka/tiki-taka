@@ -9,6 +9,8 @@ import com.teamsparta.tikitaka.domain.match.model.SortCriteria
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface MatchService2 {
 
@@ -17,6 +19,7 @@ interface MatchService2 {
     fun deleteMatch(principal: UserPrincipal, matchId: Long): MatchResponse
     fun getMatches(pageable: Pageable): Page<MatchResponse>
     fun getAvailableMatchesAndSort(pageable: Pageable, sortCriteria: SortCriteria): Page<MatchResponse>
+    fun getMatchesByDateAndRegion(pageable: Pageable, matchDate: LocalDate, region: List<Region>?): Page<MatchResponse>
     fun getMatchesByRegionAndSort(
         region: List<Region>,
         pageable: Pageable,
