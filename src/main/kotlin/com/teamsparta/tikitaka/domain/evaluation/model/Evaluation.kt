@@ -36,6 +36,9 @@ class Evaluation(
     @Column(name = "deleted_at", nullable = true)
     val deletedAt: LocalDateTime? = null,
 
+    @Column(name = "email", nullable = false)
+    var email: String
+
     ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

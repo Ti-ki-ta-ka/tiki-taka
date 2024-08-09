@@ -2,6 +2,8 @@ package com.teamsparta.tikitaka.domain.users.controller.v2
 
 import com.teamsparta.tikitaka.domain.recruitment.dto.recruitmentapplication.RecruitmentApplicationResponse
 import com.teamsparta.tikitaka.domain.recruitment.service.v2.recruitmentapplication.RecruitmentApplicationService
+import com.teamsparta.tikitaka.domain.team.dto.response.TeamResponse
+import com.teamsparta.tikitaka.domain.team.service.v2.TeamService2
 import com.teamsparta.tikitaka.domain.users.dto.*
 import com.teamsparta.tikitaka.domain.users.service.v1.UsersService
 import com.teamsparta.tikitaka.infra.security.UserPrincipal
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*
 class UsersController2(
     private val userService: UsersService,
     private val recruitmentApplicationService: RecruitmentApplicationService,
+    private val teamService2:TeamService2
 ) {
     @PostMapping("/sign-up")
     fun signUp(
@@ -70,6 +73,23 @@ class UsersController2(
     ): ResponseEntity<List<RecruitmentApplicationResponse>> {
         return ResponseEntity.status(HttpStatus.OK)
             .body(recruitmentApplicationService.getMyApplications(userPrincipal))
+    }
+
+
+    @GetMapping("/my-team")
+    fun getMyTeam(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal
+    ): ResponseEntity<TeamResponse> {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(teamService2.getMyTeam(userPrincipal))
+    }
+
+    @GetMapping("/my-team-member")
+    fun getMyTeamMembers(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal
+    ): ResponseEntity<List<UserResponse>> {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(teamService2.getMyTeamMembers(userPrincipal))
     }
 
 }

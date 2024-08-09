@@ -71,17 +71,21 @@ class EvaluationServiceImpl(
 
     @Transactional
     override fun createEvaluationsForMatch(match: SuccessMatch) {
+        val host = usersRepository.findByIdOrNull(match.hostId)
+        val guest = usersRepository.findByIdOrNull(match.guestId)
         val hostTeamEvaluation = Evaluation(
             evaluatorTeamId = match.hostTeamId,
             evaluateeTeamId = match.guestTeamId,
             evaluatorId = match.guestId,
             createdAt = LocalDateTime.now(),
+            email = host!!.email
         )
         val guestTeamEvaluation = Evaluation(
             evaluatorTeamId = match.guestTeamId,
             evaluateeTeamId = match.hostTeamId,
             evaluatorId = match.hostId,
             createdAt = LocalDateTime.now(),
+            email = guest!!.email
         )
 
         evaluationRepository.save(hostTeamEvaluation)
